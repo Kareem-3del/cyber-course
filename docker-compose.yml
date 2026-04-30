@@ -1,0 +1,33 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: cyber-course:latest
+    container_name: cyber-course
+    restart: unless-stopped
+    expose:
+      - "3000"
+    environment:
+      NODE_ENV: production
+      NEXT_TELEMETRY_DISABLED: "1"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik-public"
+      - "traefik.http.routers.cyber.rule=Host(`cyber.kareem-3del.com`)"
+      - "traefik.http.routers.cyber.entrypoints=websecure"
+      - "traefik.http.routers.cyber.tls=true"
+      - "traefik.http.routers.cyber.tls.certresolver=letsencrypt"
+      - "traefik.http.services.cyber.loadbalancer.server.port=3000"
+      # HTTP -> HTTPS redirect
+      - "traefik.http.routers.cyber-http.rule=Host(`cyber.kareem-3del.com`)"
+      - "traefik.http.routers.cyber-http.entrypoints=web"
+      - "traefik.http.routers.cyber-http.middlewares=cyber-redirect"
+      - "traefik.http.middlewares.cyber-redirect.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.cyber-redirect.redirectscheme.permanent=true"
+    networks:
+      - traefik-public
+
+networks:
+  traefik-public:
+    external: true
