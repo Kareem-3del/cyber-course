@@ -108,8 +108,10 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#000000",
-  colorScheme: "light",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#FFFFFF" },
+    { media: "(prefers-color-scheme: dark)", color: "#000000" },
+  ],
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
@@ -128,10 +130,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   // Locale is injected by middleware (`middleware.ts`) into the request
   // headers. Reading it here means the very first byte of HTML carries the
   // correct lang/dir — no client-side flip, no FOUC.
-  const locale = (headers().get("x-locale") as "ar" | "en" | null) ?? "ar";
+  const h = headers();
+  const locale = (h.get("x-locale") as "ar" | "en" | null) ?? "ar";
+  const theme  = (h.get("x-theme") as "light" | "dark" | null) ?? "light";
   const dir = locale === "ar" ? "rtl" : "ltr";
   return (
-    <html lang={locale} dir={dir} suppressHydrationWarning className={fontVars}>
+    <html lang={locale} dir={dir} data-theme={theme} suppressHydrationWarning className={fontVars}>
       <body className="font-sans antialiased min-h-screen overflow-x-hidden">
         {/* JSON-LD structured data — improves Google rich results */}
         <script

@@ -2,11 +2,19 @@ import type { Config } from "tailwindcss";
 
 /**
  * RawBlock token mapping.
- * The legacy app used semantic tokens (bg, panel, line, ink, mute, accent, ...).
- * We keep those names so the existing class soup keeps working, but every
- * value now maps to the brutalist palette: black, white, surface-sunken, and
- * the four state colors. `accent` and `blue` are deliberately the same
- * (#0000FF) — RawBlock reserves blue for links, period.
+ *
+ * Every color now points at a CSS custom property defined in `globals.css`.
+ * That single indirection is what lets dark mode work: setting
+ * `data-theme="dark"` on <html> swaps the values of those custom properties,
+ * which automatically repaints every `bg-white`, `text-black`, `border-black`
+ * across the codebase without us having to add a `dark:` variant on each one.
+ *
+ * - `white`  → `var(--rb-white)`  (light: #FFFFFF, dark: #000000)
+ * - `black`  → `var(--rb-black)`  (light: #000000, dark: #FFFFFF)
+ * - state colors track the same variables.
+ *
+ * Blue (#0000FF) stays hard-coded everywhere it really must remain blue
+ * (the RawBlock spec reserves it for hyperlinks).
  */
 const config: Config = {
   content: [
@@ -18,28 +26,29 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["Work Sans", "var(--font-ar)", "system-ui", "sans-serif"],
-        display: ["Archivo Black", "var(--font-ar)", "system-ui", "sans-serif"],
+        sans: ["Work Sans", "system-ui", "sans-serif"],
+        display: ["Archivo Black", "system-ui", "sans-serif"],
         mono: ["Space Mono", "ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
       },
       colors: {
-        // base surfaces
-        bg: "#FFFFFF",
-        panel: "#FFFFFF",
-        panel2: "#F0F0F0",
-        sunken: "#F0F0F0",
-        // structure
-        line: "#000000",
-        ink: "#000000",
-        inkInv: "#FFFFFF",
-        mute: "#555555",
-        // semantic
-        accent: "#000000",  // emphasis = black, never blue
-        link: "#0000FF",
-        red: "#FF0000",
-        blue: "#0000FF",
-        green: "#008000",
-        amber: "#FFA500",
+        // Theme-aware — flip with data-theme="dark".
+        white:  "var(--rb-white)",
+        black:  "var(--rb-black)",
+        // Semantic surface tokens (re-mapped to the new palette).
+        bg:     "var(--rb-white)",
+        panel:  "var(--rb-white)",
+        panel2: "var(--rb-sunken)",
+        sunken: "var(--rb-sunken)",
+        line:   "var(--rb-black)",
+        ink:    "var(--rb-black)",
+        inkInv: "var(--rb-white)",
+        mute:   "var(--rb-disabled)",
+        accent: "var(--rb-black)",
+        link:   "var(--rb-link)",
+        red:    "var(--rb-error)",
+        blue:   "var(--rb-link)",
+        green:  "var(--rb-success)",
+        amber:  "var(--rb-warning)",
       },
       borderWidth: {
         DEFAULT: "3px",

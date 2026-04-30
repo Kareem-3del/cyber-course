@@ -21,8 +21,13 @@ export function middleware(req: NextRequest) {
   const locale: "ar" | "en" =
     path === "/en" || path.startsWith("/en/") ? "en" : "ar";
 
+  // Theme preference comes from a cookie set by the toggle. Default light.
+  const themeCookie = req.cookies.get("theme")?.value;
+  const theme: "light" | "dark" = themeCookie === "dark" ? "dark" : "light";
+
   const headers = new Headers(req.headers);
   headers.set("x-locale", locale);
+  headers.set("x-theme", theme);
   return NextResponse.next({ request: { headers } });
 }
 

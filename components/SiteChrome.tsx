@@ -7,6 +7,7 @@ import { useI18n, T } from "@/lib/i18n";
 import { useProgress } from "@/lib/progress";
 import { LESSONS } from "@/lib/lessons";
 import { LanguageToggle } from "./LanguageToggle";
+import { ThemeToggle } from "./ThemeToggle";
 import { Sidebar } from "./Sidebar";
 import { CourseTabs } from "./CourseTabs";
 
@@ -65,6 +66,7 @@ export function PublicHeader() {
             <T ar="ادخل الدورة" en="Enter Course" />
             <Arrow className="w-3.5 h-3.5" strokeWidth={3} />
           </Link>
+          <ThemeToggle />
           <LanguageToggle />
         </div>
       </div>
@@ -130,6 +132,7 @@ function CourseHeader({ onMenu }: { onMenu?: () => void }) {
             </div>
             <span className="eng text-black/60">{done}/{total}</span>
           </div>
+          <ThemeToggle />
           <LanguageToggle />
         </div>
       </div>

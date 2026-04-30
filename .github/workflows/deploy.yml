@@ -1,0 +1,59 @@
+name: Deploy to cyber.kareem-3del.com
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-prod
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          echo "${{ secrets.SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
+
+      - name: Pull, build, restart
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+        run: |
+          ssh -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" bash -se <<'REMOTE'
+          set -euo pipefail
+          cd /opt/cyber-course
+          echo "::group::git pull"
+          git fetch --all --prune
+          git reset --hard origin/main
+          echo "::endgroup::"
+          echo "::group::docker build"
+          docker compose build --pull
+          echo "::endgroup::"
+          echo "::group::docker up"
+          docker compose up -d --force-recreate
+          echo "::endgroup::"
+          echo "::group::cleanup"
+          docker image prune -f
+          echo "::endgroup::"
+          docker compose ps
+          REMOTE
+
+      - name: Smoke test
+        run: |
+          for i in 1 2 3 4 5 6 7 8 9 10; do
+            code=$(curl -k -s -o /dev/null -w "%{http_code}" --max-time 10 https://cyber.kareem-3del.com || echo 000)
+            echo "attempt $i -> $code"
+            if [ "$code" = "200" ] || [ "$code" = "301" ] || [ "$code" = "302" ]; then
+              exit 0
+            fi
+            sleep 6
+          done
+          exit 1
