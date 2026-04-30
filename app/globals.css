@@ -1,0 +1,488 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* =========================================================================
+   RawBlock — Brutalist design system
+   White surfaces, black borders, no shadows, no rounded corners.
+   Blue (#0000FF) is reserved for hyperlinks only.
+   ========================================================================= */
+
+:root {
+  /* Arabic body — Tajawal, dual-script humanist sans, pairs with Work Sans.
+     Weights available: 400, 500, 700, 800, 900. */
+  --font-ar: var(--font-tajawal), var(--font-cairo), system-ui, sans-serif;
+  /* Arabic display — Tajawal 900 (Black) gives the closest brutalist match
+     to Archivo Black; Cairo Black is kept as fallback. Reem Kufi is the
+     brutalist Kufic accent, opt-in via `.font-kufi`. */
+  --font-ar-display: var(--font-tajawal), var(--font-cairo), var(--font-reem-kufi), system-ui, sans-serif;
+  --font-ar-mono:    var(--font-tajawal), var(--font-cairo), monospace;
+
+  --rb-black: #000000;
+  --rb-white: #FFFFFF;
+  --rb-link:  #0000FF;
+  --rb-sunken:#F0F0F0;
+  --rb-sunken-hover:#E8E8E8;
+  --rb-disabled:#CCCCCC;
+  --rb-success:#008000;
+  --rb-warning:#FFA500;
+  --rb-error:  #FF0000;
+
+  --bw-thin:  1px;
+  --bw-thick: 3px;
+  --bw-heavy: 5px;
+}
+
+html, body {
+  background: var(--rb-white);
+  color: var(--rb-black);
+}
+html { scroll-behavior: smooth; }
+
+/* Sharp edges everywhere. The radio dot keeps `border-radius: 9999px` via
+   the `rounded-full` utility because `*` does not match it via specificity. */
+*, *::before, *::after {
+  border-radius: 0;
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+.rounded-full,
+.rb-circle { border-radius: 9999px !important; }
+
+/* Selection */
+::selection { background: var(--rb-black); color: var(--rb-white); }
+
+/* Body type */
+body {
+  font-family: var(--font-work-sans), var(--font-ar), system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Headlines */
+h1, h2, h3, .display {
+  font-family: var(--font-archivo-black), var(--font-ar), system-ui, sans-serif;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  color: var(--rb-black);
+}
+h1 { font-size: clamp(40px, 6vw, 64px); line-height: 1.0; }
+h2 { font-size: clamp(32px, 4.4vw, 48px); line-height: 1.05; }
+h3 { font-size: clamp(22px, 2.6vw, 32px); line-height: 1.1; }
+h4 { font-family: var(--font-work-sans), sans-serif; font-weight: 600; font-size: 22px; line-height: 1.2; }
+
+/* Links — the ONLY place blue is used */
+a { color: inherit; }
+.prose-ar a, .prose-md a, .link {
+  color: var(--rb-link);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* RTL/LTR helpers (kept) */
+.ltr { direction: ltr; unicode-bidi: isolate; text-align: left; }
+.eng { direction: ltr; unicode-bidi: isolate; }
+
+/* =========================================================================
+   Mono / code / terminal
+   ========================================================================= */
+pre, code, .mono {
+  font-family: var(--font-space-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+pre {
+  direction: ltr;
+  text-align: left;
+  background: var(--rb-sunken);
+  color: var(--rb-black);
+  border: 3px solid var(--rb-black);
+  border-radius: 0;
+  padding: 16px 18px;
+  overflow-x: auto;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* Token colors stay strictly within the brutalist palette */
+pre .c { color: #555555; }      /* comment — neutral grey */
+pre .k { color: var(--rb-error); font-weight: 700; }
+pre .s { color: var(--rb-success); }
+pre .n { color: var(--rb-warning); font-weight: 700; }
+pre .v { color: var(--rb-black); font-weight: 700; }
+
+/* Terminal mock — inverted block, no traffic-light dots */
+.terminal {
+  background: var(--rb-black);
+  color: var(--rb-white);
+  border: 3px solid var(--rb-black);
+}
+.terminal-bar {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 12px;
+  border-bottom: 3px solid var(--rb-black);
+  background: var(--rb-white);
+  color: var(--rb-black);
+  font-family: var(--font-space-mono), monospace;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+.terminal-bar span { display: none; }
+.terminal-bar::before {
+  content: "//SHELL";
+  font-weight: 700;
+}
+.terminal-body {
+  padding: 14px 16px;
+  font-family: var(--font-space-mono), monospace;
+  font-size: 13px;
+  line-height: 1.7;
+  direction: ltr;
+  text-align: left;
+}
+.terminal-body .prompt { color: var(--rb-white); font-weight: 700; }
+.terminal-body .out    { color: #BFBFBF; }
+
+/* =========================================================================
+   Chips — RawBlock filter & status
+   The legacy `.chip` / `.chip-red|blue|amber|green` names are kept so all
+   existing pages render correctly; styles are re-skinned to brutalist.
+   ========================================================================= */
+.chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 2px 10px;
+  font-family: var(--font-work-sans), sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  background: var(--rb-white);
+  color: var(--rb-black);
+  border: 2px solid var(--rb-black);
+}
+.chip-red    { color: var(--rb-error);   border-color: var(--rb-error); }
+.chip-blue   { color: var(--rb-link);    border-color: var(--rb-link); }
+.chip-amber  { color: var(--rb-warning); border-color: var(--rb-warning); }
+.chip-green  { color: var(--rb-success); border-color: var(--rb-success); }
+
+/* Active filter chip = full inversion */
+.chip-active {
+  background: var(--rb-black);
+  color: var(--rb-white);
+  border-color: var(--rb-black);
+}
+
+/* =========================================================================
+   Tier pills — re-mapped to status chips
+   ========================================================================= */
+.tier-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 2px 10px;
+  font-family: var(--font-work-sans), sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: var(--rb-white);
+  border: 2px solid var(--rb-black);
+  color: var(--rb-black);
+}
+.tier-1 { color: var(--rb-success); border-color: var(--rb-success); }
+.tier-2 { color: var(--rb-link);    border-color: var(--rb-link); }
+.tier-3 { color: var(--rb-warning); border-color: var(--rb-warning); }
+.tier-4 { color: var(--rb-error);   border-color: var(--rb-error); }
+
+/* =========================================================================
+   Buttons (utility classes for use inline)
+   ========================================================================= */
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 24px;
+  font-family: var(--font-work-sans), sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  border: 3px solid var(--rb-black);
+  background: var(--rb-black);
+  color: var(--rb-white);
+  cursor: pointer;
+  transition: background-color .12s linear, color .12s linear, border-width .05s linear;
+}
+.btn:hover { background: var(--rb-white); color: var(--rb-black); }
+.btn:active { border-width: 5px; padding: 8px 22px; background: var(--rb-black); color: var(--rb-white); }
+.btn-secondary { background: var(--rb-white); color: var(--rb-black); }
+.btn-secondary:hover { background: var(--rb-black); color: var(--rb-white); }
+.btn-ghost { background: transparent; color: var(--rb-black); border-color: transparent; padding: 10px 0; text-decoration: underline; }
+.btn-ghost:hover { background: transparent; color: var(--rb-link); }
+.btn-destructive { background: var(--rb-error); color: var(--rb-white); border-color: var(--rb-black); }
+.btn-destructive:hover { background: var(--rb-black); color: var(--rb-error); }
+.btn-sm { padding: 6px 16px; font-size: 12px; }
+.btn-lg { padding: 16px 40px; font-size: 18px; }
+.btn[disabled], .btn:disabled {
+  background: var(--rb-sunken);
+  color: var(--rb-disabled);
+  border-color: var(--rb-disabled);
+  cursor: not-allowed;
+}
+
+/* =========================================================================
+   Inputs
+   ========================================================================= */
+.rb-input {
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--rb-sunken);
+  color: var(--rb-black);
+  border: 3px solid var(--rb-black);
+  font-family: var(--font-space-mono), monospace;
+  font-size: 15px;
+  outline: none;
+}
+.rb-input:hover { background: var(--rb-sunken-hover); }
+.rb-input:focus { border-width: 5px; padding: 8px 10px; }
+.rb-input::placeholder { color: var(--rb-disabled); }
+
+.rb-label {
+  display: block;
+  font-family: var(--font-archivo-black), sans-serif;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 4px;
+  color: var(--rb-black);
+}
+
+/* =========================================================================
+   Cards (utility)
+   ========================================================================= */
+.rb-card { background: var(--rb-white); border: 3px solid var(--rb-black); padding: 24px; }
+.rb-card-elevated { background: var(--rb-white); border: 5px solid var(--rb-black); padding: 24px; }
+
+/* =========================================================================
+   Lists with brutal dividers (used by sidebar, lessons listing)
+   ========================================================================= */
+.rb-list > * + * { border-top: 3px solid var(--rb-black); }
+.rb-list a, .rb-list button {
+  display: flex; align-items: center; gap: 8px;
+  padding: 12px 0;
+  font-family: var(--font-work-sans), sans-serif;
+  font-size: 16px;
+  color: var(--rb-black);
+  width: 100%;
+}
+.rb-list a:hover, .rb-list button:hover { text-decoration: underline; }
+.rb-list a.active, .rb-list button.active {
+  background: var(--rb-black); color: var(--rb-white);
+  padding-inline: 12px;
+}
+.rb-list a.active:hover, .rb-list button.active:hover { text-decoration: none; }
+
+/* =========================================================================
+   Tooltip
+   ========================================================================= */
+.rb-tooltip {
+  background: var(--rb-black); color: var(--rb-white);
+  font-family: var(--font-space-mono), monospace; font-size: 13px;
+  padding: 8px 12px; max-width: 260px; border: 0;
+}
+
+/* =========================================================================
+   Prose — markdown / lesson body
+   AR + EN share the same brutalist look; bidi handled at <html dir>.
+   ========================================================================= */
+.prose-ar, .prose-md {
+  line-height: 1.7;
+  color: var(--rb-black);
+}
+.prose-ar > :first-child, .prose-md > :first-child { margin-top: 0; }
+
+.prose-ar h2, .prose-md h2 {
+  font-family: var(--font-archivo-black), var(--font-ar), sans-serif;
+  font-size: clamp(28px, 3.4vw, 40px);
+  margin: 2.4rem 0 1rem;
+  padding-bottom: .5rem;
+  border-bottom: 5px solid var(--rb-black);
+  text-transform: none;
+}
+.prose-ar h3, .prose-md h3 {
+  font-family: var(--font-archivo-black), var(--font-ar), sans-serif;
+  font-size: clamp(20px, 2.4vw, 28px);
+  margin: 1.6rem 0 .6rem;
+  color: var(--rb-black);
+}
+.prose-ar p, .prose-md p { color: var(--rb-black); margin: .9rem 0; }
+.prose-ar li, .prose-md li { color: var(--rb-black); line-height: 1.7; }
+.prose-ar ul, .prose-md ul { list-style: square; padding-inline-start: 1.4rem; margin: .6rem 0 1rem; }
+.prose-ar ol, .prose-md ol { list-style: decimal; padding-inline-start: 1.4rem; margin: .6rem 0 1rem; }
+.prose-ar blockquote, .prose-md blockquote {
+  border-inline-start: 5px solid var(--rb-black);
+  background: var(--rb-sunken);
+  padding: 1rem 1.2rem;
+  margin: 1rem 0;
+  color: var(--rb-black);
+  font-style: normal;
+}
+.prose-ar hr, .prose-md hr { border: 0; border-top: 3px solid var(--rb-black); margin: 2rem 0; }
+.prose-ar code, .prose-md code {
+  background: var(--rb-sunken);
+  border: 2px solid var(--rb-black);
+  padding: 1px 6px;
+  font-size: .9em;
+}
+.prose-ar pre code, .prose-md pre code { background: transparent; border: 0; padding: 0; }
+
+/* =========================================================================
+   Scrollbar — brutalist
+   ========================================================================= */
+nav::-webkit-scrollbar, body::-webkit-scrollbar { width: 12px; height: 12px; }
+nav::-webkit-scrollbar-track,
+body::-webkit-scrollbar-track { background: var(--rb-white); border-inline-start: 3px solid var(--rb-black); }
+nav::-webkit-scrollbar-thumb,
+body::-webkit-scrollbar-thumb { background: var(--rb-black); border: 0; }
+nav::-webkit-scrollbar-thumb:hover,
+body::-webkit-scrollbar-thumb:hover { background: var(--rb-link); }
+
+/* =========================================================================
+   Legacy escape hatches — neutralized so old pages don't show effects
+   from the previous dark theme. Keeping the class names so pages compile
+   without churn, but stripping their visual effect.
+   ========================================================================= */
+.grid-bg { background: var(--rb-white); }
+.gradient-text {
+  background: none !important;
+  -webkit-background-clip: initial !important;
+          background-clip: initial !important;
+  color: var(--rb-black) !important;
+}
+.shimmer-border::before { display: none !important; }
+.hero-blob, .scan-line, .marquee-mask { display: none !important; }
+.lift, .card-hover { transition: transform .15s linear; }
+.lift:hover, .card-hover:hover { transform: translate(-2px, -2px); }
+.anim-blob, .anim-grid-pan, .anim-glow-pulse, .anim-marquee { animation: none !important; }
+.anim-fade-up, .anim-fade-in { animation: rbFadeIn .35s ease-out both; }
+
+@keyframes rbFadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Marquee kept simple — no fade mask */
+@keyframes rbMarquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.rb-marquee { animation: rbMarquee 40s linear infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .anim-fade-up, .anim-fade-in, .rb-marquee { animation: none !important; }
+}
+
+/* Inverted section helper */
+.rb-invert { background: var(--rb-black); color: var(--rb-white); }
+.rb-invert h1, .rb-invert h2, .rb-invert h3, .rb-invert h4 { color: var(--rb-white); }
+.rb-invert .chip { background: var(--rb-black); color: var(--rb-white); border-color: var(--rb-white); }
+/* Plain inline links invert to white. Button-styled anchors (Tailwind
+   classes that explicitly set their own background or text color) keep
+   their own colors so a white CTA button shows its black text. */
+.rb-invert a:not([class*="bg-"]):not([class*="text-"]) { color: var(--rb-white); }
+
+/* =========================================================================
+   Arabic typography — match the brutalist visual weight of Archivo Black
+   and Work Sans. Triggered when <html lang="ar"> or any element marked
+   :lang(ar) (e.g. via the <T> component or .eng inverse).
+   --------------------------------------------------------------------------
+   Why this exists:
+   - Archivo Black is a single-weight black display face. Arabic glyphs
+     fall through to the Arabic stack at weight 400 by default, which
+     looks much lighter than the Latin headings beside them.
+   - We also drop the `text-transform: uppercase` and wide letter-spacing
+     used on Latin labels — neither concept exists in Arabic and they
+     produce broken-looking output (disjointed glyphs, missing kashida).
+   ========================================================================= */
+:lang(ar) body,
+[dir="rtl"] body {
+  font-family: var(--font-ar), var(--font-work-sans), system-ui, sans-serif;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+/* Headings — Cairo at weight 900 (Cairo Black) is the closest brutalist
+   match for Archivo Black. Negative tracking is reduced for Arabic. */
+:lang(ar) h1, :lang(ar) h2, :lang(ar) h3, :lang(ar) h4,
+:lang(ar) .display, :lang(ar) .font-display,
+[dir="rtl"] h1, [dir="rtl"] h2, [dir="rtl"] h3, [dir="rtl"] h4 {
+  font-family: var(--font-ar-display), system-ui, sans-serif;
+  font-weight: 900;
+  letter-spacing: 0;
+}
+:lang(ar) h1 { line-height: 1.15; }
+:lang(ar) h2 { line-height: 1.2;  }
+:lang(ar) h3 { line-height: 1.25; }
+
+/* Brutalist labels & chips — drop uppercase tracking which mangles
+   Arabic, but keep the weight strong so they read as labels. */
+:lang(ar) .chip,
+:lang(ar) .tier-pill,
+:lang(ar) .rb-label,
+:lang(ar) .btn,
+[dir="rtl"] .chip,
+[dir="rtl"] .tier-pill,
+[dir="rtl"] .rb-label,
+[dir="rtl"] .btn {
+  font-family: var(--font-ar), system-ui, sans-serif;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: none;
+}
+:lang(ar) .rb-label { font-weight: 900; }
+
+/* Mono-styled UI bits (terminal bar, eyebrow `// 01`) read as decorative
+   ASCII in Arabic. Keep them in Latin mono — they do not need translation. */
+
+/* `.eng` already isolates Latin runs inside Arabic paragraphs; ensure
+   they keep Latin metrics so monospace blocks render correctly. */
+.eng { font-family: var(--font-work-sans), system-ui, sans-serif; }
+.eng.mono, pre .eng, code .eng { font-family: var(--font-space-mono), ui-monospace, monospace; }
+
+/* Body prose — match the Latin reading rhythm. Cairo runs slightly
+   smaller than Work Sans at the same px size, so we bump body Arabic
+   line-height. Buttons get +1px for visual parity. */
+:lang(ar) p, :lang(ar) li,
+[dir="rtl"] .prose-ar p, [dir="rtl"] .prose-ar li,
+[dir="rtl"] .prose-md p, [dir="rtl"] .prose-md li {
+  line-height: 1.85;
+}
+:lang(ar) .btn,
+[dir="rtl"] .btn { padding-block: 11px; }
+
+/* Prose headings — pick up the same weight bump in Arabic */
+:lang(ar) .prose-ar h2, :lang(ar) .prose-md h2,
+[dir="rtl"] .prose-ar h2, [dir="rtl"] .prose-md h2 {
+  font-family: var(--font-ar-display), sans-serif;
+  font-weight: 900;
+}
+:lang(ar) .prose-ar h3, :lang(ar) .prose-md h3,
+[dir="rtl"] .prose-ar h3, [dir="rtl"] .prose-md h3 {
+  font-family: var(--font-ar-display), sans-serif;
+  font-weight: 800;
+}
+
+/* Optional accent — Reem Kufi for hero/quote moments. Add the class
+   `.font-kufi` to opt in. */
+.font-kufi { font-family: var(--font-reem-kufi), var(--font-ar-display), sans-serif; font-weight: 700; }
+.rb-invert hr { border-top-color: var(--rb-white); }
+
+/* Diagonal-stripe filler used as a substitute for decorative imagery */
+.rb-stripes {
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--rb-black) 0 6px,
+    var(--rb-white) 6px 14px
+  );
+}
+
+/* Caret blink (kept) */
+@keyframes caretBlink { 50% { opacity: 0; } }
+.rb-caret { animation: caretBlink 1s steps(2) infinite; }
