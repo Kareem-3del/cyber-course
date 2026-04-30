@@ -7,25 +7,26 @@ export default function Page() {
       <L
         ar={<>
           <Section title="من الحاوية إلى السيرفر — كسر العزل">
-            <Analogy>الحاوية مثل سفينة في ميناء: لكل سفينة حدودها، لكنها تشترك في الميناء (الـ host kernel). لو وجد القرصان شقّاً في القاع، خرج من سفينته إلى ميناء كامل فيه عشرات السفن الأخرى.</Analogy>
-            <Callout kind="danger" title="هام">
-              يُشرح هنا للوعي الدفاعي و لاختبارات الاختراق المرخّصة. تطبيقها على بيئات إنتاج لجهات أخرى = جريمة فيدرالية.
+            <Analogy>الحاوية زي مركب في ميناء: كل مركب ليه حدوده، لكن كلهم بيشتركوا في نفس الميناء (الـ host kernel). لو القرصان لقى خرم في قاع المركب بتاعه، يخرج منه ويبقى في ميناء كامل فيه عشرات المراكب التانية. ده بالظبط اللي بيحصل في Container Escape.</Analogy>
+            <Callout kind="danger" title="تحذير قانوني">
+              الكلام ده للوعي الدفاعي ولاختبارات الاختراق المرخّصة. تطبيقه على بيئات إنتاج لجهات تانية = جريمة فيدرالية. لا تلعب بالنار.
             </Callout>
           </Section>
 
-          <Section title="ما الذي يعزل الحاوية؟">
+          <Section title="إيه اللي بيعزل الحاوية أصلاً؟">
+            <p>قبل ما نتكلم عن الهروب، خلينا نفهم السجن نفسه. الحاوية مش VM — هي عملية عادية على الـ kernel، بس متلفّة في كذا طبقة عزل:</p>
             <ul>
-              <li><b>Namespaces</b>: PID, network, mount, UTS, IPC, user, cgroup, time. كل واحد يعزل نوعاً.</li>
-              <li><b>cgroups</b>: حدود الموارد (CPU, memory, io).</li>
-              <li><b>capabilities</b>: تقسيم صلاحيات root إلى ~40 صلاحية مستقلة.</li>
-              <li><b>seccomp-bpf</b>: قائمة بيضاء لـ syscalls المسموحة.</li>
+              <li><b>Namespaces</b>: PID, network, mount, UTS, IPC, user, cgroup, time. كل واحد بيعزل بُعد واحد.</li>
+              <li><b>cgroups</b>: بتحدد الموارد (CPU, memory, io).</li>
+              <li><b>capabilities</b>: بتقسم صلاحيات root لحوالي 40 صلاحية مستقلة.</li>
+              <li><b>seccomp-bpf</b>: قائمة بيضاء للـ syscalls المسموحة.</li>
               <li><b>AppArmor / SELinux</b>: MAC إجباري.</li>
-              <li><b>UID mapping</b>: user namespace يجعل root الحاوية = uid عادي على الـ host.</li>
+              <li><b>UID mapping</b>: user namespace بيخلّي root الحاوية = uid عادي على الـ host.</li>
             </ul>
-            <p>سقوط أي واحدة من هذه = طبقة دفاع أقل.</p>
+            <p>أي طبقة فيهم تسقط = طبقة دفاع أقل. لما تسقط كلهم = هربت.</p>
           </Section>
 
-          <Section title="Misconfigurations — الطريق الأقصر للهروب">
+          <Section title="Misconfigurations — السكة الأقصر للهروب">
             <h3>1) Privileged container</h3>
             <Code lang="bash">{`docker run --privileged ...
 # يعطي كل الـ capabilities + access للـ devices = root كامل على host`}</Code>
@@ -68,7 +69,7 @@ docker -H unix:///var/run/docker.sock run -v /:/host --privileged alpine \\
               <li><b>CVE-2024-23653 (BuildKit)</b> — هروب أثناء بناء الـ image.</li>
             </ul>
             <Callout kind="warn" title="القاعدة الذهبية">
-              ضع داخل الـ image سياسة patch صارمة: حدّث runtime (containerd, runc, BuildKit) فوراً عند صدور CVE.
+              خلّي عندك سياسة patch صارمة على الـ runtime: حدّث containerd و runc و BuildKit فوراً لما يطلع CVE. التأخير يوم واحد ممكن يحرقلك الـ cluster كله.
             </Callout>
           </Section>
 

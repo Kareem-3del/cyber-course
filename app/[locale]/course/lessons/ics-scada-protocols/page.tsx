@@ -6,17 +6,17 @@ export default function Page() {
     <LessonShell slug="ics-scada-protocols">
       <L
         ar={<>
-          <Section title="عالم لا يشبه IT — لماذا ICS مختلف؟">
+          <Section title="عالم تاني خالص — ليه ICS مش زي IT؟">
             <Analogy>
-              IT يعمل بمنطق "secure first, fast second". OT (Operational Technology) عكس ذلك تماماً: محطة كهرباء
-              تتحمل ثوانٍ من التأخر، وثانية واحدة من توقف الإنذار قد تعني انفجار. هندسة OT بُنيت على أن "متى" أهم من
-              "ما"، والكثير من بروتوكولاتها لا تحتوي authentication أصلاً لأن التواصل بين PLC و sensor كان
-              يفترض أن يتم في شبكة معزولة.
+              IT شغّال بمنطق "الأمان الأول والسرعة بعدين". OT (Operational Technology) عكس ده تماماً: محطة كهربا
+              ممكن تستحمل ثواني تأخير، لكن ثانية واحدة الإنذار يتعطّل فيها = انفجار. هندسة OT اتبنت على إن "إمتى"
+              أهم من "إيه"، وكتير من بروتوكولاتها مفيهاش authentication أصلاً، لأن الكلام بين PLC والـ sensor
+              كان مفروض إنه في شبكة معزولة.
             </Analogy>
             <p>
-              الواقع اليوم: تلك الشبكات لم تعد معزولة. Stuxnet، Industroyer، Pipedream، CHIRP — كل حملة كبرى ضد
-              بنية تحتية حرجة استغلت بروتوكولات صُممت بلا حماية. هذا الدرس يغطي Modbus، DNP3، IEC-104 — الأكثر
-              انتشاراً في الكهرباء، الماء، النقل.
+              الواقع النهارده؟ الشبكات دي بقت متوصّلة. Stuxnet، Industroyer، Pipedream، CHIRP — كل حملة كبيرة على
+              البنية التحتية الحرجة استغلت بروتوكولات اتعملت من غير حماية. الدرس ده هيغطي Modbus، DNP3، IEC-104 —
+              اللي بتشتغل في الكهربا والمياه والمواصلات.
             </p>
           </Section>
 
@@ -130,11 +130,11 @@ nmap -p 502,20000,2404,44818,47808 10.10.10.0/24 --script default
             </Step>
           </Section>
 
-          <Callout kind="danger" title="تحذير صارم">
-            الفحص الفعّال (active scanning) على شبكة OT حية قد يتسبب في انفجار، تعطل خط إنتاج، أو خسائر بمليارات.
-            كل العمل الـ ICS الحقيقي يبدأ بـ <strong>passive monitoring</strong> فقط (port mirror، Zeek، Claroty).
-            أي فحص فعّال يحتاج maintenance window مع مهندس OT حاضر. فيدرالياً، اختبار ICS غير مصرّح به قد يقع
-            تحت قانون <span className="eng">PIPDA</span> أو CIRCIA reporting.
+          <Callout kind="danger" title="تحذير صارم — اقراها مرتين">
+            الـ active scan على شبكة OT شغّالة ممكن يسبب انفجار، يوقف خط إنتاج، أو يخسّر مليارات. أي شغل ICS حقيقي
+            بيبتدي بـ <strong>passive monitoring</strong> بس (port mirror، Zeek، Claroty). أي فحص فعّال محتاج
+            maintenance window ومهندس OT واقف معاك. فيدرالياً، اختبار ICS من غير تصريح ممكن يقع تحت
+            <span className="eng"> PIPDA </span>أو CIRCIA reporting. ما تلمسش غير لما يبقى عندك ورق.
           </Callout>
 
           <Callout kind="good" title="الدفاع — الفروقات المهمة">

@@ -6,16 +6,16 @@ export default function Page() {
     <LessonShell slug="angular-security">
       <L
         ar={<>
-          <Section title="Angular مختلف بنيوياً">
-            <p>Angular يفرض <b>contextual sanitization</b>: كل قيمة تدخل DOM يحدّد لها Angular السياق (HTML, URL, Style, Script, Resource URL) و يعقّمها وفقاً له. هذا أقوى من React بشكل افتراضي. لكن Angular يعطيك أيضاً أبواباً للتجاوز: <span className="eng">bypassSecurityTrust*</span>، <span className="eng">[innerHTML]</span>، <span className="eng">[srcdoc]</span>، JIT eval، Server-Side Rendering مع Angular Universal.</p>
-            <Analogy>كقفل ذكي يميّز المفاتيح. يرفض كل مفتاح غير المفاتيح المسجّلة. لكن صاحب البيت يستطيع أن يضع علامة "trust" على أي مفتاح. يوم يضع العلامة على مفتاح غريب، انتهت الحماية.</Analogy>
+          <Section title="Angular مختلف من جذره">
+            <p>Angular بيفرض <b>contextual sanitization</b>: أي قيمة بتدخل الـ DOM، Angular بيحدد ليها السياق (HTML, URL, Style, Script, Resource URL) وبيعقمها على الأساس ده. الكلام ده أقوى من React بشكل افتراضي. بس Angular في نفس الوقت بيديك أبواب جانبية للتجاوز: <span className="eng">bypassSecurityTrust*</span>، <span className="eng">[innerHTML]</span>، <span className="eng">[srcdoc]</span>، JIT eval، والـ SSR في Angular Universal.</p>
+            <Analogy>قفل ذكي بيميز المفاتيح المسجلة عنده، وبيرفض أي مفتاح تاني. بس صاحب البيت بإيده يقدر يحط علامة "trust" على أي مفتاح. اليوم اللي يحط فيه العلامة على مفتاح غريب، الحماية انتهت.</Analogy>
             <Callout kind="danger" title="تذكير قانوني">
-              الأمثلة لتعليم XSS و bypasses في تطبيقاتك. لا تطبّقها على تطبيقات لا تملكها.
+              الأمثلة دي لتعليم XSS والـ bypasses جوه تطبيقاتك إنت. متطبقهاش على تطبيق مش بتاعك.
             </Callout>
           </Section>
 
-          <Section title="الـ DomSanitizer — كيف يعمل و كيف يُتجاوز">
-            <p>Angular يصنّف القيم في 5 سياقات:</p>
+          <Section title="الـ DomSanitizer — بيشتغل إزاي وبيتخطى إزاي">
+            <p>Angular بيصنف القيم لـ 5 سياقات:</p>
             <TwoCol>
               <Card title="HTML" color="amber">
                 المحتوى داخل element. مثال: <span className="eng">[innerHTML]</span>.
@@ -60,12 +60,12 @@ load(userInput: string) {
   // أو تتجنب innerHTML تماماً
 }`}</Code>
             <Callout kind="info" title="القاعدة الذهبية">
-              كل <span className="eng">bypassSecurityTrust*</span> هو <b>code smell</b>. كل instance يحتاج: justification + sanitization منفصلة + code review.
+              كل <span className="eng">bypassSecurityTrust*</span> هو <b>code smell</b>. كل سطر منهم لازم له: مبرر مكتوب + sanitization منفصلة + code review.
             </Callout>
           </Section>
 
-          <Section title="Template Injection — Angular-specific">
-            <p>Angular template = expression language. لو تستخرج template من user input ثم compile، فأنت تنفّذ كود.</p>
+          <Section title="Template Injection — خاصة بـ Angular">
+            <p>الـ Angular template هو expression language. لو خدت template من إنت user input وعملت له compile، إنت كدة بتنفذ كود مباشرة.</p>
             <Code lang="typescript">{`// خطر — Server-Side Template Injection
 // تطبيق يولّد components من DB (CMS-like)
 @Component({
@@ -88,7 +88,7 @@ load(userInput: string) {
 // JIT compilation معطّل في prod`}</Code>
           </Section>
 
-          <Section title="bypassSecurityTrustResourceUrl — الفخ الأعلى خطورة">
+          <Section title="bypassSecurityTrustResourceUrl — أخطر فخ في Angular">
             <Code lang="typescript">{`// خطر — iframe يأخذ URL من user
 @Component({
   template: \`<iframe [src]="vidUrl"></iframe>\`
@@ -116,13 +116,13 @@ setVideo(url: string) {
 }`}</Code>
           </Section>
 
-          <Section title="Server-Side Rendering — Angular Universal">
-            <p>Angular Universal يُشغّل الكود على Node.js للـ SSR. كل ثغرة Node تنطبق + ثغرات خاصة بالـ rendering:</p>
+          <Section title="SSR — Angular Universal">
+            <p>Angular Universal بيشغل الكود على Node.js عشان الـ SSR. كل ثغرات Node بتنطبق هنا، وبتيجي معاها ثغرات خاصة بالـ rendering:</p>
             <ul>
-              <li><b>Hydration mismatch</b> — كـ React، يكشف server-side state.</li>
-              <li><b>SSR XSS</b> — لو يستخدم <span className="eng">document.write</span> أو manipulate DOM في server context، النتيجة قد تشمل user input بدون escape.</li>
-              <li><b>Resource leaks</b> — كل request ينشئ Angular module جديد. استدعاء CPU-heavy على demand قد يُسقط الخادم.</li>
-              <li><b>Secrets exposure</b> — initial state يُطبع في HTML (<span className="eng">TransferState</span>). أي شيء fetch قبل client يصل = visible في source.</li>
+              <li><b>Hydration mismatch</b> — زي React، بيكشف الـ server-side state.</li>
+              <li><b>SSR XSS</b> — لو الكود بيستخدم <span className="eng">document.write</span> أو بيلعب في الـ DOM في context السيرفر، الـ user input ممكن يدخل من غير escape.</li>
+              <li><b>Resource leaks</b> — كل request بينشئ Angular module جديد. شغل CPU ثقيل على demand = السيرفر بيقع.</li>
+              <li><b>Secrets exposure</b> — الـ initial state بينطبع جوه الـ HTML (<span className="eng">TransferState</span>). أي حاجة fetched قبل ما الـ client يستلم = ظاهرة في الـ source.</li>
             </ul>
             <Code lang="typescript">{`// خطر — TransferState يحوي بيانات حسّاسة
 constructor(
@@ -146,8 +146,8 @@ const safeUser = { id: u.id, name: u.name };
 this.state.set(KEY, safeUser);`}</Code>
           </Section>
 
-          <Section title="Trusted Types — تفعيل قوي في Angular">
-            <p>Angular 16+ يدعم Trusted Types بسهولة. مع CSP <span className="eng">require-trusted-types-for 'script'</span>، أي bypass يُحظر بالـ browser.</p>
+          <Section title="Trusted Types — Angular بيدعمها بقوة">
+            <p>Angular 16+ بيدعم Trusted Types ببساطة. مع CSP <span className="eng">require-trusted-types-for 'script'</span>، أي bypass بيتلغي على مستوى المتصفح نفسه.</p>
             <Code lang="typescript">{`// app.module.ts أو main.ts
 import { TrustedTypesModule } from '@angular/platform-browser';
 
@@ -157,11 +157,11 @@ import { TrustedTypesModule } from '@angular/platform-browser';
 // لو حاول كود في bundle أن يضع innerHTML بـ string عادي → throw
 // فقط Angular sanitizer (الذي ينتج TrustedHTML) يعمل`}</Code>
             <Callout kind="good" title="ميزة Angular">
-              عكس React، Angular مُصمَّم حول Trusted Types — التفعيل سهل و الفائدة فورية. <b>يجب</b> أن يكون default في كل deploy إنتاجي جديد.
+              على عكس React، Angular مصمم حوالين Trusted Types — التفعيل سهل والفايدة فورية. <b>لازم</b> يكون default في أي deploy إنتاجي جديد، مفيش كلام.
             </Callout>
           </Section>
 
-          <Section title="Routing — Open Redirect و Route Guards">
+          <Section title="Routing — Open Redirect وRoute Guards">
             <Code lang="typescript">{`// خطر — redirect بعد login
 loginCmp() {
   this.auth.login(...).subscribe(() => {
@@ -205,8 +205,8 @@ export class AdminGuard implements CanActivate {
 }`}</Code>
           </Section>
 
-          <Section title="HttpClient — XSRF & Interceptors">
-            <p>Angular يحوي حماية CSRF مدمجة عبر <span className="eng">HttpClientXsrfModule</span>. تقرأ cookie <span className="eng">XSRF-TOKEN</span> و تضيفها في header <span className="eng">X-XSRF-TOKEN</span>.</p>
+          <Section title="HttpClient — XSRF والـ Interceptors">
+            <p>Angular معاه حماية CSRF مدمجة عن طريق <span className="eng">HttpClientXsrfModule</span>. بيقرا الـ cookie اسمه <span className="eng">XSRF-TOKEN</span> ويبعته في header <span className="eng">X-XSRF-TOKEN</span>.</p>
             <Code lang="typescript">{`@NgModule({
   imports: [
     HttpClientModule,
@@ -234,30 +234,30 @@ export class AuthInterceptor implements HttpInterceptor {
 // أفضل: cookie httpOnly + إعادة الـ XSRF token في كل non-GET`}</Code>
           </Section>
 
-          <Section title="Forms — Validation وReactive Forms">
+          <Section title="Forms — الـ Validation والـ Reactive Forms">
             <ul>
-              <li><b>Validation سيرفر-جانب إجباري</b> — Angular validators تجميلي فقط، يمكن تجاوزه ببساطة في DevTools.</li>
-              <li><b>FormControl values</b> — أي one-way binding من user input إلى model، احفظ نسخة DTO مفلترة.</li>
-              <li><b>Custom validators async</b> — لا تستخدم <span className="eng">eval</span> أو ديناميكي يأتي من API.</li>
-              <li><b>File upload</b> — كما في React/Express، فحص MIME + حجم + extension + scan.</li>
+              <li><b>Server-side validation إجباري</b> — Angular validators ديكور بس، أي حد بيتخطاهم بـ DevTools في ثواني.</li>
+              <li><b>FormControl values</b> — أي one-way binding من user input للـ model، احتفظ بنسخة DTO مفلترة.</li>
+              <li><b>Custom async validators</b> — متستخدمش <span className="eng">eval</span> ولا كود ديناميكي جاي من API.</li>
+              <li><b>File upload</b> — زي React/Express: افحص MIME + الحجم + الـ extension + اعمل scan.</li>
             </ul>
           </Section>
 
-          <Section title="JIT vs AOT — لماذا AOT حماية">
+          <Section title="JIT vs AOT — ليه الـ AOT حماية؟">
             <ul>
-              <li><b>JIT</b> — templates تُجمع وقت runtime في المتصفح. أبطأ + يعرّض لكثير من ثغرات template injection.</li>
-              <li><b>AOT</b> — templates تُجمع وقت البناء. أسرع + يكتشف أخطاء template في build، و templates ديناميكية تصبح مستحيلة.</li>
-              <li>منذ Angular 9 (Ivy)، AOT افتراضي. تأكد أن <span className="eng">ng build --configuration=production</span> يستخدم AOT (هو كذلك).</li>
-              <li>تجنّب <span className="eng">@Component({`{ jit: true }`})</span> أو <span className="eng">JitCompilerFactory</span> في prod.</li>
+              <li><b>JIT</b> — الـ templates بتتجمع runtime في المتصفح. أبطأ + بتفتح باب لـ template injection.</li>
+              <li><b>AOT</b> — الـ templates بتتجمع وقت الـ build. أسرع + بتمسك أخطاء الـ template بدري، والـ templates الديناميكية بتبقى مستحيلة.</li>
+              <li>من Angular 9 (Ivy)، الـ AOT default. اتأكد إن <span className="eng">ng build --configuration=production</span> بيستخدم AOT (وهو فعلاً بيستخدمه).</li>
+              <li>ابعد عن <span className="eng">@Component({`{ jit: true }`})</span> و<span className="eng">JitCompilerFactory</span> في prod.</li>
             </ul>
           </Section>
 
-          <Section title="Supply chain — Angular ecosystem">
+          <Section title="Supply chain — منظومة Angular">
             <ul>
-              <li><b>npm + @angular/* mirror</b> — حدّث Angular بانتظام. إصدار جديد كل 6 أشهر، LTS سنة.</li>
-              <li><b>schematics من شركة ثالثة</b> — <span className="eng">ng add</span> ينفّذ كود. تحقّق من المصدر.</li>
-              <li><b>Material / PrimeNG / NG-Zorro</b> — مكوّنات UI كبيرة، تاريخ CVEs (XSS في tooltip, popover). حدّث بانتظام.</li>
-              <li><b>SystemJS / esm.sh</b> في dev — لا تستخدمها في prod.</li>
+              <li><b>npm + @angular/*</b> — حدّث Angular بانتظام. إصدار major كل 6 شهور، LTS سنة كاملة.</li>
+              <li><b>Schematics من طرف تالت</b> — <span className="eng">ng add</span> بينفذ كود. اتأكد من المصدر قبل أي حاجة.</li>
+              <li><b>Material / PrimeNG / NG-Zorro</b> — مكتبات UI ضخمة وعندها تاريخ CVEs (XSS في tooltip وpopover). حدّث.</li>
+              <li><b>SystemJS / esm.sh</b> في الـ dev — متشغلهاش في prod أبداً.</li>
             </ul>
           </Section>
 
@@ -275,24 +275,24 @@ export class AuthInterceptor implements HttpInterceptor {
   require-trusted-types-for 'script';
   trusted-types angular;`}</Code>
             <Callout kind="info" title="ملاحظة CSP">
-              إذا استخدمت <span className="eng">DomSanitizer.bypassSecurityTrustStyle</span>، قد تحتاج <span className="eng">'unsafe-inline'</span> في style-src. حاول استخدام classes مسبقة بدلاً من inline style.
+              لو استخدمت <span className="eng">DomSanitizer.bypassSecurityTrustStyle</span>، يمكن تحتاج <span className="eng">'unsafe-inline'</span> في style-src. حاول تستخدم classes جاهزة بدل inline style أصلاً.
             </Callout>
           </Section>
 
-          <Section title="checklist مراجعة Angular app">
+          <Section title="Checklist مراجعة Angular app">
             <ol>
-              <li>كل <span className="eng">bypassSecurityTrust*</span> له justification + DOMPurify.</li>
-              <li>كل <span className="eng">[innerHTML]</span> يأتي من مصدر موثوق أو يمر عبر sanitization.</li>
+              <li>كل <span className="eng">bypassSecurityTrust*</span> معاه justification + DOMPurify.</li>
+              <li>كل <span className="eng">[innerHTML]</span> جاي من مصدر موثوق أو ماشي عبر sanitization.</li>
               <li>AOT في prod (افحص <span className="eng">angular.json</span>).</li>
-              <li>HttpClientXsrfModule مفعّل + الخادم يحقّق X-XSRF-TOKEN.</li>
-              <li>كل route admin/protected له CanActivate و CanActivateChild.</li>
-              <li>Trusted Types CSP مفعّل.</li>
-              <li>لا tokens في localStorage — httpOnly cookies.</li>
-              <li>TransferState لا يحوي PII أو internal flags.</li>
-              <li>SSR (Universal): timeouts على HTTP، لا synchronous heavy work.</li>
-              <li>Open redirect filter في كل <span className="eng">navigateByUrl</span> من user input.</li>
-              <li>Forms: server-side validation كاملة، لا تثق في Angular validators.</li>
-              <li>Material/PrimeNG محدّث، CVEs محلولة.</li>
+              <li>HttpClientXsrfModule مفعل + السيرفر بيتحقق من X-XSRF-TOKEN.</li>
+              <li>كل route admin/protected معاه CanActivate وCanActivateChild.</li>
+              <li>Trusted Types CSP مفعل.</li>
+              <li>مفيش tokens في localStorage — httpOnly cookies بس.</li>
+              <li>TransferState مفيهوش PII ولا internal flags.</li>
+              <li>SSR (Universal): timeouts على الـ HTTP، مفيش synchronous heavy work.</li>
+              <li>Open redirect filter على كل <span className="eng">navigateByUrl</span> جاي من user input.</li>
+              <li>Forms: server-side validation كاملة، متثقش في Angular validators أبداً.</li>
+              <li>Material/PrimeNG محدّث، الـ CVEs متحلولة.</li>
             </ol>
             <Callout kind="info" title="أدوات">
               <span className="eng">@angular-eslint</span>, <span className="eng">eslint-plugin-security</span>, Snyk, Semgrep <span className="eng">p/angular</span>, Sonarqube مع Angular ruleset.

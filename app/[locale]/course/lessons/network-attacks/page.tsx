@@ -7,52 +7,52 @@ export default function Page() {
       <L
         ar={<>
           <Section title="بروتوكولات الإنترنت بُنيت على الثقة">
-            <Analogy>الإنترنت بُني عام 1969 على افتراض «كل من يصل للشبكة موثوق». BGP، DNS، ARP، NTP — كلها صُممت قبل ظهور المهاجمين. اليوم نضع طبقات ثقة (TLS, BGPsec, DNSSEC, RPKI) فوق هذا الأساس الهش. هذا الدرس يكشف الطبقة التحتية.</Analogy>
+            <Analogy>الإنترنت اتبنى سنة 1969 على فرضية: «كل اللي على الشبكة دي موثوقين». BGP، DNS، ARP، NTP — كلهم اتصمموا قبل ما المهاجمين يكونوا موجودين أصلاً. النهارده إحنا بنركّب طبقات ثقة (TLS, BGPsec, DNSSEC, RPKI) فوق الأساس الهش ده. الدرس ده بيكشفلك الطبقة اللي تحت.</Analogy>
             <Callout kind="danger" title="مخاطر عالية">
-              هذه الهجمات تؤثر على بنية تحتية مشتركة. أي اختبار خارج معامل معزولة قد يُسبّب أضراراً جسيمة لأطراف ثالثة و
-              يُعدّ جريمة. التركيز هنا: <b>كيف تكتشفها و تتحصّن منها كجهة حكومية</b>.
+              الهجمات دي بتأثر على بنية تحتية مشتركة. أي اختبار برّه معمل معزول ممكن يضر أطراف تالتة بشكل جدّي،
+              ويتحسب جريمة قانونياً. تركيزنا هنا: <b>إزاي تكتشفها وتتحصّن ضدها كجهة حكومية</b>.
             </Callout>
           </Section>
 
           <Section title="BGP Hijacking — اختطاف الإنترنت">
-            <p>BGP هو «نظام مرور الإنترنت». كل ASN يعلن أي IP ranges يملكها، و الـ routers تختار أقصر مسار. لو أعلن شخص بكذبٍ أنه يملك مدى لا يخصّه، تتدفق الحركة إليه.</p>
+            <p>BGP هو «نظام المرور» على الإنترنت. كل ASN بيعلن الـ IP ranges اللي يملكها، والـ routers بتختار أقصر سكة. حد أعلن كذب إنه صاحب range مش بتاعه؟ الترافيك هيمشي عنده.</p>
             <h3>أنواع الهجوم</h3>
             <ul>
-              <li><b>Prefix Hijack</b> — أعلن /24 لـ Google. ASNs قريبة منك ستوجّه الحركة لك.</li>
-              <li><b>Sub-prefix hijack</b> — /25 أكثر تحديداً يفوز على /24 الحقيقي (BGP يفضّل الأطول).</li>
-              <li><b>Route Leak</b> — مزود ينشر مسارات customer إلى peers خطأً (Pakistan Telecom YouTube 2008).</li>
+              <li><b>Prefix Hijack</b> — أعلن /24 بتاع Google. الـ ASNs القريبة منك هتوجّه الترافيك ليك.</li>
+              <li><b>Sub-prefix hijack</b> — /25 أكتر تحديداً بيكسب على الـ /24 الأصلي (BGP بيفضّل الأطول).</li>
+              <li><b>Route Leak</b> — مزود بينشر مسارات customer لـ peers بالغلط (Pakistan Telecom / YouTube 2008).</li>
               <li><b>BGP for DDoS amplification</b>.</li>
             </ul>
-            <h3>أمثلة شهيرة</h3>
+            <h3>حوادث مشهورة</h3>
             <ul>
-              <li><b>2008 Pakistan → YouTube</b> — حذف عالمي لمدة ساعتين.</li>
-              <li><b>2017 Rostelecom</b> — اختطف حركة Google, Apple, Facebook لدقائق.</li>
-              <li><b>2018 Amazon Route 53</b> — هجوم استهدف MyEtherWallet، سُرقت $150K.</li>
-              <li><b>2022 KlaySwap</b> — اختطاف BGP أدى لسرقة $1.9M.</li>
+              <li><b>2008 Pakistan → YouTube</b> — YouTube غاب عن العالم ساعتين.</li>
+              <li><b>2017 Rostelecom</b> — خطف ترافيك Google, Apple, Facebook لدقائق.</li>
+              <li><b>2018 Amazon Route 53</b> — استهدف MyEtherWallet، سرقوا $150K.</li>
+              <li><b>2022 KlaySwap</b> — BGP hijack جاب $1.9M.</li>
             </ul>
             <Callout kind="good" title="الدفاع">
               <ol>
-                <li><b>RPKI (Resource Public Key Infrastructure)</b> — توقيع رقمي للملكية. ASNs ترفض إعلانات غير موقّعة.</li>
-                <li><b>BGPsec</b> — توقيع المسار كاملاً.</li>
-                <li><b>MANRS</b> initiative — أفضل الممارسات.</li>
-                <li>اشترك مع مزودي مراقبة (BGPStream, ThousandEyes, Kentik) للإنذار الفوري.</li>
-                <li>راقب كل إعلانات لمداك في <b>RIPE RIS, RouteViews</b>.</li>
-                <li>اطلب من upstream ISPs تطبيق <b>strict prefix filtering</b>.</li>
+                <li><b>RPKI (Resource Public Key Infrastructure)</b> — توقيع تشفيري للملكية. الـ ASNs بترفض الإعلانات غير الموقّعة.</li>
+                <li><b>BGPsec</b> — توقيع المسار كله مش الملكية بس.</li>
+                <li>مبادرة <b>MANRS</b> — أحسن الممارسات.</li>
+                <li>اشترك في خدمة مراقبة (BGPStream, ThousandEyes, Kentik) عشان تيجيلك تنبيهات على طول.</li>
+                <li>راقب إعلانات الـ prefix بتاعك من <b>RIPE RIS, RouteViews</b>.</li>
+                <li>اطلب من upstream ISPs يطبّقوا <b>strict prefix filtering</b>.</li>
               </ol>
             </Callout>
           </Section>
 
           <Section title="DNS Attacks">
             <h3>1) DNS Cache Poisoning (Kaminsky)</h3>
-            <p>الإجابات على استعلامات DNS تأتي بـ ID 16-bit. لو خمّن المهاجم الـ ID قبل وصول الإجابة الحقيقية، يضع جوابه المزيف في الـ cache.</p>
-            <p>2008 Kaminsky bug جعل الهجوم عملياً في ثوانٍ. الحل: <b>port randomization + DNSSEC</b>.</p>
+            <p>الردود على DNS بتيجي بـ ID طوله 16-bit بس. المهاجم لو خمّن الـ ID قبل ما الرد الأصلي يوصل، رده المزيف بيدخل الـ cache.</p>
+            <p>سنة 2008 ثغرة Kaminsky خلّت الهجوم ده يحصل في ثواني. الحل: <b>port randomization + DNSSEC</b>.</p>
             <h3>2) DNS Tunneling</h3>
             <Code lang="payload">{`# قنوات سرية عبر DNS — يصعب حجبها
 iodine, dnscat2, DNSStager
 # بيانات السرقة في NULL/TXT records
 # C2 كامل عبر DNS فقط`}</Code>
             <h3>3) DNS Rebinding</h3>
-            <p>المهاجم يتحكم بـ DNS server. أول استعلام يرجع IP عام، الثاني يرجع 127.0.0.1.</p>
+            <p>المهاجم متحكّم في DNS server. أول lookup بيرجّع IP عام، التاني بيرجّع 127.0.0.1. وأنت كده وقعت من غير ما تحس.</p>
             <Code lang="attack flow">{`1. الضحية يفتح evil.com (في المتصفح)
 2. evil.com يرجع 1.2.3.4 → JS يحمّل
 3. JS ينام دقيقة، DNS TTL = 0
@@ -61,22 +61,22 @@ iodine, dnscat2, DNSStager
    كل ذلك بنفس الـ origin، فلا CORS يمنعه`}</Code>
             <Callout kind="good" title="الدفاع">
               <ul>
-                <li><b>Host header validation</b> على كل خدمة داخلية.</li>
-                <li>طلب authentication دائماً (لا يكفي «الشبكة الداخلية»).</li>
-                <li>متصفح: تطبيقات مهمة تستخدم WebAuthn/origin-bound tokens.</li>
-                <li>عيّن <b>min DNS TTL</b> في الـ resolver لـ private IPs.</li>
+                <li><b>Host header validation</b> على كل خدمة داخلية، حتى لو افتكرت إنها مش متشافة.</li>
+                <li>اطلب authentication دايماً. «هي شبكة داخلية» مش مبرّر.</li>
+                <li>في المتصفح: التطبيقات المهمة تستخدم WebAuthn / origin-bound tokens.</li>
+                <li>حدّد <b>min DNS TTL</b> في الـ resolver للـ private IPs.</li>
               </ul>
             </Callout>
-            <h3>4) DNSSEC و موضع الحرب</h3>
+            <h3>4) DNSSEC وحالة المعركة</h3>
             <ul>
-              <li>DNSSEC يوقّع كل records — يمنع poisoning.</li>
-              <li>تبني محدود (نحو 30% عالمياً).</li>
-              <li>هجمات NSEC walking تكشف كل subdomain.</li>
+              <li>DNSSEC بيوقّع كل records — يقفل الـ poisoning بشكل نهائي.</li>
+              <li>التطبيق محدود (~30% عالمياً)، يعني المعركة لسه شغّالة.</li>
+              <li>هجمات NSEC walking بتكشفلك كل subdomain موجود في الـ zone.</li>
             </ul>
           </Section>
 
           <Section title="ARP Spoofing — ملك الشبكات المحلية">
-            <p>ARP لا يحوي مصادقة. أي جهاز يستطيع أن يقول: «أنا 192.168.1.1» و الكل يصدقه.</p>
+            <p>ARP مفيهوش authentication. أي جهاز على الشبكة يقدر يقول «أنا 192.168.1.1» والكل بيصدّق.</p>
             <Code lang="bash">{`# inside a lab network only
 sudo arpspoof -i eth0 -t VICTIM_IP GATEWAY_IP
 sudo arpspoof -i eth0 -t GATEWAY_IP VICTIM_IP
@@ -87,36 +87,36 @@ ettercap -T -M arp:remote /VICTIM// /GATEWAY//
 bettercap -iface eth0`}</Code>
             <h3>تأثيرات</h3>
             <ul>
-              <li>MITM على كل حركة الضحية.</li>
-              <li>SSL stripping (لو الموقع لم يفعّل HSTS).</li>
+              <li>MITM على كل ترافيك الضحية.</li>
+              <li>SSL stripping لو الموقع مش مفعّل HSTS.</li>
               <li>حقن JavaScript في الـ HTTP responses.</li>
-              <li>DNS spoofing ضمن الـ session.</li>
+              <li>DNS spoofing داخل الـ session نفسها.</li>
             </ul>
             <Callout kind="good" title="الدفاع">
               <ul>
                 <li><b>DAI (Dynamic ARP Inspection)</b> على الـ switches.</li>
                 <li>DHCP snooping + IP source guard.</li>
-                <li>802.1X لمنع أجهزة غير مصرّح بها من الشبكة أصلاً.</li>
-                <li>HSTS preload + الـ certificate pinning يمنع SSL stripping.</li>
-                <li>راقب جدول ARP لتغيرات مفاجئة (arpwatch).</li>
+                <li>802.1X — يمنع أي جهاز مش متصرّح يدخل الشبكة من الأول.</li>
+                <li>HSTS preload + certificate pinning بيقفلوا SSL stripping.</li>
+                <li>راقب جدول ARP لأي تغيير مفاجئ (arpwatch).</li>
               </ul>
             </Callout>
           </Section>
 
           <Section title="DHCP Attacks">
             <ul>
-              <li><b>DHCP Starvation</b> — استهلاك كل الـ pool بطلبات مزيفة.</li>
-              <li><b>Rogue DHCP</b> — رد على طلبات بأسرع من السيرفر الحقيقي → DNS مهاجم، gateway مهاجم.</li>
-              <li><b>DHCPv6</b> + <b>mitm6</b> — هجوم شائع على Active Directory (سبق في درس Advanced AD).</li>
+              <li><b>DHCP Starvation</b> — تستهلك كل الـ pool بطلبات وهمية.</li>
+              <li><b>Rogue DHCP</b> — ترد على الطلبات أسرع من السيرفر الأصلي → DNS بتاعك، gateway بتاعك.</li>
+              <li><b>DHCPv6</b> + <b>mitm6</b> — هجوم شائع جداً على Active Directory (شفناه في درس Advanced AD).</li>
             </ul>
-            <p>الدفاع: <b>DHCP Snooping</b> على الـ switches، تعيين trusted ports فقط.</p>
+            <p>الدفاع: <b>DHCP Snooping</b> على الـ switches، وحدّد trusted ports بس.</p>
           </Section>
 
           <Section title="NTP — الزمن سلاح">
             <ul>
-              <li><b>NTP Amplification</b>: طلب <code>monlist</code> ينتج رد ~200x — استُخدم في DDoS بحجم 400 Gbps.</li>
-              <li><b>NTP Time Manipulation</b>: تأخير ساعة الضحية = إبطال شهادات TLS / Kerberos / TOTP.</li>
-              <li>الدفاع: <b>NTS (Network Time Security)</b>، <b>chrony</b> بدلاً من <code>ntpd</code> القديم.</li>
+              <li><b>NTP Amplification</b>: طلب <code>monlist</code> بيرجّع رد ~200x — استُخدم في DDoS بـ 400 Gbps.</li>
+              <li><b>NTP Time Manipulation</b>: تحرّك ساعة الضحية = تكسر شهادات TLS وKerberos وTOTP.</li>
+              <li>الدفاع: <b>NTS (Network Time Security)</b>، و<b>chrony</b> بدل <code>ntpd</code> القديم.</li>
             </ul>
           </Section>
 
@@ -124,44 +124,44 @@ bettercap -iface eth0`}</Code>
             <h3>طبقات الهجوم</h3>
             <TwoCol>
               <Card title="L3/L4 — Volumetric" color="red">
-                SYN flood, UDP flood, NTP/DNS/Memcached amplification. تُقاس بـ Gbps أو Mpps.
+                SYN flood, UDP flood, NTP/DNS/Memcached amplification. بتقاس بـ Gbps أو Mpps.
               </Card>
               <Card title="L7 — Application" color="red">
-                HTTP flood, Slowloris, slow POST. تستهدف الموارد لا الخط. أصعب اكتشافاً.
+                HTTP flood, Slowloris, slow POST. بيستهدف الموارد مش الخط نفسه. أصعب واحد في الكشف.
               </Card>
               <Card title="Protocol" color="red">
-                Smurf, Ping of Death (تاريخي), TCP state exhaustion.
+                Smurf, Ping of Death (تاريخي)، TCP state exhaustion.
               </Card>
               <Card title="Reflection / Amplification" color="red">
-                طلب صغير → رد كبير → عبر IP مزيف للضحية. NTP, DNS, Memcached, CLDAP, SNMP.
+                طلب صغير → رد ضخم → بـ IP مزوّر للضحية. NTP, DNS, Memcached, CLDAP, SNMP.
               </Card>
             </TwoCol>
-            <h3>الدفاع الفعلي</h3>
+            <h3>الدفاع الحقيقي</h3>
             <ol>
               <li>مزود <b>scrubbing</b>: Cloudflare, Akamai Prolexic, AWS Shield Advanced, Imperva.</li>
-              <li><b>Anycast</b> لتوزيع الحمولة جغرافياً.</li>
-              <li>تقليل سطح الـ UDP (لا تفتح خدمات قابلة للـ amplification علناً).</li>
+              <li><b>Anycast</b> يوزّع الحمل جغرافياً.</li>
+              <li>قلّل سطح UDP (متفتحش خدمات قابلة للـ amplification علناً).</li>
               <li>BCP38 (anti-spoofing) عند الـ ISP.</li>
-              <li>تخطيط سعة + اتفاقيات DDoS-protection مسبقة.</li>
-              <li>Application: rate limit + caching + CAPTCHA + bot management.</li>
+              <li>تخطيط سعة + اتفاقيات DDoS-protection جاهزة قبل ما الكارثة تيجي.</li>
+              <li>على مستوى التطبيق: rate limit + caching + CAPTCHA + bot management.</li>
             </ol>
           </Section>
 
           <Section title="TLS Attacks الكلاسيكية">
             <ul>
-              <li><b>SSL Strip</b> — تخفيض إلى HTTP — تحلّه HSTS + preload.</li>
-              <li><b>Heartbleed (CVE-2014-0160)</b> — تسريب 64KB من ذاكرة OpenSSL لكل طلب.</li>
+              <li><b>SSL Strip</b> — يخفض الاتصال لـ HTTP — يقفله HSTS + preload.</li>
+              <li><b>Heartbleed (CVE-2014-0160)</b> — يسرّب 64KB من ذاكرة OpenSSL لكل طلب.</li>
               <li><b>POODLE, BEAST, CRIME, BREACH, DROWN, ROBOT</b> — كلها على إصدارات/ciphers قديمة.</li>
-              <li><b>TLS 1.3</b> يُلغي معظم هذا.</li>
+              <li><b>TLS 1.3</b> بيقضي على أغلب الكلام ده.</li>
               <li><b>Lucky 13</b> — timing على CBC-MAC.</li>
-              <li>SNI spoofing لتجاوز filtering.</li>
+              <li>SNI spoofing لتعدية الـ filtering.</li>
             </ul>
           </Section>
 
           <Section title="ICMP و IPv6 — أبواب منسية">
             <ul>
-              <li><b>ICMP redirect</b> — إعادة توجيه حركة (نادر اليوم لكن لا يزال يعمل على شبكات قديمة).</li>
-              <li><b>SLAAC attack</b> — الإعلان عن نفسك كـ IPv6 router افتراضي على شبكة ليس فيها IPv6 — كل الحركة تمرّ بك.</li>
+              <li><b>ICMP redirect</b> — إعادة توجيه ترافيك (نادر النهارده، بس لسه شغّال على شبكات قديمة).</li>
+              <li><b>SLAAC attack</b> — تعلن عن نفسك كـ IPv6 router افتراضي على شبكة ما عندهاش IPv6 — كل الترافيك بيعدّي عليك.</li>
               <li><b>RA Guard bypass</b>.</li>
               <li>الدفاع: <b>RA Guard, DHCPv6 guard, ND inspection</b> على الـ switches.</li>
             </ul>
@@ -170,11 +170,11 @@ bettercap -iface eth0`}</Code>
           <Section title="مراقبة الشبكة كجهة حكومية">
             <ol>
               <li><b>Full PCAP retention</b> على المحيط (zeek + arkime).</li>
-              <li>NetFlow/sFlow على كل الـ aggregation switches.</li>
-              <li>JA3/JA4 fingerprinting لكشف أدوات معروفة.</li>
-              <li>Threat intel feeds مدمجة في الـ NDR (Spamhaus, Shadowserver, الحكومي الوطني).</li>
+              <li>NetFlow/sFlow على كل aggregation switches.</li>
+              <li>JA3/JA4 fingerprinting عشان تصطاد الأدوات المعروفة.</li>
+              <li>Threat intel feeds مدمجة في الـ NDR (Spamhaus, Shadowserver, CERT الوطني).</li>
               <li>BGP route monitoring + DNS DDoS monitoring.</li>
-              <li>تدريبات هجوم/دفاع كل ربع تشمل سيناريوهات شبكية.</li>
+              <li>تدريبات هجوم/دفاع كل ربع سنة، فيها سيناريوهات شبكية.</li>
             </ol>
           </Section>
         </>}

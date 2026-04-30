@@ -92,7 +92,7 @@ export default function ToolsPage() {
       <div className="flex flex-wrap gap-2 mb-6 items-center">
         <span className="font-mono text-[11px] uppercase tracking-[0.18em] me-1">Cat:</span>
         <button onClick={() => setCat("all")} className={`chip ${cat === "all" ? "chip-active" : ""}`}>
-          <T ar="الكل" en="All" /> [{TOOLS.length}]
+          <T ar="كافة الأدوات" en="All Tools" /> [{TOOLS.length}]
         </button>
         {cats.map(([key, label]) => (
           <button key={key} onClick={() => setCat(key)} className={`chip ${cat === key ? "chip-active" : ""}`}>
@@ -223,5 +223,8 @@ function ToolModal({ tool, onClose }: { tool: Tool; onClose: () => void }) {
         </div>
       </div>
     </div>
+  );
+}
+ </div>
   );
 }

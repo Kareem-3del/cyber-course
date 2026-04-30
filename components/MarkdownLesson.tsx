@@ -175,7 +175,7 @@ export function MarkdownLesson({ slug, ar, en }: Props) {
           <aside className="hidden lg:block">
             <div className="sticky top-[88px] border-[3px] border-black bg-white p-4">
               <div className="text-[10px] uppercase tracking-[0.18em] mb-3 font-display">
-                {lang === "ar" ? "في هذه الصفحة" : "On This Page"}
+                {lang === "ar" ? "محتويات الوحدة" : "On This Page"}
               </div>
               <ul className="space-y-0 text-[13px]">
                 {headings.map((h) => (

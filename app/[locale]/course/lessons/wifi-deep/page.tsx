@@ -9,55 +9,52 @@ export default function Page() {
           <>
             <Section title="مقدمة — لماذا الـ Wi-Fi خاص؟">
               <Analogy>
-                الكابل النحاسي مثل أنبوب يحمل ماءً: لا يصل إليه إلا من يفتح الجدار. الـ Wi-Fi مثل ضباب يخرج من النافذة —
-                كل من في الشارع، السيارة، الشقة المجاورة، يستنشقه. التشفير ليس "حماية إضافية"، بل هو الحاجز الوحيد بين
-                بياناتك و أي شخص يحمل هوائياً بـ 30 دولار.
+                الكابل النحاسي زي ماسورة بتنقل مياه: محدش يقدر يوصلها إلا لما يفتح الحيطة. الـ Wi-Fi زي شبورة بتطلع من الشباك — كل اللي في الشارع، في العربية، في الشقة المجاورة، بيشمها. التشفير مش &quot;حماية إضافية&quot;، هو الحاجز الوحيد بين بياناتك وأي حد ماشي بهوائي بـ 30 دولار.
               </Analogy>
-              <Callout kind="danger" title="تنبيه قانوني — استخدام مصرح به فقط">
-                كل تقنية أدناه شرعية في مختبرك الخاص أو ضمن نطاق pentest موقّع. مهاجمة شبكة جارك أو مقهى أو شركة دون إذن
-                مكتوب = جريمة بموجب أنظمة مكافحة الجرائم المعلوماتية، حتى لو لم تسرق شيئاً.
+              <Callout kind="danger" title="قانوني — استخدام مصرّح بيه بس">
+                كل تكنيك تحت ده شرعي في الـ lab بتاعك أو جوه نطاق pentest موقّع. تهاجم شبكة الجار أو الكافيه أو شركة من غير ورق = جريمة تحت قوانين الجرائم المعلوماتية، حتى لو ما سرقتش حاجة. نقطة على السطر.
               </Callout>
             </Section>
 
             <Section title="أنواع شبكات Wi-Fi و حالة كل واحدة في 2026">
               <div className="space-y-3">
                 <Card title="WEP (1999)" color="red">
-                  <p>RC4 + IV قصيرة (24-bit). <b>مكسور تماماً</b> — يُكسر في أقل من 5 دقائق بأي بطاقة monitor mode.</p>
-                  <p className="opacity-80 text-sm">يظهر اليوم فقط في طابعات قديمة، أجهزة ICS، أو أجهزة غير محدثة. وجوده وحده مؤشر سوء صيانة.</p>
+                  <p>RC4 + IV قصيرة (24-bit). <b>مكسور بالكامل</b> — بيتكسر في أقل من 5 دقايق بأي كرت monitor mode.</p>
+                  <p className="opacity-80 text-sm">دلوقتي بيظهر بس في طابعات قديمة، أجهزة ICS، أو أجهزة محدش حدّثها. وجوده لوحده مؤشر إن الصيانة عك.</p>
                 </Card>
                 <Card title="WPA / TKIP (2003)" color="red">
-                  <p>ترقيع لـ WEP. <b>مكسور</b> عبر هجوم Beck-Tews / chopchop. لا يُستخدم اليوم إلا بالخطأ.</p>
+                  <p>ترقيع لـ WEP. <b>مكسور</b> عن طريق Beck-Tews / chopchop. ما حدش بيستخدمه دلوقتي إلا بالغلط.</p>
                 </Card>
                 <Card title="WPA2-PSK / AES-CCMP (2004)" color="amber">
-                  <p>القياسي العام لعقدين. آمن من حيث الخوارزمية، <b>هشّ من حيث كلمة السر</b>. كل الهجمات الحقيقية = كسر offline لـ handshake.</p>
-                  <p className="opacity-80 text-sm">قابل لـ KRACK (2017) — معالَج بترقيعات client. PMKID attack (2018) — لا يحتاج client.</p>
+                  <p>القياس العام لعقدين. آمن من ناحية الخوارزمية، <b>هش من ناحية الباسورد</b>. كل الهجمات الحقيقية = كسر offline لـ handshake.</p>
+                  <p className="opacity-80 text-sm">معرّض لـ KRACK (2017) — اتعالج بترقيعات client. هجوم PMKID (2018) — مش محتاج client أصلاً.</p>
                 </Card>
                 <Card title="WPA2-Enterprise (EAP)" color="amber">
-                  <p>RADIUS + شهادة. أقوى لكن <b>التهيئة الخاطئة قاتلة</b>: عميل لا يفحص شهادة الخادم → Evil Twin يأخذ NetNTLM/MSCHAPv2 hashes.</p>
+                  <p>RADIUS + شهادة. أقوى بس <b>الإعداد الغلط بيقتله</b>: عميل ما بيفحصش شهادة الـ server → Evil Twin بياخد NetNTLM/MSCHAPv2 hashes.</p>
                 </Card>
                 <Card title="WPA3-Personal / SAE (2018)" color="green">
-                  <p>Dragonfly handshake — <b>يمنع الكسر offline</b> نظرياً. كل محاولة تتطلب تفاعل مع AP حقيقي → forward secrecy.</p>
-                  <p className="opacity-80 text-sm">ضربته ثغرات Dragonblood (CVE-2019-9494/9496) في الـ side-channel و downgrade. الترقيعات الحديثة أقفلت معظمها.</p>
+                  <p>Dragonfly handshake — <b>بيمنع الكسر offline</b> نظرياً. كل محاولة محتاجة تفاعل مع AP حقيقي → forward secrecy.</p>
+                  <p className="opacity-80 text-sm">ضربته ثغرات Dragonblood (CVE-2019-9494/9496) في الـ side-channel والـ downgrade. الترقيعات الحديثة قفلت معظمها.</p>
                 </Card>
                 <Card title="WPA3-Enterprise + 192-bit suite" color="green">
-                  <p>للقطاعات الحكومية/المالية. Suite-B + ECDH P-384 + AES-GCMP-256. <b>لا توجد هجمات عملية معروفة</b> على الخوارزمية ذاتها — فقط على التهيئة و البشر.</p>
+                  <p>للقطاعات الحكومية/المالية. Suite-B + ECDH P-384 + AES-GCMP-256. <b>مفيش هجمات عملية معروفة</b> على الخوارزمية نفسها — بس على الإعداد والبشر.</p>
                 </Card>
                 <Card title="OWE (Opportunistic Wireless Encryption)" color="amber">
-                  <p>بديل آمن للـ Open networks في المقاهي. تشفير بدون كلمة سر عبر Diffie-Hellman. <b>لا يحمي من Evil Twin</b> لأن لا مصادقة للـ AP.</p>
+                  <p>بديل آمن للـ Open networks في الكافيهات. تشفير من غير باسورد عن طريق Diffie-Hellman. <b>مش بيحمي من Evil Twin</b> لأن مفيش مصادقة للـ AP.</p>
                 </Card>
                 <Card title="WPS (PIN)" color="red">
-                  <p>زر أو PIN مكوّن من 8 أرقام للاتصال السريع. كسره في ساعات عبر <b>Pixie Dust</b> أو brute-force على الـ PIN. <b>عطّله دائماً</b>.</p>
+                  <p>زرار أو PIN من 8 أرقام للاتصال السريع. بيتكسر في ساعات عن طريق <b>Pixie Dust</b> أو brute-force على الـ PIN. <b>قفله دايماً، من غير تفكير</b>.</p>
                 </Card>
               </div>
             </Section>
 
             <Section title="عتاد المهاجم — ما تحتاجه فعلاً">
               <ul className="list-disc pe-6 space-y-2 opacity-90">
-                <li><b>بطاقة تدعم monitor mode + packet injection</b>: Alfa AWUS036ACM (chipset MT7612U)، AWUS036ACH (RTL8812AU)، Panda PAU09.</li>
-                <li><b>هوائي اتجاهي</b> (Yagi 16dBi) لمسافات بعيدة، أو omni لمسح متعدد.</li>
-                <li><b>SDR</b> اختياري (HackRF, BladeRF) لتحليل أعمق و هجمات مخصصة.</li>
-                <li><b>GPU للـ cracking</b>: hashcat على RTX 4090 يكسر ~3M H/s لـ WPA2.</li>
-                <li><b>Pwnagotchi / WiFi Pineapple</b> لجمع handshakes و إدارة AP خبيث.</li>
+                <li><b>كرت يدعم monitor mode + packet injection</b>: Alfa AWUS036ACM (chipset MT7612U)، AWUS036ACH (RTL8812AU)، Panda PAU09.</li>
+                <li><b>هوائي اتجاهي</b> (Yagi 16dBi) للمسافات البعيدة، أو omni للمسح المتعدد.</li>
+                <li><b>SDR</b> اختياري (HackRF, BladeRF) للتحليل الأعمق والهجمات المخصصة.</li>
+                <li><b>GPU للـ cracking</b>: hashcat على RTX 4090 بيكسر ~3M H/s لـ WPA2. الفرق بين فجر وأسبوع.</li>
+                <li><b>Pwnagotchi / WiFi Pineapple</b> لجمع handshakes وإدارة AP خبيث.</li>
               </ul>
               <Code lang="bash">{`# تأكد البطاقة تدعم monitor + injection
 iw list | grep -A 8 "Supported interface modes"

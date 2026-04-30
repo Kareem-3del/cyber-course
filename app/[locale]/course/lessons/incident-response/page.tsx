@@ -6,15 +6,16 @@ export default function Page() {
     <LessonShell slug="incident-response">
       <L
         ar={<>
-          <Section title="ماذا تفعل عند الحادثة؟ — NIST IR Lifecycle">
-            <Analogy>مثل حريق في مبنى: لا تفعل أشياء عشوائية. هناك خطوات ثابتة و من ينفذها بهدوء يخسر أقل. الـ IR هو خطة الإطفاء قبل أن يبدأ الحريق.</Analogy>
+          <Section title="حصل اختراق — تعمل إيه؟ — NIST IR Lifecycle">
+            <Analogy>زي حريق في مبنى: ما تعملش حاجات عشوائية. في خطوات ثابتة، واللي بينفذها بهدوء بيخسر الأقل. الـ IR هو خطة الإطفاء اللي اتكتبت قبل ما الحريق يبتدي.</Analogy>
+            <p>هو إحنا بنعمل ست مراحل ليه؟ علشان كل مرحلة بتحدد قرار مختلف وبتمنعك تخلط بين "افهم" و"اتصرف". ما تخلطش.</p>
             <ol>
-              <li><b>Preparation</b> — تجهيز الأدوات و الأدوار.</li>
-              <li><b>Detection &amp; Analysis</b> — تأكيد الحادثة و تحديد نطاقها.</li>
-              <li><b>Containment</b> — احتواء قصير ثم طويل.</li>
-              <li><b>Eradication</b> — إزالة الجذور.</li>
-              <li><b>Recovery</b> — إعادة الخدمة بثقة.</li>
-              <li><b>Lessons Learned</b> — نمنع التكرار.</li>
+              <li><b>Preparation</b> — تجهيز الأدوات والأدوار قبل الكارثة.</li>
+              <li><b>Detection &amp; Analysis</b> — أكّد إن فيه حادثة فعلاً، وحدد نطاقها.</li>
+              <li><b>Containment</b> — احتواء قصير الأجل، وبعدين طويل.</li>
+              <li><b>Eradication</b> — اقلع الجذور، مش بس قص الورق.</li>
+              <li><b>Recovery</b> — رجّع الخدمة وانت واثق.</li>
+              <li><b>Lessons Learned</b> — تمنع التكرار، مش تلوم حد.</li>
             </ol>
           </Section>
           <Section title="Preparation — قبل أن يحدث شيء">
@@ -45,7 +46,7 @@ export default function Page() {
               <Card title="قصير المدى (دقائق)" color="amber">عزل الجهاز عن الشبكة (EDR isolate)، تعطيل الحساب، إبطال tokens / sessions، حظر IOCs.</Card>
               <Card title="طويل المدى (أيام)" color="blue">إعادة بناء الأنظمة من image نظيفة، تدوير كل الأسرار، تعديل القواعد لمنع الوصول الأولي مجدداً.</Card>
             </TwoCol>
-            <Callout kind="warn" title="حذار من الـ Burning">إن أوقفت كل شيء فجأة قد يلاحظ المهاجم و يطلق ransomware. أحياناً المراقبة الصامتة لساعات لجمع الـ TTPs أفضل.</Callout>
+            <Callout kind="warn" title="خد بالك — ما تحرقش العملية">لو أنت قطعت كل حاجة فجأة، المهاجم هيحس ويفعّل ransomware. ساعات المراقبة الصامتة لساعات علشان تجمع TTPs بتبقى أحكم من الانقضاض السريع.</Callout>
           </Section>
           <Section title="Forensics — التحليل الجنائي">
             <h3>الذاكرة — Memory</h3>
@@ -81,7 +82,7 @@ vol -f memory.raw windows.dlllist | grep -i suspicious.dll`}</Code>
               <li>قائمة إجراءات وقائية مع مالك و موعد لكل بند.</li>
               <li>تحديث الـ playbooks و قواعد الكشف.</li>
             </ul>
-            <Callout kind="info" title="نصيحة">لا تَلُم الأشخاص بل العمليات. الفريق يجب أن يحس بالأمان كي يبلّغ مبكراً عن أخطائه.</Callout>
+            <Callout kind="info" title="ناشف وخده">ما تلومش الناس، لُم العملية. الفريق لازم يحس إنه آمن علشان يبلّغ بدري عن غلطاته. اللوم بيخلّي الناس تخبّي.</Callout>
           </Section>
         </>}
         en={<>

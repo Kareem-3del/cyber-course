@@ -34,21 +34,21 @@ function autoFallback(tool: Tool, lang: "ar" | "en"): string {
   return [
     `# ${tool.name}`,
     "",
-    `> [!info] ${lang === "ar" ? "لم يُكتب الشرح الكامل بعد" : "Detailed tutorial pending"}`,
+    `> [!info] ${lang === "ar" ? "دليل تقني قيد الإعداد" : "Detailed tutorial pending"}`,
     `> ${lang === "ar"
-      ? "هذه صفحة مولّدة من بيانات الأداة. سيُضاف شرح كامل للمعاملات و أمثلة الناتج لاحقاً."
+      ? "هذا المحتوى تم إنشاؤه آلياً بناءً على المواصفات التقنية للأداة؛ سيتم إدراج شرح تفصيلي للمعاملات البرمجية وحالات الاستخدام قريباً."
       : "This is an auto-generated stub. A full parameter walkthrough and sample outputs will follow."}`,
     "",
-    `## ${lang === "ar" ? "الوصف" : "Description"}`,
+    `## ${lang === "ar" ? "الوصف الوظيفي" : "Description"}`,
     "",
     t(tool.blurb),
     "",
-    `## ${lang === "ar" ? "متى تستخدمها" : "When to use"}`,
+    `## ${lang === "ar" ? "حالات الاستخدام" : "When to use"}`,
     "",
     t(tool.whenToUse),
     "",
-    tool.install ? `## ${lang === "ar" ? "التثبيت" : "Install"}\n\n\`\`\`terminal\n${tool.install}\n\`\`\`\n` : "",
-    ex ? `## ${lang === "ar" ? "أمثلة سريعة" : "Quick examples"}\n\n\`\`\`terminal\n${ex}\n\`\`\`\n` : "",
+    tool.install ? `## ${lang === "ar" ? "طريقة التثبيت" : "Install"}\n\n\`\`\`terminal\n${tool.install}\n\`\`\`\n` : "",
+    ex ? `## ${lang === "ar" ? "أمثلة تطبيقية" : "Quick examples"}\n\n\`\`\`terminal\n${ex}\n\`\`\`\n` : "",
   ].filter(Boolean).join("\n");
 }
 
@@ -260,7 +260,7 @@ export function ToolTutorial({ tool, ar, en }: Props) {
           className="inline-flex items-center gap-2 px-5 py-2.5 border-[3px] border-black bg-white text-[12px] font-bold uppercase tracking-[0.12em] hover:bg-black hover:text-white"
         >
           <ArrowLeft className="w-4 h-4" strokeWidth={3} />
-          <T ar="كل الأدوات" en="All Tools" />
+          <T ar="العودة لصندوق الأدوات" en="Back to Toolkit" />
         </Link>
       </div>
     </article>

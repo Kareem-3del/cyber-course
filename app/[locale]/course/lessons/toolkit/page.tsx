@@ -128,7 +128,7 @@ export default function Page() {
               <li><b>Blue Team</b>: BTL1/BTL2, SOC-200, SANS GIAC (GCIA, GCFA).</li>
               <li><b>DFIR</b>: 13Cubed, DFIR.training, SANS FOR-508.</li>
             </ul>
-            <Callout kind="info" title="النصيحة الأخيرة">الأمن السيبراني سباق ماراثون لا 100م. خصّص ساعة يومياً للقراءة و التطبيق العملي، و خلال سنة ستصبح من ضمن أفضل 5% في مجالك.</Callout>
+            <Callout kind="info" title="نصيحة أخيرة ناشفة">السيبر سباق ماراثون مش 100 متر. خد ساعة في اليوم — قراية + تطبيق فعلي على lab — وخلال سنة هتلاقي نفسك ضمن أحسن 5% في المجال. اللي بيحرق المراحل بيقع في النص.</Callout>
           </Section>
         </>}
         en={<>

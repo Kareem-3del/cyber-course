@@ -53,7 +53,7 @@ export default function GlossaryPage() {
         <input
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          placeholder={lang === "ar" ? "ابحث عن مصطلح..." : "SEARCH A TERM..."}
+          placeholder={lang === "ar" ? "البحث في قاموس المصطلحات..." : "SEARCH GLOSSARY..."}
           className="w-full ps-10 pe-9 py-2.5 border-[3px] border-black bg-sunken text-sm font-mono uppercase placeholder:text-black/40 focus:outline-none focus:border-[5px] focus:py-[7px]"
         />
         {q && (
@@ -104,5 +104,7 @@ export default function GlossaryPage() {
         </div>
       )}
     </div>
+  );
+}
   );
 }

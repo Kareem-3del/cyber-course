@@ -6,57 +6,57 @@ export default function Page() {
     <LessonShell slug="soc-analyst-day1">
       <L
         ar={<>
-          <Section title="ماذا يفعل محلل SOC فعلياً">
-            <p>SOC (Security Operations Center) يعمل 24/7. وظيفتك الأولى ليست "إيقاف الهاكرز" — بل <b>فرز التنبيهات</b>: هل هذا حقيقي؟ هل سبق و رأيناه؟ هل يستحق إيقاظ Tier-2؟ ثم توثيق ما رأيت و كيف.</p>
-            <Analogy>تخيّل غرفة طوارئ في مستشفى. الممرض الذي يستقبلك في البوابة (Triage Nurse) لا يجري عمليات — يقرر من يدخل فوراً، من ينتظر، و من يُحوَّل لمستشفى آخر. هذا هو محلل SOC من المستوى الأول (Tier-1).</Analogy>
+          <Section title="إيه اللي بيعمله محلل الـ SOC فعلاً؟">
+            <p>الـ SOC شغال 24/7. شغلتك أول يوم مش "أوقف الهاكرز" — شغلتك <b>تفرز الـ alerts</b>: ده حقيقي؟ شفناه قبل كده؟ يستاهل إن Tier-2 يصحى من نومه؟ و بعدها توثّق اللي شفته و إزاي.</p>
+            <Analogy>تخيل طوارئ المستشفى. الممرض اللي بيستقبلك على الباب (Triage Nurse) مش بيعمل عمليات — هو بيقرر مين يدخل دلوقتي، مين يستنى، و مين يتحوّل لمستشفى تاني. ده بالظبط شغل Tier-1.</Analogy>
           </Section>
 
-          <Section title="هرم الأدوار في SOC">
+          <Section title="هرم الأدوار في الـ SOC">
             <TwoCol>
               <Card title="Tier-1 — Triage" color="blue">
-                يستقبل التنبيهات من SIEM/EDR. يحدد: false positive, benign, escalate. متوسط زمن لكل تذكرة 5–15 دقيقة. غالباً 50–200 تذكرة في المناوبة.
+                بيستقبل الـ alerts من SIEM/EDR. بيقرر: false positive, benign, escalate. متوسط 5-15 دقيقة لكل تذكرة. ممكن 50-200 تذكرة في المناوبة. شغل وش.
               </Card>
               <Card title="Tier-2 — Investigation" color="amber">
-                يأخذ ما رفعه Tier-1. يبحث عمقاً: قراءة logs، تتبع process tree، رسم timeline. يقرّر: حادث أم لا.
+                بياخد اللي رفعه Tier-1 و يدخل في التفاصيل: قراءة logs، شجرة العمليات، رسم timeline. هو اللي بيقول "حادث ولا لأ".
               </Card>
               <Card title="Tier-3 — IR / Hunt" color="red">
-                Incident Response و Threat Hunting. يقود التعامل مع الحوادث الحقيقية. يكتب detections جديدة. يعمل مع CTI و forensics.
+                Incident Response و Threat Hunting. بيقود الحوادث الحقيقية، يكتب detections جديدة، و يشتغل مع CTI و forensics.
               </Card>
               <Card title="SOC Manager + Engineers" color="green">
-                Engineers يبنون detections و يضبطون الأدوات. Manager يتعامل مع SLAs، تقارير الإدارة، و التعاون مع فرق أخرى (Legal, IT, Product).
+                الـ Engineers بيبنوا الـ detections و بيضبطوا الأدوات. الـ Manager ماسك الـ SLAs، تقارير الإدارة، و التعامل مع باقي الفرق (Legal, IT, Product).
               </Card>
             </TwoCol>
           </Section>
 
-          <Section title="دورة المناوبة — أول 8 ساعات">
-            <Callout kind="good" title="نموذج تشغيل احترافي">
+          <Section title="المناوبة — أول 8 ساعات شغل">
+            <Callout kind="good" title="نموذج تشغيل محترم">
               <ol>
-                <li><b>15 دقيقة قبل البداية</b> — اقرأ shift handoff من المناوبة السابقة. ما المفتوح؟ ما الذي يحتاج متابعة؟</li>
-                <li><b>اطّلع على dashboards</b> — حالة المصادر (SIEM ingestion، EDR coverage)، تنبيهات مفتوحة، حالات Major Incident.</li>
-                <li><b>راجع threat intel daily</b> — هل هناك حملة جديدة تستهدف القطاع؟ مؤشرات جديدة (IOCs)؟</li>
-                <li><b>ابدأ بالـ queue</b> — التنبيهات مرتّبة بأولوية. لا تختار الأسهل.</li>
-                <li><b>وثّق كل شيء</b> — كل query، كل ملاحظة، كل قرار. القاعدة: لو غادرت الآن هل يستطيع زميلك إكمال العمل؟</li>
-                <li><b>قبل النهاية</b> — اكتب handoff واضح: ما أُغلق، ما المفتوح، ما يحتاج المتابعة.</li>
+                <li><b>15 دقيقة قبل ما تبدأ</b> — اقرا الـ handoff من المناوبة اللي قبلك. إيه المفتوح؟ إيه اللي محتاج متابعة؟</li>
+                <li><b>بص على الـ dashboards</b> — صحة المصادر (SIEM ingestion، EDR coverage)، الـ alerts المفتوحة، أي Major Incident شغال.</li>
+                <li><b>راجع الـ threat intel اليومي</b> — فيه حملة جديدة بتضرب القطاع بتاعك؟ IOCs جديدة؟</li>
+                <li><b>اشتغل في الـ queue</b> — مرتب بالأولوية. متختارش الأسهل عشان تخلص بدري.</li>
+                <li><b>وثّق كل حاجة</b> — كل query، كل ملاحظة، كل قرار. القاعدة: لو مشيت دلوقتي، زميلك يقدر يكمّل ولا لأ؟</li>
+                <li><b>قبل ما تخلص</b> — اكتب handoff واضح: قفلت إيه، فاضل إيه، إيه محتاج متابعة.</li>
               </ol>
             </Callout>
           </Section>
 
-          <Section title="منهجية فرز التنبيه — السؤال 5W+H">
-            <p>أي تنبيه يجب أن يجيب على هذه الأسئلة قبل أن تتخذ قراراً:</p>
+          <Section title="منهجية الفرز — 5W+H قبل أي قرار">
+            <p>أي alert لازم يرد على الأسئلة دي قبل ما تقرر تقفله أو ترفعه:</p>
             <ul>
-              <li><b>What</b> — ما القاعدة (rule) التي أطلقت التنبيه؟ ماذا تعني؟</li>
-              <li><b>Who</b> — أي مستخدم/جهاز/IP؟ هل من المعتاد أن يفعل ذلك؟</li>
-              <li><b>When</b> — الوقت الدقيق. هل في ساعات العمل؟ هل سبق نمط مماثل؟</li>
-              <li><b>Where</b> — أي شبكة، أي نظام، أي subnet؟</li>
-              <li><b>Why</b> — هل هناك سبب مشروع؟ تذاكر change، نشاط مستخدم معروف؟</li>
-              <li><b>How</b> — كيف وصل المؤشر؟ من أين بدأت السلسلة؟</li>
+              <li><b>What</b> — أنهي rule طنّت؟ معناها إيه؟</li>
+              <li><b>Who</b> — أنهي يوزر/جهاز/IP؟ ده طبيعي منه ولا غريب؟</li>
+              <li><b>When</b> — التوقيت بالظبط. في ساعات الشغل؟ النمط ده شفناه قبل كده؟</li>
+              <li><b>Where</b> — أنهي شبكة، أنهي نظام، أنهي subnet؟</li>
+              <li><b>Why</b> — فيه سبب مشروع؟ change ticket؟ نشاط يوزر معروف؟</li>
+              <li><b>How</b> — المؤشر وصل ازاي؟ السلسلة بدأت منين؟</li>
             </ul>
-            <Callout kind="info" title="قاعدة ذهبية">
-              "<b>True positive حتى يثبت العكس</b>" أفضل من "false positive حتى يثبت العكس". لا تغلق تنبيهاً بسبب الكسل — اغلقه فقط بدليل.
+            <Callout kind="info" title="قاعدة دهبية">
+              "<b>True positive لحد ما يثبت العكس</b>" أحسن بكتير من "false positive لحد ما يثبت العكس". متقفلش تذكرة من الكسل — اقفلها بدليل بس.
             </Callout>
           </Section>
 
-          <Section title="استعلامات SIEM شائعة — ابدأ بهذه">
+          <Section title="SIEM Queries بتستخدمها كل يوم — ابدأ بدول">
             <h3>Splunk SPL</h3>
             <Code lang="splunk">{`# تسجيل دخول فاشل متكرر ثم ناجح من نفس IP (brute force ناجح)
 index=windows EventCode=4625 OR EventCode=4624
@@ -84,27 +84,27 @@ SigninLogs
 | where array_length(Locations) > 1`}</Code>
           </Section>
 
-          <Section title="EDR — كيف تقرأ process tree">
-            <p>الـ EDR (CrowdStrike, Defender, SentinelOne) يعطيك شجرة العمليات. اقرأها من <b>الجذر</b>:</p>
+          <Section title="EDR — إزاي تقرا الـ Process Tree">
+            <p>الـ EDR (CrowdStrike, Defender, SentinelOne) بيديك شجرة العمليات. اقراها من <b>الجذر</b> مش من تحت:</p>
             <Code lang="text">{`explorer.exe (PID 4321)                    ← parent شرعي
   └─ outlook.exe (PID 5678)                ← شرعي
       └─ winword.exe (PID 6789)            ← فتح مرفق Word
           └─ cmd.exe (PID 7890)            ← !! Word لا يجب أن يفتح cmd !!
               └─ powershell.exe -enc ...   ← !!! base64 → تنفيذ`}</Code>
-            <Callout kind="info" title="إشارات حمراء كلاسيكية">
+            <Callout kind="info" title="علامات حمرا كلاسيكية">
               <ul>
-                <li>Office app يُولّد cmd/powershell/wscript.</li>
-                <li>svchost.exe من path غير <span className="eng">C:\Windows\System32</span>.</li>
-                <li>rundll32.exe بدون arguments أو مع DLL في AppData/Temp.</li>
-                <li>PowerShell بـ <span className="eng">-EncodedCommand</span>, <span className="eng">-WindowStyle Hidden</span>, <span className="eng">DownloadString</span>.</li>
-                <li>schtasks.exe ينشئ مهمة بأسماء عشوائية.</li>
-                <li>net.exe يضيف مستخدماً لـ Administrators.</li>
+                <li>Office app بيفتح cmd/powershell/wscript. ده مش طبيعي خالص.</li>
+                <li>svchost.exe من مكان غير <span className="eng">C:\Windows\System32</span>.</li>
+                <li>rundll32.exe من غير arguments، أو DLL من AppData/Temp.</li>
+                <li>PowerShell بـ <span className="eng">-EncodedCommand</span>، <span className="eng">-WindowStyle Hidden</span>، أو <span className="eng">DownloadString</span>.</li>
+                <li>schtasks.exe بيعمل مهمة بأسماء عشوائية.</li>
+                <li>net.exe بيضيف يوزر لـ Administrators.</li>
               </ul>
             </Callout>
           </Section>
 
-          <Section title="نظام التذاكر — قواعد التوثيق">
-            <p>التذكرة الجيدة قابلة للقراءة بعد سنة. هيكل قياسي:</p>
+          <Section title="التذاكر — قواعد التوثيق">
+            <p>التذكرة الكويسة بتتقرى بعد سنة و فاهم منها كل حاجة. الهيكل القياسي:</p>
             <Code lang="markdown">{`## Summary
 [سطر واحد] What happened, who, where, when
 
@@ -128,56 +128,56 @@ SigninLogs
 - [ ] Open detection-engineering ticket if rule needs tuning`}</Code>
           </Section>
 
-          <Section title="التصعيد — متى و كيف">
-            <Callout kind="good" title="صعّد فوراً إذا">
+          <Section title="Escalation — تصعّد إمتى و إزاي">
+            <Callout kind="good" title="صعّد على طول لو">
               <ul>
-                <li>Domain admin أو high-value account متورط.</li>
-                <li>أكثر من host واحد مصاب.</li>
-                <li>دليل على exfiltration (نقل بيانات للخارج).</li>
+                <li>Domain admin أو حساب مهم متورط.</li>
+                <li>أكتر من host واحد متضرب.</li>
+                <li>فيه دليل على exfiltration (داتا بتطلع برة).</li>
                 <li>Ransomware (تشفير ملفات، ransom notes).</li>
-                <li>Persistence مكتشف (scheduled task جديد، service جديد).</li>
-                <li>عدم اليقين بعد 30 دقيقة بحث جدّي.</li>
+                <li>Persistence اتكشف (scheduled task جديد، service جديد).</li>
+                <li>إنت لسه مش متأكد بعد 30 دقيقة شغل جد.</li>
               </ul>
             </Callout>
-            <p>صيغة التصعيد المثالية: <b>"رأيت X. يبدو Y. أحتاج Z."</b> لا تترك Tier-2 يخمّن.</p>
+            <p>صيغة التصعيد المثالية: <b>"شفت X. شكله Y. محتاج Z."</b> متخليش Tier-2 يخمّن — ده بيوحرق وقت الكل.</p>
           </Section>
 
-          <Section title="معدّات شخصية تحتاج إتقانها فوراً">
+          <Section title="مهارات لازم تتقنها من أول أسبوع">
             <ul>
-              <li><b>Splunk SPL</b> أو <b>KQL</b> — أيهما تستخدمه شركتك. تعلّم top-10 commands خلال أسبوع.</li>
-              <li><b>regex</b> أساسي — كل yara/sigma/grep يستخدمه.</li>
-              <li><b>JSON parsing</b> — السجلات الحديثة كلها JSON. تعلّم jq.</li>
-              <li><b>VirusTotal Intelligence</b> — البحث المتقدم (أكثر من رفع ملف). أساسي.</li>
-              <li><b>MITRE ATT&CK Navigator</b> — اربط كل نشاط بتقنية.</li>
+              <li><b>Splunk SPL</b> أو <b>KQL</b> — حسب اللي شركتك بتستخدمه. ذاكر top-10 commands في أسبوع.</li>
+              <li><b>regex</b> أساسي — كل yara/sigma/grep قايم عليه.</li>
+              <li><b>JSON parsing</b> — اللوجز الحديثة كلها JSON. اتعلم jq.</li>
+              <li><b>VirusTotal Intelligence</b> — البحث المتقدم، مش بس رفع ملف.</li>
+              <li><b>MITRE ATT&CK Navigator</b> — اربط كل observation بـ technique.</li>
               <li><b>Markdown</b> للتوثيق السريع.</li>
             </ul>
           </Section>
 
-          <Section title="فخاخ Tier-1 — تجنّبها من اليوم الأول">
+          <Section title="فخاخ Tier-1 — اوعى تقع فيها من أول يوم">
             <ul>
-              <li><b>الإغلاق دون توثيق.</b> التذكرة بدون evidence لا تساوي شيئاً في المراجعة.</li>
-              <li><b>المماطلة في التصعيد.</b> "سأنتهي منها" قد تتحول لساعتين. عند الشك صعّد بعد 30 دقيقة.</li>
-              <li><b>تنفيذ command على الـ endpoint.</b> لا تشغّل أي شيء على جهاز ضحية بدون موافقة Tier-2/IR. قد تدمّر أدلة.</li>
-              <li><b>مشاركة معلومات حادث في chat عام.</b> استخدم القناة المخصّصة. الحوادث حسّاسة.</li>
-              <li><b>الاعتماد على Google فقط.</b> اسأل زميلك. السؤال يوفّر ساعات.</li>
+              <li><b>تقفل من غير توثيق.</b> تذكرة من غير evidence ملهاش لازمة في الـ audit.</li>
+              <li><b>تماطل في التصعيد.</b> "هنشوفها كده" بتبقى ساعتين. عند الشك، صعّد بعد 30 دقيقة. خلاص.</li>
+              <li><b>تشغل أوامر على الـ endpoint.</b> متشغّلش حاجة على جهاز ضحية من غير إذن Tier-2/IR. ممكن تحرق الـ evidence.</li>
+              <li><b>تنشر تفاصيل حادث في chat عام.</b> استخدم القناة المخصصة. الحوادث حساسة.</li>
+              <li><b>تعتمد على Google بس.</b> اسأل زميلك. سؤال واحد بيوفر ساعات.</li>
             </ul>
-            <Callout kind="info" title="ثقافة">
-              SOC الجيد لا يعاقب على false positive — يعاقب على false negative <b>غير الموثّق</b>. وثّق دائماً قرارك و دليلك.
+            <Callout kind="info" title="ثقافة الفريق">
+              الـ SOC الكويس مش بيعاقب على false positive — بيعاقب على false negative <b>مش متوثق</b>. وثّق قرارك و الدليل بتاعه دايماً.
             </Callout>
           </Section>
 
-          <Section title="معجم لا غنى عنه">
+          <Section title="معجم لازم تكون عارفه">
             <ul>
               <li><b>IOC</b> — Indicator of Compromise (hash, IP, domain).</li>
-              <li><b>TTP</b> — Tactics, Techniques, Procedures (مستوى أعلى من IOC).</li>
+              <li><b>TTP</b> — Tactics, Techniques, Procedures (مستوى أعلى من الـ IOC).</li>
               <li><b>MTTD / MTTR</b> — Mean Time To Detect / Respond.</li>
-              <li><b>SLA</b> — اتفاقية مستوى الخدمة (مثلاً Tier-1 يستجيب خلال 15 دقيقة).</li>
-              <li><b>Runbook / Playbook</b> — خطوات قياسية لمعالجة حالة معينة.</li>
+              <li><b>SLA</b> — اتفاقية مستوى الخدمة (مثلاً Tier-1 يرد في 15 دقيقة).</li>
+              <li><b>Runbook / Playbook</b> — خطوات قياسية لحالة معينة.</li>
               <li><b>Triage</b> — الفرز.</li>
-              <li><b>EDR / XDR</b> — Endpoint Detection / Extended Detection & Response.</li>
+              <li><b>EDR / XDR</b> — Endpoint / Extended Detection & Response.</li>
               <li><b>SOAR</b> — Orchestration & Automated Response (أتمتة الـ playbook).</li>
               <li><b>UEBA</b> — User & Entity Behavior Analytics.</li>
-              <li><b>HVA</b> — High-Value Asset (بنك أهداف يحتاج حماية أعلى).</li>
+              <li><b>HVA</b> — High-Value Asset (الكنوز اللي بتتحرس).</li>
             </ul>
           </Section>
         </>}

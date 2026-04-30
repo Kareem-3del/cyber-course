@@ -6,74 +6,74 @@ export default function Page() {
     <LessonShell slug="social-engineering">
       <L
         ar={<>
-          <Section title="لماذا «الإنسان» هو أضعف حلقة؟">
-            <Analogy>تستطيع أن تبني جدراناً بسماكة 10 أمتار، لكن لو وقف الحارس عند الباب و فتحه لأي شخص يقول «أنا من الصيانة»، فلا قيمة لكل الجدران. أكثر من 80% من الاختراقات تبدأ بخطأ بشري.</Analogy>
+          <Section title="ليه "الإنسان" هو أضعف حلقة دايماً؟">
+            <Analogy>ممكن تبني جدران 10 متر سمك. بس لو الحارس على الباب فتح لأي حد قاله "أنا من الصيانة"، الجدران كلها مفيهاش لازمة. أكتر من 80% من الاختراقات بتبدأ بغلطة بشرية. مش ثغرة في النظام — ثغرة في الإنسان.</Analogy>
           </Section>
           <Section title="مبادئ الإقناع — Cialdini">
             <ul>
-              <li><b>السلطة</b> (Authority) — «أنا من تكنولوجيا المعلومات».</li>
-              <li><b>الإلحاح</b> (Urgency) — «حسابك سيُقفل خلال ساعة».</li>
-              <li><b>الندرة</b> (Scarcity) — «10 أماكن فقط».</li>
-              <li><b>الإجماع</b> (Social Proof) — «كل زملائك أكملوا التحديث».</li>
-              <li><b>الإعجاب</b> (Liking) — انتحال شخصية صديق.</li>
-              <li><b>المعاملة بالمثل</b> (Reciprocity) — هدية صغيرة قبل الطلب.</li>
-              <li><b>الالتزام</b> (Commitment) — اطلب «نعم» صغيرة قبل الكبيرة.</li>
+              <li><b>Authority — السلطة</b> — "أنا من الـ IT". الناس بتطيع الزي الرسمي.</li>
+              <li><b>Urgency — الاستعجال</b> — "حسابك هيتقفل خلال ساعة". العقل بيتعطل تحت الضغط.</li>
+              <li><b>Scarcity — الندرة</b> — "10 أماكن بس". الخوف من إنه يفوتك.</li>
+              <li><b>Social Proof — الإجماع</b> — "كل زمايلك خلصوا التحديث". مفيش حد عايز يبقى لوحده.</li>
+              <li><b>Liking — الإعجاب</b> — انتحال شخصية صاحب أو زميل.</li>
+              <li><b>Reciprocity — المعاملة بالمثل</b> — هدية صغيرة قبل ما تطلب.</li>
+              <li><b>Commitment — الالتزام</b> — اطلب "نعم" صغيرة الأول، الكبيرة بتيجي ورا.</li>
             </ul>
           </Section>
-          <Section title="أنواع الهجمات">
+          <Section title="أنواع الهجمات — اعرف اللي ضدك">
             <TwoCol>
-              <Card title="Phishing عام">رسالة بريد جماعية بطعم بسيط (تحديث، فاتورة).</Card>
-              <Card title="Spear Phishing">مستهدفة لشخص بعد OSINT — نسبة نجاحها 30 ضعف.</Card>
-              <Card title="Whaling">تستهدف المدراء التنفيذيين تحديداً.</Card>
-              <Card title="Vishing">صوتي عبر الهاتف، غالباً لانتحال صفة الـ IT.</Card>
-              <Card title="Smishing">SMS — «طرد ينتظر، اضغط الرابط».</Card>
-              <Card title="BEC (Business Email Compromise)">انتحال CEO لإصدار أمر تحويل عاجل — أكبر خسائر مالية على الإطلاق.</Card>
-              <Card title="Baiting">USB مرمي في موقف السيارات.</Card>
-              <Card title="Tailgating">الدخول الفعلي خلف موظف بدون بطاقة.</Card>
+              <Card title="Phishing عام">إيميل جماعي بطعم بسيط (تحديث، فاتورة). شبكة واسعة.</Card>
+              <Card title="Spear Phishing">موجه لشخص واحد بعد OSINT دقيق — نسبة النجاح أعلى 30 ضعف.</Card>
+              <Card title="Whaling">بيستهدف الـ C-level بالظبط. صيد كبير.</Card>
+              <Card title="Vishing">بالصوت على التليفون، بينتحل غالباً شخصية الـ IT.</Card>
+              <Card title="Smishing">SMS — "في طرد بيستناك، دوس الرابط".</Card>
+              <Card title="BEC (Business Email Compromise)">انتحال شخصية الـ CEO عشان يطلع أمر تحويل عاجل — أكبر خسائر مالية على الإطلاق.</Card>
+              <Card title="Baiting">USB مرمي في الباركينج، و فيه دايماً حد بيركبه.</Card>
+              <Card title="Tailgating">دخول فعلي ورا موظف من غير بطاقة. "اتفضل الباب يا فندم".</Card>
             </TwoCol>
           </Section>
-          <Section title="بناء حملة phishing احترافية (تمرين مصرّح)">
-            <Step n={1} title="OSINT">جمع أسماء، إيميلات، تقنيات، أنماط داخلية.</Step>
-            <Step n={2} title="اختيار البيع — Pretext">«تذكرة جديدة في Jira» / «إعادة تعيين كلمة المرور» / «بريد خارج المكتب من المدير».</Step>
-            <Step n={3} title="بناء الـ landing page">
+          <Section title="بناء حملة Phishing احترافية (تمرين مصرّح به)">
+            <Step n={1} title="OSINT">جمع أسامي، إيميلات، الـ stack التقني، الأنماط الداخلية.</Step>
+            <Step n={2} title="اختيار الـ Pretext — السبب">"تذكرة جديدة في Jira" / "إعادة تعيين password" / "رسالة خارج المكتب من المدير".</Step>
+            <Step n={3} title="بناء الـ Landing Page">
               <Code lang="tools">{`evilginx2 -p phishlets/  # MFA bypass via reverse proxy
 gophish + chameleon       # كامل: حملة + تتبع
 modlishka                # 2FA-bypassing reverse proxy
 goPhish                  # حملات تدريبية</Code>`}</Code>
             </Step>
-            <Step n={4} title="تسجيل دومين مشابه — Typosquatting">
+            <Step n={4} title="Typosquatting — دومين شبيه">
               <Code lang="bash">{`dnstwist target.gov         # توليد دومينات متشابهة
 # ت𝖺rget.gov, target-gov.com, target.g0v, t4rget.gov`}</Code>
             </Step>
-            <Step n={5} title="إعداد البريد بشكل شرعي">
-              SPF + DKIM + DMARC على دومين الإرسال، مع تسخين IP لتجنب فلاتر السبام.
+            <Step n={5} title="ضبط الإيميل بشكل شرعي">
+              SPF + DKIM + DMARC على دومين الإرسال، مع تسخين الـ IP عشان تعدي فلاتر السبام.
             </Step>
-            <Step n={6} title="تحليل النتائج">معدل الفتح، معدل الضغط، معدل تسليم الـ creds، الـ MFA bypass.</Step>
+            <Step n={6} title="تحليل النتائج">معدل الفتح، معدل الضغط، الـ creds اللي وصلت، حالات الـ MFA bypass.</Step>
           </Section>
-          <Section title="MFA Bypass عبر Adversary-in-the-Middle">
-            <p>أدوات مثل <b>evilginx2</b> تعمل كوكيل عكسي بين الضحية و الموقع الحقيقي. الضحية تدخل اسمها و كلمتها و رمز MFA — كل شيء يمر بشكل طبيعي، لكن المهاجم يلتقط الـ session cookie النهائي.</p>
-            <Callout kind="danger" title="نتيجة">حتى MFA الكلاسيكي (TOTP, SMS) لا يحمي من هذا الهجوم. فقط <b>FIDO2 / WebAuthn / Passkeys</b> محصّنة لأنها مرتبطة بالدومين الأصلي.</Callout>
+          <Section title="MFA Bypass عن طريق Adversary-in-the-Middle">
+            <p>أدوات زي <b>evilginx2</b> بتشتغل reverse proxy بين الضحية و الموقع الحقيقي. الضحية بتدخل اليوزرنيم و الباسورد و كود الـ MFA — كل حاجة بتعدي طبيعي. بس المهاجم بيمسك الـ session cookie النهائي. مفيش حد حس بحاجة.</p>
+            <Callout kind="danger" title="النتيجة">حتى الـ MFA الكلاسيكي (TOTP, SMS) مش بيحميك من ده. <b>FIDO2 / WebAuthn / Passkeys</b> هي بس اللي محصّنة، لأنها مربوطة بالدومين الأصلي تشفيراً.</Callout>
           </Section>
           <Section title="الدفاع — المستوى التقني">
             <ol>
-              <li><b>SPF/DKIM/DMARC</b> بسياسة <code>p=reject</code>.</li>
-              <li>ABnti-spoofing داخل الـ inbound mail (Microsoft Defender for Office, Proofpoint, Mimecast).</li>
+              <li><b>SPF/DKIM/DMARC</b> بسياسة <code>p=reject</code>. أي حاجة أقل من كده عك.</li>
+              <li>Anti-spoofing على الإيميل الداخل (Microsoft Defender for Office, Proofpoint, Mimecast).</li>
               <li>Sandbox للمرفقات + URL rewriting + click-time scanning.</li>
-              <li><b>FIDO2 / Passkeys</b> بدلاً من TOTP/SMS — يمنع AiTM phishing تماماً.</li>
-              <li>Conditional access — منع الدخول من بلدان أو IPs غير معتادة.</li>
-              <li>Browser isolation للأقسام الحساسة.</li>
-              <li>كشف الدومينات المتشابهة المُنشأة حديثاً (DomainTools / urlscan.io watchlists).</li>
+              <li><b>FIDO2 / Passkeys</b> بدل TOTP/SMS — بيقتل الـ AiTM phishing من جذوره.</li>
+              <li>Conditional Access — امنع الدخول من بلاد أو IPs مش معتادة.</li>
+              <li>Browser isolation للفرق الحساسة.</li>
+              <li>كشف الدومينات الشبيهة اللي اتسجلت حديثاً (DomainTools / urlscan.io watchlists).</li>
             </ol>
           </Section>
-          <Section title="الدفاع — المستوى البشري">
+          <Section title="الدفاع — المستوى البشري (الأهم)">
             <ul>
-              <li>تدريب دوري قصير (15 دقيقة شهرياً أفضل من ساعتين سنوياً).</li>
-              <li>محاكاة phishing داخلية: من تنقر، تتدرب — لا تُعاقب.</li>
-              <li>زر «Report Phish» في الـ mail client يوصل الرسالة فوراً للـ SOC.</li>
-              <li>قاعدة الـ <b>Out-of-Band verification</b> لأي طلب مالي: اتصال هاتفي بالرقم الموثق، لا بالرقم في الإيميل.</li>
-              <li>ثقافة «لا توبيخ» للإبلاغ المبكر — أهم بكثير من العقوبة.</li>
+              <li>تدريب قصير و دوري (15 دقيقة كل شهر أحسن بكتير من ساعتين كل سنة).</li>
+              <li>محاكاة phishing داخلية: اللي بيدوس بيتدرّب، مش بيتعاقب.</li>
+              <li>زرار "Report Phish" في mail client بيبعت الرسالة على طول للـ SOC.</li>
+              <li>قاعدة <b>Out-of-Band verification</b> لأي طلب مالي: كلّمه على الرقم الموثق، مش الرقم اللي في الإيميل.</li>
+              <li>ثقافة "مفيش لوم" للإبلاغ المبكر — ده أهم بكتير من أي عقاب.</li>
             </ul>
-            <Callout kind="good" title="مؤشر نجاح">المؤسسات الناجحة معدل الإبلاغ فيها أعلى من معدل النقر — تُكافأ على ذلك.</Callout>
+            <Callout kind="good" title="مقياس النجاح">المؤسسات الناضجة بيبقى عندها معدل البلاغات أعلى من معدل النقر — و بيكافئوا اللي بيبلّغ.</Callout>
           </Section>
         </>}
         en={<>

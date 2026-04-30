@@ -7,15 +7,15 @@ export default function Page() {
       <L
         ar={<>
           <Section title="لماذا Next.js يضاعف سطح الهجوم">
-            <p>Next.js مزيج: <b>React frontend + Node backend + edge middleware + RSC + Server Actions + Image Optimizer + ISR cache</b>. كل واحدة منها بروتوكول هجوم مستقل. مهاجم متمرّس يفصل الطبقات و يضرب الأضعف.</p>
-            <Analogy>كمبنى متعدد الطوابق فيه مصاعد متباينة (App Router, Pages, API, Edge). ليس كل المصاعد تذهب لكل الطوابق، و ليس كل الباب فيها يقفل بنفس الطريقة. المهاجم يتعلّم خريطة المصاعد قبل أن يُحدّد طريقه.</Analogy>
+            <p>Next.js كوكتيل: <b>React frontend + Node backend + Edge middleware + RSC + Server Actions + Image Optimizer + ISR cache</b>. كل واحدة فيهم سطح هجوم مستقل بذاته. المهاجم الشاطر بيفصل الطبقات وبيضرب الأضعف.</p>
+            <Analogy>تخيلها مبنى بأكتر من طابق وفيه أكتر من مصعد (App Router, Pages, API, Edge). مش كل مصعد بيوصل كل دور، ولا كل أبوابه بتقفل بنفس الطريقة. المهاجم برسم خريطة المصاعد الأول، وبعدين بيختار سكته.</Analogy>
             <Callout kind="danger" title="تذكير قانوني">
-              الأمثلة لاختبار تطبيقاتك. لا تستخدمها على مواقع خارجية بدون إذن.
+              الأمثلة دي لاختبار تطبيقاتك أنت. متستخدمهاش على مواقع برّه من غير إذن.
             </Callout>
           </Section>
 
           <Section title="CVE-2025-29927 — Middleware Authorization Bypass">
-            <p>أكبر CVE في تاريخ Next.js (مارس 2025). استخدام رأس داخلي <span className="eng">x-middleware-subrequest</span> لتجاوز middleware authorization.</p>
+            <p>أكبر CVE في تاريخ Next.js (مارس 2025). header داخلي اسمه <span className="eng">x-middleware-subrequest</span> اتستخدم لتعدية الـ middleware authorization كله.</p>
             <Code lang="text">{`# Vulnerable: Next.js < 14.2.25 / < 15.2.3 يفحص هذا header
 # لمنع loops لكن لم يعقّمه من external requests
 
@@ -26,8 +26,8 @@ curl -H "x-middleware-subrequest: middleware:middleware:middleware:middleware:mi
 # auth checks في middleware.ts → bypassed
 # rewrite/redirect → bypassed
 # rate limit → bypassed`}</Code>
-            <Callout kind="info" title="من تأثّر">
-              كل تطبيق Next.js يستخدم middleware للـ authorization. إذا كنت &lt; 14.2.25 أو &lt; 15.2.3، رقّع <b>الآن</b>. التحديث وحده الإصلاح. WAF rules مؤقتة فقط.
+            <Callout kind="info" title="مين اتأثّر">
+              أي تطبيق Next.js بيستخدم middleware للـ authorization. لو إصدارك &lt; 14.2.25 أو &lt; 15.2.3، رقّع <b>دلوقتي</b>. التحديث هو الحل الوحيد. WAF rules مجرد إسعافات أولية.
             </Callout>
             <Code lang="javascript">{`// الدفاع المعمّق — لا تعتمد على middleware وحده للـ authz
 // كل route يفحص في handler:
@@ -39,12 +39,12 @@ export async function GET(req) {
           </Section>
 
           <Section title="Server Actions — سطح هجوم جديد كلياً">
-            <p>Server Actions = functions على client تُستدعى عبر POST مشفّر. لكن:</p>
+            <p>Server Actions = دوال بتتنادى من الـ client عن طريق POST مشفّر. بس:</p>
             <ul>
-              <li><b>كل Server Action endpoint عام</b> — حتى لو لم يُستخدم في UI. مهاجم يسرد actions من bundle و يستدعيها مباشرة.</li>
-              <li><b>Authentication ليست تلقائية</b> — يجب فحصها يدوياً في كل action.</li>
-              <li><b>Action IDs مستقرة عبر deploys</b> (إن لم يتم تشفيرها). مهاجم يحفظ ID و يستخدمه على version مختلف.</li>
-              <li><b>FormData parsing</b> — أنواع غير متوقّعة (Files كـ string).</li>
+              <li><b>كل Server Action endpoint مفتوح للعامة</b> — حتى لو مفيش UI بينديها. المهاجم بيعدّ الـ actions من الـ bundle ويناديهم مباشرة.</li>
+              <li><b>الـ Authentication مش بتحصل تلقائي</b> — لازم تفحصها يدوي في كل action.</li>
+              <li><b>Action IDs ثابتة عبر الـ deploys</b> (لو ما اتشفّروش). المهاجم بيحفظ الـ ID ويعيد استخدامه.</li>
+              <li><b>FormData parsing</b> — أنواع مش متوقعة (Files بتيجي كـ string).</li>
             </ul>
             <Code lang="javascript">{`// خطر — Server Action بدون auth
 'use server';
@@ -71,7 +71,7 @@ experimental: {
   serverActions: { allowedOrigins: ['app.target.gov'] }
 }`}</Code>
             <Callout kind="info" title="Action ID enumeration">
-              في dev mode، action IDs قابلة للتعداد عبر bundle. في prod، Next يشفّرها بـ encryption key. <b>اضبط <span className="eng">NEXT_SERVER_ACTIONS_ENCRYPTION_KEY</span></b> صراحةً، إلا فإن كل deploy يولّد key جديد و يكسر long-lived clients.
+              في dev mode، الـ action IDs قابلة للتعداد من الـ bundle. في prod، Next بيشفّرها بـ encryption key. <b>ظبّط <span className="eng">NEXT_SERVER_ACTIONS_ENCRYPTION_KEY</span></b> بنفسك، وإلا كل deploy بيولّد key جديد ويكسر الـ clients اللي شغّالة من فترة.
             </Callout>
           </Section>
 
@@ -97,7 +97,7 @@ return <ProfileCard
 const dto = pick(user, ['id', 'name', 'avatar']);
 return <ProfileCard user={dto} />;`}</Code>
             <Callout kind="danger" title="مهم">
-              "use server" و "use client" حدود thread. ما يبقى على الخادم هو <b>فقط</b> ما لا تمرّره إلى client component و لا تُرجعه من server action. الـ secrets في server-only files (e.g., <span className="eng">server-only</span> package).
+              "use server" و "use client" حدود فعلية بين العالمين. اللي بيفضل على السيرفر هو <b>بس</b> اللي ما بتمررهوش لـ client component ولا بتـ return من server action. السرّيات تبقى في server-only files (مثلاً package <span className="eng">server-only</span>).
             </Callout>
           </Section>
 
@@ -132,7 +132,7 @@ export async function GET(req: NextRequest, { params }) {
           </Section>
 
           <Section title="ISR / Cache Poisoning">
-            <p>Next.js يخزّن صفحات و API responses حسب URL. المهاجم يستطيع تسميم cache بطلب يتحكّم به.</p>
+            <p>Next.js بيـ cache صفحات وAPI responses بالـ URL. المهاجم يقدر يسمّم الـ cache بطلب هو متحكّم فيه.</p>
             <Code lang="text">{`# في app/products/[slug]/page.tsx
 # revalidate = 3600
 
@@ -147,16 +147,16 @@ const url = headers().get('x-forwarded-host');   ← يستخدمه في canonic
 # كل user لاحق يصل لنفس الصفحة المسمومة`}</Code>
             <Callout kind="good" title="الدفاع">
               <ul>
-                <li>لا تعتمد على request headers في رسم cached pages.</li>
-                <li>عرّف <span className="eng">cache key</span> بصراحة — لا تترك Next يقرّر ضمنياً.</li>
-                <li>افحص و حدّد <span className="eng">trust proxy</span> headers.</li>
-                <li><span className="eng">revalidateTag</span> / <span className="eng">revalidatePath</span> mutations يجب أن تتطلّب auth أو secret.</li>
+                <li>متعتمدش على request headers وأنت بترسم cached pages.</li>
+                <li>عرّف <span className="eng">cache key</span> بصراحة — متخليش Next يستنتج لوحده.</li>
+                <li>اضبط الـ <span className="eng">trust proxy</span> headers.</li>
+                <li><span className="eng">revalidateTag</span> و <span className="eng">revalidatePath</span> لازم يطلبوا auth أو secret.</li>
               </ul>
             </Callout>
           </Section>
 
           <Section title="Image Optimizer SSRF">
-            <p>Next يحوي <span className="eng">/_next/image</span> endpoint يعيد تحميل أي URL لتحسينه. لو مكوّن <span className="eng">remotePatterns</span> فضفاض، يصبح SSRF proxy.</p>
+            <p>Next عنده endpoint اسمه <span className="eng">/_next/image</span> بيـ fetch أي URL عشان يحسّنه. لو الـ <span className="eng">remotePatterns</span> مفتوحة، الـ endpoint ده بيبقى SSRF proxy على طبق.</p>
             <Code lang="javascript">{`// next.config.js — خطر
 images: {
   domains: ['*'],     // أو dangerouslyAllowSVG: true
@@ -199,10 +199,10 @@ router.push(safeNext(searchParams.get('next')));`}</Code>
 
           <Section title="Environment variables — تسرّبات شائعة">
             <ul>
-              <li><b>NEXT_PUBLIC_*</b> تنتشر في bundle client. <b>لا</b> تضع secrets فيها.</li>
-              <li><b>process.env في Server Component</b> آمن، لكن لو مرّرته إلى Client Component، يُرسل.</li>
-              <li><b>.env.local في git</b> — أضف إلى .gitignore. استخدم secret manager في prod (Vercel env, AWS Secrets Manager).</li>
-              <li><b>build-time vs runtime</b> — secret في NEXT_PUBLIC يُحقن وقت البناء؛ لا يتغيّر بدون rebuild.</li>
+              <li><b>NEXT_PUBLIC_*</b> بتتحقن في bundle الـ client. <b>متحطش</b> secrets فيها أبداً.</li>
+              <li><b>process.env في Server Component</b> آمن، بس لو مرّرته لـ Client Component، خلاص اتنشر.</li>
+              <li><b>.env.local في git</b> — حطّه في .gitignore. استخدم secret manager في prod (Vercel env, AWS Secrets Manager).</li>
+              <li><b>Build-time vs runtime</b> — السرّ في NEXT_PUBLIC بيتحط وقت البناء، مش هيتغيّر من غير rebuild.</li>
             </ul>
             <Code lang="javascript">{`// server-only — Next مكتبة تمنع الاستيراد من client component
 // app/lib/secret.ts
@@ -244,10 +244,10 @@ export const config = { matcher: ['/admin/:path*', '/api/admin/:path*'] };`}</Co
 
           <Section title="Edge Runtime vs Node Runtime">
             <ul>
-              <li>Edge runtime يعمل على V8 isolates، لا full Node. بعض libs (crypto، fs) لا تعمل.</li>
-              <li>Edge أسرع لكن <b>أقلّ قوة</b> — لا long DB queries.</li>
-              <li>middleware يعمل على Edge افتراضياً. لو نقلته لـ Node، تأكد أن routes تتطابق.</li>
-              <li>الـ secrets في Edge runtime تظهر في كل region — توزيع جغرافي قد يخالف data residency.</li>
+              <li>Edge runtime بيشتغل على V8 isolates، مش Node كامل. بعض المكتبات (crypto, fs) مش هتشتغل.</li>
+              <li>Edge أسرع، بس <b>أقل قوة</b> — مفيش DB queries طويلة.</li>
+              <li>middleware بيشتغل على Edge افتراضياً. لو نقلته لـ Node، تأكد إن الـ routes لسه متطابقة.</li>
+              <li>السرّيات في Edge runtime موجودة في كل region — التوزيع الجغرافي ممكن يخالف data residency rules عندك.</li>
             </ul>
           </Section>
 
@@ -293,20 +293,20 @@ export function middleware(req) {
           <Section title="checklist مراجعة Next.js app">
             <ol>
               <li>الإصدار &gt;= 14.2.25 / 15.2.3 (CVE-2025-29927).</li>
-              <li>Middleware <b>ليس</b> الفحص الوحيد للـ authz — كل route يعيد الفحص.</li>
-              <li>Server Actions كلها تتحقق من session + input.</li>
-              <li>RSC: لا تمرّر entities كاملة لـ client.</li>
-              <li>API Routes: ownership check + select explicit.</li>
+              <li>الـ Middleware <b>مش</b> طبقة الـ authz الوحيدة — كل route يعيد الفحص.</li>
+              <li>كل Server Action بيفحص session + input.</li>
+              <li>RSC: ما تمررش entities كاملة لـ client component.</li>
+              <li>API Routes: ownership check + select صريح.</li>
               <li>Image: <span className="eng">remotePatterns</span> صارمة.</li>
               <li>NEXT_SERVER_ACTIONS_ENCRYPTION_KEY مضبوط.</li>
               <li>Headers: HSTS, CSP, Permissions-Policy.</li>
-              <li>NEXT_PUBLIC_* لا تحوي secrets.</li>
-              <li>server-only package على ملفات السرّ.</li>
-              <li>Auth.js: secret + algorithms مضبوطة.</li>
-              <li>open redirect filter في كل router.push من user input.</li>
+              <li>NEXT_PUBLIC_* مفيهاش secrets.</li>
+              <li>package server-only على ملفات السرّيات.</li>
+              <li>Auth.js: secret + algorithms مضبوطين.</li>
+              <li>open redirect filter في كل router.push بياخد user input.</li>
             </ol>
             <Callout kind="info" title="أدوات">
-              <span className="eng">next-secure-headers</span>, Snyk, Semgrep <span className="eng">p/nextjs</span>, Vercel Firewall, Cloudflare WAF rules لـ Next-specific patterns.
+              <span className="eng">next-secure-headers</span>, Snyk, Semgrep <span className="eng">p/nextjs</span>, Vercel Firewall، وقواعد Cloudflare WAF للأنماط الخاصة بـ Next.
             </Callout>
           </Section>
         </>}

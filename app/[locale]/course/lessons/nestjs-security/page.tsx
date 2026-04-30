@@ -7,10 +7,10 @@ export default function Page() {
       <L
         ar={<>
           <Section title="لماذا NestJS له فئة مخاطر خاصة">
-            <p>NestJS يضيف فوق Express/Fastify طبقات: <b>Decorators، DI Container، Guards، Pipes، Interceptors، Modules</b>. كل طبقة قد تُكتب بشكل خاطئ يفتح ثغرة لا توجد في Express العاري. الميزة هي نفسها العيب: الـ "magic" يخفي ما يجري فعلاً.</p>
-            <Analogy>كمصفاة مياه متعددة المراحل. لو إحدى المراحل مكسورة و الباقي يعمل، يبدو الماء نظيفاً — لكنه ليس كذلك. NestJS pipeline مماثل: Guard ينجح، Pipe يفحص، Interceptor يعدّل — أي حلقة معطّلة تكسر السلسلة كلها.</Analogy>
+            <p>NestJS بيركّب فوق Express/Fastify طبقات: <b>Decorators، DI Container، Guards، Pipes، Interceptors، Modules</b>. كل طبقة فيها طريقة تكتبها غلط فتفتح ثغرة مكنتش هتلاقيها في Express العادي. هو إحنا بنحبه ليه؟ الـ "magic". وهو ده نفسه اللي بيضرّك — لأنه بيخبّي عنك اللي بيحصل فعلاً.</p>
+            <Analogy>تخيّلها فلتر مياه بأكتر من مرحلة. لو واحدة منهم مكسورة والباقي شغّال، المياه بتبان نضيفة — وهي مش نضيفة. NestJS كده بالظبط: Guard يعدّي، Pipe يفحص، Interceptor يعدّل — أي حلقة فيهم تخش، السلسلة كلها مكسورة وأنت مش حاسس.</Analogy>
             <Callout kind="danger" title="تحذير قانوني">
-              الأمثلة للتدريب في مختبرك. لا تختبر على إنتاج لا تملكه.
+              الأمثلة دي للتدريب في المعمل بتاعك. ما تجربش على إنتاج مش بتاعك.
             </Callout>
           </Section>
 
@@ -30,11 +30,11 @@ export default function Page() {
 [Interceptors (after)]    ← serialization, response shaping
   ↓
 Response`}</Code>
-            <p>كل خطوة محتملة كنقطة خطأ. لو Guard رفع exception غير متوقع، الـ filter قد يحوّله لـ 500 يكشف stack trace. لو Pipe لم يُربط، DTO يدخل غير مفحوص.</p>
+            <p>كل خطوة من دول نقطة فشل محتملة. Guard رمى exception غير متوقع؟ الـ filter ممكن يحوّله 500 ويسرّب stack trace. Pipe مش متربّط؟ الـ DTO هيعدّي من غير فحص أصلاً.</p>
           </Section>
 
           <Section title="ValidationPipe — الفخ الأشهر">
-            <p>NestJS يستخدم <span className="eng">class-validator</span>. لو نسيت <span className="eng">whitelist: true</span> أو <span className="eng">forbidNonWhitelisted</span>، المهاجم يحقن خصائص إضافية.</p>
+            <p>NestJS بيستخدم <span className="eng">class-validator</span>. تنسى <span className="eng">whitelist: true</span> أو <span className="eng">forbidNonWhitelisted</span>؟ المهاجم بيحقن خصايص زيادة في الـ DTO وأنت بتحفظهم في DB من غير ما تاخد بالك.</p>
             <Code lang="typescript">{`// خطر — DTO فيه isAdmin محذوف من الواجهة لكن موجود في DB
 class CreateUserDto {
   @IsString() name: string;
@@ -63,7 +63,7 @@ app.useGlobalPipes(new ValidationPipe({
   forbidUnknownValues: true
 }));`}</Code>
             <Callout kind="info" title="فخ transform">
-              <span className="eng">transform: true</span> + <span className="eng">enableImplicitConversion: true</span> = خطر. <span className="eng">"true"</span> string يصبح boolean true. <span className="eng">"123abc"</span> قد يصبح 123. اضبط <b>explicit conversion</b>.
+              <span className="eng">transform: true</span> + <span className="eng">enableImplicitConversion: true</span> = ضرب نار. الـ string <span className="eng">"true"</span> بيبقى boolean true. <span className="eng">"123abc"</span> ممكن يبقى 123. خلّيها <b>explicit conversion</b> دايماً.
             </Callout>
           </Section>
 
@@ -117,11 +117,11 @@ return req.headers['x-user-id'] === req.params.id;
 // المهاجم يضيف header (مع trust proxy)`}</Code>
             <Callout kind="good" title="قواعد Guards">
               <ul>
-                <li>افحص <span className="eng">hasOwnProperty</span> (أو استخدم <span className="eng">Object.hasOwn</span>) لا inherited.</li>
-                <li>اعتمد على <span className="eng">req.user</span> الذي وضعه AuthGuard موثوق فقط.</li>
-                <li>لا تستند على headers قابلة للتزوير.</li>
-                <li>RolesGuard: استخدم Reflector لقراءة decorator، لا strings hard-coded.</li>
-                <li>اختبر الـ Guard مع <span className="eng">{`{__proto__: {isAdmin: true}}`}</span> في request.</li>
+                <li>افحص بـ <span className="eng">hasOwnProperty</span> (أو <span className="eng">Object.hasOwn</span>) — مش inherited.</li>
+                <li>متثقش في <span className="eng">req.user</span> إلا لو AuthGuard موثوق هو اللي حطّه.</li>
+                <li>متبنيش حاجة على headers سهلة التزوير.</li>
+                <li>RolesGuard: استخدم Reflector وأنت بتقرا الـ decorator، مش strings hard-coded.</li>
+                <li>جرّب الـ Guard بنفسك على <span className="eng">{`{__proto__: {isAdmin: true}}`}</span> في الـ request — لو عدّى، عندك مشكلة.</li>
               </ul>
             </Callout>
           </Section>
@@ -152,12 +152,12 @@ JwtModule.register({
           </Section>
 
           <Section title="DI Container Poisoning">
-            <p>كل provider في Module مثل singleton. لو attacker يستطيع تعديل provider في runtime (نادر لكن ممكن عبر debugger / unsafe eval)، يؤثر على كل الطلبات. لكن الأشهر:</p>
+            <p>كل provider في الـ Module هو فعلياً singleton. لو حد قدر يعدّل provider في الـ runtime (نادر، بس ممكن عن طريق debugger أو unsafe eval)، هيأثر على كل الـ requests. الأشهر:</p>
             <ul>
-              <li><b>Custom providers بـ <span className="eng">useValue</span></b> من user input — لا تفعل ذلك أبداً.</li>
-              <li><b>Dynamic modules</b> تأخذ config من file — file injection يصبح RCE.</li>
-              <li><b>useFactory</b> ينفّذ كود — تأكد المصدر آمن.</li>
-              <li><b>Request-scoped providers</b> — أبطأ، لكن ضرورية لـ per-request state. لا تستخدم singleton لـ user data.</li>
+              <li><b>Custom providers بـ <span className="eng">useValue</span></b> جايّة من user input — متعملش كده أبداً.</li>
+              <li><b>Dynamic modules</b> بتقرا config من ملف — file injection بيبقى RCE على طول.</li>
+              <li><b>useFactory</b> بينفّذ كود — تأكد إن المصدر موثوق.</li>
+              <li><b>Request-scoped providers</b> — أبطأ، صح، بس ضروريين لـ per-request state. متستخدمش singleton لـ user data.</li>
             </ul>
           </Section>
 
@@ -181,11 +181,11 @@ login(@Body() dto: LoginDto) { ... }
 
           <Section title="GraphQL في NestJS — surface هجوم خاصة">
             <ul>
-              <li><b>Introspection</b> — معطل في prod افتراضياً، لكن كثير ينساه. <span className="eng">{`{introspection: false, playground: false}`}</span>.</li>
-              <li><b>Query depth & complexity</b> — query عميقة تُسقط الخادم. استخدم <span className="eng">graphql-depth-limit</span> + <span className="eng">graphql-query-complexity</span>.</li>
-              <li><b>Batching attacks</b> — مهاجم يرسل 1000 query في نفس الـ request للـ brute force. حدّ بـ <span className="eng">apollo-server</span> options.</li>
-              <li><b>BOLA على resolvers</b> — كل resolver يجب أن يعيد فحص الـ ownership. لا تعتمد على parent resolver.</li>
-              <li><b>N+1</b> — استخدم DataLoader. غير ذلك = DoS بسيط.</li>
+              <li><b>Introspection</b> — مقفول في prod افتراضياً، بس كتير بينساه. <span className="eng">{`{introspection: false, playground: false}`}</span>.</li>
+              <li><b>Query depth & complexity</b> — query عميقة بتوقّع السيرفر. استخدم <span className="eng">graphql-depth-limit</span> + <span className="eng">graphql-query-complexity</span>.</li>
+              <li><b>Batching attacks</b> — حد يبعت 1000 query في request واحد عشان يعمل brute force. حدّها من <span className="eng">apollo-server</span> options.</li>
+              <li><b>BOLA على resolvers</b> — كل resolver لازم يعيد فحص الـ ownership. متعتمدش على الـ parent resolver وخلاص.</li>
+              <li><b>N+1</b> — استخدم DataLoader. غير كده، هتعمل DoS لنفسك ببلاش.</li>
             </ul>
             <Code lang="typescript">{`import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import depthLimit from 'graphql-depth-limit';
@@ -332,11 +332,11 @@ bootstrap();`}</Code>
           <Section title="مراجع و أدوات">
             <ul>
               <li><b>Snyk</b> — مع Nest-aware rules.</li>
-              <li><b>Semgrep</b> — قواعد nestjs مخصّصة (<span className="eng">nestjs.audit</span>).</li>
+              <li><b>Semgrep</b> — قواعد nestjs مخصصة (<span className="eng">nestjs.audit</span>).</li>
               <li><b>nest-cli + ESLint security plugin</b>.</li>
-              <li><b>OWASP API Security Top 10</b> — كل النقاط تنطبق.</li>
-              <li><b>Burp + Postman collection</b> — اختبر كل endpoint مع IDOR/BOLA.</li>
-              <li>كتاب: "NestJS in Practice" + قسم Security من docs.nestjs.com.</li>
+              <li><b>OWASP API Security Top 10</b> — كل بند فيها بينطبق.</li>
+              <li><b>Burp + Postman collection</b> — جرّب كل endpoint بـ IDOR/BOLA.</li>
+              <li>كتاب "NestJS in Practice" + قسم Security من docs.nestjs.com.</li>
             </ul>
           </Section>
         </>}

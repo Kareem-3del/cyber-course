@@ -6,15 +6,15 @@ export default function Page() {
     <LessonShell slug="react-security">
       <L
         ar={<>
-          <Section title="React XSS-by-default? — أو لا؟">
-            <p>React يهرب النصوص في JSX تلقائياً، لذا <span className="eng">{`{userInput}`}</span> آمن. هذه الإشاعة تُنسي المطوّرين أن React يفتح فجوات أخرى: <span className="eng">dangerouslySetInnerHTML</span>، URL handlers (<span className="eng">href</span>, <span className="eng">src</span>)، الـ refs، الـ event handlers الديناميكية، JSX injection عبر <span className="eng">React.createElement</span>.</p>
-            <Analogy>كباب أمان مزدوج. الإطار يحميك من نسيان قفله، لكن لو فتحته يدوياً (dangerouslySetInnerHTML) فأنت لوحدك. كثيرون يفتحون الباب لأن "الإطار آمن دائماً".</Analogy>
-            <Callout kind="danger" title="تذكير">
-              الأمثلة لتعليم استغلال DOM/XSS في تطبيقاتك. لا تطبّقها على مواقع لا تملكها.
+          <Section title="React آمن من XSS by default؟ — هو إحنا متأكدين؟">
+            <p>أيوة، React بيعمل escape للنصوص في JSX، يعني <span className="eng">{`{userInput}`}</span> سليمة. بس السمعة دي بتنوّم المطورين، و بينسوا إن React بيفتح خرّامات تانية كتير: <span className="eng">dangerouslySetInnerHTML</span>، URL handlers (<span className="eng">href</span>, <span className="eng">src</span>)، refs، event handlers ديناميكية، و JSX injection عن طريق <span className="eng">React.createElement</span>. الإطار مش حصان أبيض — إنت اللي بتقفل الباب أو تفتحه.</p>
+            <Analogy>تخيل باب بيتقفل لوحده. طالما سايبه — تمام. بس لحظة ما تفتحه بإيدك (dangerouslySetInnerHTML) إنت لوحدك في الشارع. الناس بتفتح الباب و هي مطمنة "الإطار آمن دايماً" — و دي اللحظة اللي بتتحرق فيها.</Analogy>
+            <Callout kind="danger" title="تنبيه">
+              الأمثلة هنا عشان تتعلم تستغل DOM/XSS في تطبيقاتك إنت. مش لمواقع متملكهاش.
             </Callout>
           </Section>
 
-          <Section title="dangerouslySetInnerHTML — الباب الكبير">
+          <Section title="dangerouslySetInnerHTML — الباب اللي مفتوح على الآخر">
             <Code lang="jsx">{`// خطر — markdown-to-HTML بدون sanitize
 function Comment({ markdown }) {
   const html = markdownToHtml(markdown);
@@ -37,7 +37,7 @@ const safe = DOMPurify.sanitize(html, {
 return <div dangerouslySetInnerHTML={{ __html: safe }} />;`}</Code>
           </Section>
 
-          <Section title="URL Injection — href/src في React">
+          <Section title="URL Injection — href/src اللي بتسرّب الموقع">
             <Code lang="jsx">{`// خطر — link مفتوح
 <a href={userUrl}>click</a>
 
@@ -59,7 +59,7 @@ function safeUrl(u) {
 // لمنع window.opener tabnabbing`}</Code>
           </Section>
 
-          <Section title="JSX Injection — حالات نادرة لكن حقيقية">
+          <Section title="JSX Injection — حالات نادرة بس بتحرق المشروع">
             <Code lang="jsx">{`// خطر — element type ديناميكي
 function Dynamic({ tag, children }) {
   const Tag = tag;
@@ -78,8 +78,8 @@ const ALLOWED_TAGS = ['p','span','div','section','article'];
 const Tag = ALLOWED_TAGS.includes(userTag) ? userTag : 'span';`}</Code>
           </Section>
 
-          <Section title="Refs و DOM escapes">
-            <p>أحياناً تحتاج DOM API مباشرة. كل استخدام لـ <span className="eng">.innerHTML</span> أو <span className="eng">document.write</span> أو <span className="eng">eval</span> داخل useEffect يفقد حماية React.</p>
+          <Section title="Refs و الـ DOM escapes — لما بتلف على React">
+            <p>ساعات بتحتاج DOM API مباشرة، و ده مفيش منه مفر. بس أي استخدام لـ <span className="eng">.innerHTML</span> أو <span className="eng">document.write</span> أو <span className="eng">eval</span> جوا useEffect معناه إنك خرجت من حماية React بإيدك. اللي بعدها مسؤوليتك.</p>
             <Code lang="jsx">{`// خطر
 function Editor({ html }) {
   const ref = useRef(null);
@@ -98,8 +98,8 @@ useEffect(() => {
 ref.current.textContent = userText;   // آمن`}</Code>
           </Section>
 
-          <Section title="Hydration Mismatch كـ Oracle">
-            <p>SSR + CSR mismatch ينتج تحذيراً، لكنه يكشف <b>هل القيمة موجودة على الخادم؟</b>. مهاجم يستخدم هذا كـ CSRF-like oracle.</p>
+          <Section title="Hydration Mismatch — عندما يصبح الـ Warning ثغرة">
+            <p>الـ SSR/CSR لما بيختلفوا React بيطبع warning. بس الـ warning ده بيكشف معلومة: <b>هل القيمة دي موجودة على السيرفر؟</b>. المهاجم بياخد ده و يستخدمه كـ oracle شبيه بالـ CSRF.</p>
             <Code lang="jsx">{`// مثال: AB test مرتبط بـ user
 function Hero() {
   const variant = useABTest();   // يستخدم cookie
@@ -115,17 +115,17 @@ const [variant, setVariant] = useState('A');
 useEffect(() => setVariant(getVariant()), []);`}</Code>
           </Section>
 
-          <Section title="State Management — Redux / Zustand pitfalls">
+          <Section title="State Management — فخاخ Redux و Zustand">
             <ul>
-              <li><b>Storing tokens في localStorage</b> — أي XSS = سرقة فورية. استخدم <span className="eng">httpOnly cookies</span>.</li>
-              <li><b>Persisted state</b> (redux-persist) — افحص محتوى المستعاد. مهاجم بـ XSS يكتب state خبيث ثم يبقى.</li>
-              <li><b>Reducer trust</b> — Reducer يفترض actions موثوقة. لو هناك middleware يقبل actions من user input (rare), prototype pollution ممكن.</li>
-              <li><b>Devtools في production</b> — Redux DevTools يجب أن يكون <span className="eng">{`process.env.NODE_ENV === 'development'`}</span> فقط.</li>
+              <li><b>Tokens في localStorage</b> — أي XSS = الـ token اتسرق. خلاص. استخدم <span className="eng">httpOnly cookies</span>.</li>
+              <li><b>Persisted state</b> (redux-persist) — راجع المحتوى اللي بيرجع. مهاجم عنده XSS بيكتب state خبيث و يفضل قاعد فيه حتى لو قفلت الثغرة.</li>
+              <li><b>Reducer trust</b> — الـ Reducers بتفترض إن الـ actions جاية من مصدر موثوق. لو فيه middleware بيقبل actions من input المستخدم — prototype pollution على الباب.</li>
+              <li><b>Devtools في الـ production</b> — Redux DevTools لازم يبقى <span className="eng">{`process.env.NODE_ENV === 'development'`}</span> بس. غير كده إنت بتفرّج المهاجم على كل حاجة.</li>
             </ul>
           </Section>
 
-          <Section title="CSP و Trusted Types — التحصين الحقيقي">
-            <p>حتى لو نسيت DOMPurify مرة، CSP صحيح يقتل XSS قبل أن ينطلق.</p>
+          <Section title="CSP و Trusted Types — دي السكة الجد">
+            <p>حتى لو نسيت DOMPurify مرة (و ده هيحصل، أنت بني آدم)، CSP صح بيقتل الـ XSS قبل ما يلحق ينفّذ.</p>
             <Code lang="text">{`# Strict CSP for React
 Content-Security-Policy:
   default-src 'self';
@@ -152,11 +152,11 @@ if (window.trustedTypes) {
 // عبر setting compatible policy`}</Code>
           </Section>
 
-          <Section title="Supply chain — npm + CDN risks">
+          <Section title="Supply Chain — مخاطر npm و الـ CDN">
             <ul>
-              <li><b>compromised dependencies</b> — نفس قصة Node. حدّث react, react-dom, مكتباتك.</li>
-              <li><b>CDN scripts</b> (analytics, A/B) — بدون <span className="eng">integrity</span> SRI تكسر AppSec كاملة.</li>
-              <li><b>Browser extension supply chain</b> — لا تثق بأي شيء على client.</li>
+              <li><b>Compromised dependencies</b> — نفس قصة Node. حدّث react, react-dom، و كل مكتباتك. اللي مش بيحدّث بيعيش بنصف عقل.</li>
+              <li><b>CDN scripts</b> (analytics, A/B) — من غير <span className="eng">integrity</span> SRI كل أمن التطبيق بتاعك بيقع في ثانية.</li>
+              <li><b>Browser extension supply chain</b> — متأمنش لأي حاجة موجودة على الـ client. الـ client أرض عدوانية.</li>
             </ul>
             <Code lang="html">{`<script
   src="https://cdn.example.com/lib.js"
@@ -164,14 +164,14 @@ if (window.trustedTypes) {
   crossorigin="anonymous"></script>`}</Code>
           </Section>
 
-          <Section title="XS-Leaks — تسريبات عبر الحدود">
-            <p>حتى مع SOP و CSP، browser side-channels تكشف معلومات. مهاجم في موقع آخر يُحمّل تطبيقك في iframe / window و يقيس:</p>
+          <Section title="XS-Leaks — تسريبات بتعدي الحدود">
+            <p>حتى مع SOP و CSP، الـ browser side-channels لسه بتسرّب معلومات. مهاجم على موقع تاني بيحمّل تطبيقك في iframe أو window و بيقيس:</p>
             <ul>
-              <li><b>Frame counting</b> — كم iframe لـ <span className="eng">target.com/profile</span>؟ يكشف عدد الـ widgets per state.</li>
-              <li><b>Window.length</b> — قبل/بعد login.</li>
-              <li><b>Cache timing</b> — هل المورد cached؟ → user logged in.</li>
-              <li><b>postMessage leaks</b> — listener على <span className="eng">"*"</span>.</li>
-              <li><b>Navigation timing</b> — كم استغرق تحميل /admin؟ → admin أم لا.</li>
+              <li><b>Frame counting</b> — كام iframe بيرسمه <span className="eng">target.com/profile</span>؟ ده بيفضح عدد الـ widgets في كل حالة.</li>
+              <li><b>window.length</b> — قبل و بعد الـ login.</li>
+              <li><b>Cache timing</b> — هل الـ resource cached؟ → اليوزر داخل بحسابه.</li>
+              <li><b>postMessage leaks</b> — listener على <span className="eng">"*"</span>. ده عك صريح.</li>
+              <li><b>Navigation timing</b> — تحميل /admin أخد قد إيه؟ → admin أو لأ.</li>
             </ul>
             <Callout kind="good" title="الدفاع">
               <ul>
@@ -179,23 +179,23 @@ if (window.trustedTypes) {
                 <li><span className="eng">Cross-Origin-Embedder-Policy: require-corp</span></li>
                 <li><span className="eng">Cross-Origin-Resource-Policy: same-site</span></li>
                 <li><span className="eng">X-Frame-Options: DENY</span> (أو CSP frame-ancestors).</li>
-                <li>postMessage: قارن <span className="eng">event.origin</span> بقائمة صريحة.</li>
-                <li>SameSite=strict cookies تمنع كثيراً من تقاطع المواقع.</li>
+                <li>postMessage: قارن الـ <span className="eng">event.origin</span> بـ allowlist صريح. متسيبش "*" أبداً.</li>
+                <li>SameSite=strict cookies بتقفل كتير من سيناريوهات الـ cross-site.</li>
               </ul>
             </Callout>
           </Section>
 
-          <Section title="React-specific CVE highlights">
+          <Section title="CVEs بتاعة React — اللي لازم تبقى عارفها">
             <ul>
-              <li><b>CVE-2018-6341 (react-dom)</b> — XSS عبر attributes في server renderer قديم.</li>
-              <li><b>react-router</b> CVE متعدد — open redirect عبر <span className="eng">basename</span>.</li>
-              <li><b>next/router</b> historical — open redirect.</li>
-              <li><b>Material-UI / antd / chakra</b> — sanitization مفقود في tooltip/popover history.</li>
-              <li><b>react-markdown</b> — في الإصدارات القديمة قبل v6 كان يستخدم raw HTML افتراضياً. v6+ آمن لكن لا يزال يحتاج config صحيح.</li>
+              <li><b>CVE-2018-6341 (react-dom)</b> — XSS عن طريق attributes في server renderer قديم.</li>
+              <li><b>react-router</b> — كذا CVE، أشهرهم open redirect عن طريق <span className="eng">basename</span>.</li>
+              <li><b>next/router</b> historical — open redirect برضو.</li>
+              <li><b>Material-UI / antd / chakra</b> — sanitization ناقص في الـ tooltip/popover.</li>
+              <li><b>react-markdown</b> — قبل v6 كان بيقبل raw HTML افتراضياً. v6+ آمن، بس لسه محتاج config مظبوط.</li>
             </ul>
           </Section>
 
-          <Section title="Authentication patterns — أين تخفق React apps">
+          <Section title="Authentication — هنا تطبيقات React بتعك">
             <Code lang="jsx">{`// خطأ شائع — token في localStorage
 localStorage.setItem('token', jwt);
 fetch('/api', { headers: { Authorization: 'Bearer ' + jwt } });
@@ -211,19 +211,19 @@ fetch('/api', { credentials: 'include', headers: { 'X-CSRF-Token': csrfToken } }
 // Cookie ↔ BFF ↔ Auth Server (token تبقى على الـ BFF)`}</Code>
           </Section>
 
-          <Section title="ممارسات مراجعة كود React">
+          <Section title="Code Review لـ React — الـ checklist اللي بتمشي بيه">
             <ol>
-              <li>ابحث عن <span className="eng">dangerouslySetInnerHTML</span> — كل instance يحتاج justification + DOMPurify.</li>
-              <li>ابحث عن <span className="eng">.innerHTML</span>، <span className="eng">document.write</span>، <span className="eng">eval</span>، <span className="eng">new Function</span>.</li>
-              <li>افحص كل <span className="eng">href</span> ديناميكي — هل يفلتر <span className="eng">javascript:</span>؟</li>
-              <li>افحص كل <span className="eng">target="_blank"</span> — هل يحوي <span className="eng">rel="noopener"</span>؟</li>
-              <li>افحص كل postMessage — هل يفحص origin؟</li>
-              <li>افحص localStorage — أي tokens / PII؟ يجب أن لا يكون.</li>
-              <li>افحص env leaks — <span className="eng">REACT_APP_</span> / <span className="eng">VITE_</span> تظهر في bundle.</li>
-              <li>افحص الـ redirects — هل يمنع <span className="eng">//evil.com</span>؟</li>
+              <li>دور على <span className="eng">dangerouslySetInnerHTML</span> — كل instance لازم يبقى ليه سبب + DOMPurify. غير كده احذفه.</li>
+              <li>دور على <span className="eng">.innerHTML</span>, <span className="eng">document.write</span>, <span className="eng">eval</span>, <span className="eng">new Function</span>.</li>
+              <li>افحص كل <span className="eng">href</span> ديناميكي — بيفلتر <span className="eng">javascript:</span> ولا لأ؟</li>
+              <li>افحص كل <span className="eng">target="_blank"</span> — معاه <span className="eng">rel="noopener"</span> ولا منسي؟</li>
+              <li>افحص كل postMessage — بيتحقق من origin؟</li>
+              <li>افحص localStorage — فيه tokens أو PII؟ المفروض مفيش.</li>
+              <li>افحص الـ env leaks — <span className="eng">REACT_APP_</span> / <span className="eng">VITE_</span> بتظهر في الـ bundle. أي سر هنا = سر متسرب.</li>
+              <li>افحص الـ redirects — بيمنع <span className="eng">//evil.com</span>؟</li>
             </ol>
-            <Callout kind="info" title="أدوات">
-              ESLint + <span className="eng">eslint-plugin-react</span>, <span className="eng">eslint-plugin-jsx-a11y</span>, <span className="eng">eslint-plugin-security</span>. Semgrep <span className="eng">p/react</span>. Dependabot. Snyk.
+            <Callout kind="info" title="أدوات بتختصر عليك">
+              ESLint + <span className="eng">eslint-plugin-react</span>, <span className="eng">eslint-plugin-jsx-a11y</span>, <span className="eng">eslint-plugin-security</span>. Semgrep <span className="eng">p/react</span>. Dependabot. Snyk. خلّي الأدوات تشتغل عنك بدل ما تنسى.
             </Callout>
           </Section>
         </>}

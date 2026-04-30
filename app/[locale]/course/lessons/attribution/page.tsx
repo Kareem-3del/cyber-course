@@ -6,55 +6,55 @@ export default function Page() {
     <LessonShell slug="attribution">
       <L
         ar={<>
-          <Section title="مَن المهاجم؟ — فن نسب الهجمات">
-            <Analogy>المحقق في مسرح الجريمة لا يبحث عن البصمة فقط، بل عن أسلوب الجريمة، نوع السلاح، ساعة الوقوع، حتى رائحة المعطف. هكذا نتتبع المهاجم: ليس IP واحد بل <b>نمط كامل</b>.</Analogy>
-            <Callout kind="warn" title="تحذير مهم">الـ attribution صعب و كثيراً ما يكون <i>احتمالياً</i> لا قاطعاً. المهاجمون المحترفون يستخدمون false flags لتوجيه التهمة لجهة أخرى. لا تبني قراراً قانونياً على دليل واحد.</Callout>
+          <Section title="مين المهاجم؟ — فن الـ Attribution">
+            <Analogy>المحقق في مسرح الجريمة مش بيدور على البصمة بس، هو بيدور على أسلوب الجريمة، نوع السلاح، ميعاد التنفيذ، وحتى ريحة المعطف. كدة بنتبع المهاجم: مش IP واحد، إحنا بندور على <b>باترن كامل</b>.</Analogy>
+            <Callout kind="warn" title="تنبيه مهم">الـ attribution صعب وفي أغلب الأوقات بيكون <i>احتمالي</i> مش قاطع. المحترفين بيستخدموا false flags عشان يوجهوا التهمة لجهة تانية. متبنيش قرار قانوني على دليل واحد لوحده.</Callout>
           </Section>
-          <Section title="هرم الأدلة و TTPs">
-            <p>نسعى لجمع المؤشرات (IOCs) و سلوكيات (TTPs) و مقارنتها بمكتبة الـ threat actors المعروفة (APT28, APT29, Lazarus, Conti...).</p>
+          <Section title="هرم الأدلة والـ TTPs">
+            <p>إحنا بنلم المؤشرات (IOCs) والسلوكيات (TTPs) ونقارنهم بمكتبة الـ threat actors المعروفين (APT28, APT29, Lazarus, Conti...).</p>
             <ul>
               <li><b>Diamond Model</b> — Adversary, Capability, Infrastructure, Victim.</li>
               <li><b>MITRE ATT&amp;CK Mapping</b> — مطابقة كل خطوة بتقنية.</li>
               <li><b>Cyber Kill Chain</b> — أين كانت الفجوات.</li>
             </ul>
           </Section>
-          <Section title="جمع المعلومات عن المهاجم خلال الهجوم">
+          <Section title="جمع معلومات عن المهاجم وهو شغال">
             <h3>1. على مستوى الشبكة</h3>
             <ul>
-              <li>عناوين IP و ASN — هل هو VPS, Tor, residential proxy؟</li>
-              <li>بصمات JA3 / JA4 للـ TLS client — تكشف الأداة المستخدمة.</li>
-              <li>بصمات User-Agent و ترتيب الـ HTTP headers.</li>
-              <li>توقيت الطلبات (timezone analysis) — متى يكون نشطاً غالباً؟</li>
+              <li>عناوين IP والـ ASN — هل هو VPS ولا Tor ولا residential proxy؟</li>
+              <li>بصمات JA3 / JA4 للـ TLS client — بتكشف الأداة المستخدمة.</li>
+              <li>بصمات الـ User-Agent وترتيب الـ HTTP headers.</li>
+              <li>توقيت الـ requests (timezone analysis) — هو بيشتغل امتى؟</li>
             </ul>
             <h3>2. على مستوى الأدوات</h3>
             <ul>
-              <li>هاش الـ payload + قارن في VirusTotal, MalwareBazaar, ANY.RUN.</li>
-              <li>ميتاداتا في الـ implant (PDB path, compile timestamp, language pack).</li>
+              <li>هاش الـ payload وقارنه في VirusTotal, MalwareBazaar, ANY.RUN.</li>
+              <li>الميتاداتا جوه الـ implant (PDB path, compile timestamp, language pack).</li>
               <li>إعادة استخدام C2 domains — راجع RiskIQ / DomainTools / Censys.</li>
-              <li>أنماط الكود — خوارزمية تشفير فريدة، أخطاء إملائية ثابتة.</li>
+              <li>أنماط الكود — خوارزمية تشفير فريدة، أخطاء إملائية بتتكرر.</li>
             </ul>
             <h3>3. على مستوى السلوك</h3>
             <ul>
-              <li>وقت العمل (مثلاً 9-5 بتوقيت موسكو يشير لـ APT28/29).</li>
-              <li>أسلوب الـ post-exploitation (هل يستخدم PsExec أم WMIexec؟).</li>
-              <li>اختيار الأهداف داخل الشبكة (DC, mail server, backup؟).</li>
+              <li>ساعات الشغل (لو 9-5 بتوقيت موسكو، ده باترن APT28/29).</li>
+              <li>أسلوب الـ post-exploitation (بيستخدم PsExec ولا WMIexec؟).</li>
+              <li>اختيار الأهداف جوه الشبكة (DC ولا mail server ولا backup؟).</li>
             </ul>
           </Section>
-          <Section title="Honeytokens & Beacons — جذب المهاجم لكشف نفسه">
-            <p>أعظم أدوات تتبع المهاجم — تجعله يخبرك بنفسه أنه دخل، و من أين، و ماذا يفعل.</p>
+          <Section title="Honeytokens & Beacons — خلي المهاجم يكشف نفسه">
+            <p>دي أعظم أدوات تتبع. خليه هو اللي يقولك بنفسه إنه دخل، ومن فين، وبيعمل إيه.</p>
             <TwoCol>
-              <Card title="Web Bugs" color="amber">رابط مخفي في صفحة لا يظهر للمستخدم العادي. أي spider يفتحه = إنذار.</Card>
-              <Card title="DNS Tokens" color="amber">دومين فريد لكل ضحية. أول DNS lookup له = هويتك مكشوفة.</Card>
-              <Card title="AWS Token" color="amber">مفتاح AWS مزيف في ملف .env. استخدامه يولّد إنذاراً مع IP المهاجم.</Card>
-              <Card title="Office Document Tokens" color="amber">ملف .docx يحوي صورة ترتبط بـ URL مراقَب — يكشف من فتحه.</Card>
+              <Card title="Web Bugs" color="amber">رابط مخفي في الصفحة، اليوزر العادي مش هيوصله. أي spider بيفتحه = إنذار.</Card>
+              <Card title="DNS Tokens" color="amber">دومين فريد لكل ضحية. أول DNS lookup له، إنت كشفته.</Card>
+              <Card title="AWS Tokens" color="amber">مفتاح AWS مزيف جوه ملف .env. أول مرة يستخدمه، الإنذار بيوصل ومعاه IP المهاجم.</Card>
+              <Card title="Office Document Tokens" color="amber">ملف .docx فيه صورة بتجيب من URL مراقَب — بيكشف لك مين فتح الملف.</Card>
             </TwoCol>
             <h3>تتبع الـ exfiltration</h3>
             <ul>
-              <li>ضع ملفات «طُعم» تحتوي tracking pixels.</li>
-              <li>استخدم watermarking — كل نسخة من الملف تحوي معرّفاً مخفياً يكشف مصدر التسرب.</li>
+              <li>حط ملفات "طعم" فيها tracking pixels.</li>
+              <li>استخدم watermarking — كل نسخة من الملف فيها معرف مخفي يكشف مصدر التسريب.</li>
             </ul>
           </Section>
-          <Section title="OSINT المعكوس — تحقيق على المهاجم">
+          <Section title="OSINT معكوس — تحقيق على المهاجم نفسه">
             <Step n={1} title="من الـ IP / Domain / Wallet">
               <Code lang="recon on attacker">{`# WHOIS history
 whoisxml.com / domaintools.com
@@ -67,52 +67,52 @@ mnemonic.no / circl.lu / VirusTotal Graph
 malpedia.caad.fkie.fraunhofer.de
 mitre.org/groups`}</Code>
             </Step>
-            <Step n={2} title="من ملف خبيث">ارفعه في ANY.RUN, Joe Sandbox, Tria.ge, Hatching Triage. ابحث عن: مسارات PDB، تعليقات لغة، خوادم C2، مفاتيح mutex.</Step>
-            <Step n={3} title="من العملة المشفرة (لو فدية)">Chainalysis, TRM Labs, blockchain.info — تتبع المحفظة. كل mixer يضعف الإخفاء قليلاً.</Step>
-            <Step n={4} title="من نشاط على المنتديات">مراقبة BreachForums, XSS, Exploit.in, Telegram channels لاستخدامهم نفس الـ handles, PGP fingerprints, jabber IDs عبر سنوات.</Step>
+            <Step n={2} title="من ملف خبيث">ارفعه على ANY.RUN, Joe Sandbox, Tria.ge, Hatching Triage. دور على: مسارات PDB، تعليقات بلغة معينة، C2 servers، أسماء الـ mutex.</Step>
+            <Step n={3} title="من العملة المشفرة (لو فدية)">Chainalysis, TRM Labs, blockchain.info — اتبع المحفظة. كل mixer بيضعّف الإخفاء شوية، بس مش بيلغيه.</Step>
+            <Step n={4} title="من نشاط على المنتديات">راقب BreachForums, XSS, Exploit.in, Telegram channels — هما بيستخدموا نفس الـ handles ونفس PGP fingerprints وjabber IDs على مدار سنين.</Step>
           </Section>
-          <Section title="مشاركة و استهلاك Threat Intelligence">
+          <Section title="مشاركة واستهلاك الـ Threat Intelligence">
             <ul>
               <li><b>MISP</b> — منصة مفتوحة لمشاركة IOCs/TTPs.</li>
-              <li><b>STIX/TAXII</b> — معايير صيغة و نقل.</li>
+              <li><b>STIX/TAXII</b> — معايير الصيغة والنقل.</li>
               <li><b>المصادر</b>: AlienVault OTX, Mandiant Advantage, Recorded Future, MS Threat Intel, CISA AIS.</li>
-              <li>جدول CISA KEV — ثغرات تُستغل فعلياً، رتّب الترقيع بحسبه.</li>
+              <li>جدول CISA KEV — ثغرات بتتستغل فعلياً، رتب أولويات الترقيع منه.</li>
             </ul>
           </Section>
-          <Section title="ماذا تستطيع و ماذا لا تستطيع كـ White Hat">
-            <Callout kind="danger" title="ما يُمنع قانونياً">
+          <Section title="إنت كـ White Hat تقدر تعمل إيه ومتقدرش تعمل إيه">
+            <Callout kind="danger" title="ممنوع قانونياً">
               <ul>
-                <li>اختراق سيرفر المهاجم (hack-back) — مخالف للقانون في معظم الدول.</li>
-                <li>تنفيذ DoS على بنيته.</li>
-                <li>التظاهر بشخصيته.</li>
+                <li>تخترق سيرفر المهاجم (hack-back) — مخالف للقانون في أغلب الدول.</li>
+                <li>تعمل DoS على بنيته التحتية.</li>
+                <li>تتنكر بشخصيته.</li>
               </ul>
             </Callout>
-            <Callout kind="good" title="ما يُسمح به">
+            <Callout kind="good" title="مسموح">
               <ul>
-                <li>جمع كل المعلومات من OSINT و سجلاتك.</li>
-                <li>التواصل مع CERT الوطني و جهات إنفاذ القانون.</li>
-                <li>طلب إنزال البنية التحتية للمهاجم عبر registrars / hosting providers (abuse@ + spamhaus / shadowserver).</li>
-                <li>مشاركة IOCs مع المجتمع لمنع ضحايا آخرين.</li>
+                <li>تجمع كل المعلومات من OSINT ومن السجلات بتاعتك.</li>
+                <li>تتواصل مع CERT الوطني وجهات إنفاذ القانون.</li>
+                <li>تطلب إنزال البنية التحتية للمهاجم عن طريق الـ registrars / hosting providers (abuse@ + spamhaus / shadowserver).</li>
+                <li>تشارك IOCs مع المجتمع عشان تحمي ضحايا تانيين.</li>
               </ul>
             </Callout>
           </Section>
-          <Section title="إن استطعت الوصول لبنية المهاجم بإذن قانوني">
-            <p>تحت أمر قضائي / تنسيق مع CERT وطني، قد تتمكن جهة إنفاذ القانون من الاستيلاء على سيرفر C2. عند ذلك يجب:</p>
+          <Section title="لو وصلت لبنية المهاجم بإذن قانوني">
+            <p>تحت أمر قضائي أو بتنسيق مع CERT وطني، جهة إنفاذ القانون ممكن تستولي على سيرفر C2. ساعتها لازم:</p>
             <ol>
-              <li>الحفاظ على سلسلة الحفظ (chain of custody) — كل لمسة موثقة.</li>
-              <li>عمل forensic image كاملة قبل أي شيء.</li>
-              <li>تحليل قاعدة الضحايا، استرجاع البيانات المسروقة، إخطار المتأثرين.</li>
-              <li>تحويل الـ C2 إلى sinkhole لتجميع المؤشرات (مع تنسيق دولي).</li>
+              <li>تحافظ على سلسلة الحفظ (chain of custody) — كل لمسة موثقة.</li>
+              <li>تاخد forensic image كاملة قبل أي حاجة.</li>
+              <li>تحلل قاعدة الضحايا، تسترجع البيانات المسروقة، تبلغ المتأثرين.</li>
+              <li>تحول الـ C2 لـ sinkhole عشان تجمع المؤشرات (بتنسيق دولي).</li>
             </ol>
           </Section>
           <Section title="مثال تطبيقي مختصر">
             <ol>
-              <li><b>الهجوم</b>: phishing → macro → Cobalt Strike beacon → privesc → domain admin → exfil عبر MEGA.</li>
-              <li><b>الكشف</b>: Sysmon رصد winword.exe → powershell.exe -enc؛ تنبيه Sentinel.</li>
-              <li><b>الاحتواء</b>: عزل الجهاز عبر Defender؛ إبطال tokens؛ حظر دومين الـ C2.</li>
+              <li><b>الهجوم</b>: phishing → macro → Cobalt Strike beacon → privesc → domain admin → exfil على MEGA.</li>
+              <li><b>الكشف</b>: Sysmon شاف winword.exe → powershell.exe -enc؛ Sentinel رفع تنبيه.</li>
+              <li><b>الاحتواء</b>: عزل الجهاز عبر Defender؛ إلغاء الـ tokens؛ بلوك دومين الـ C2.</li>
               <li><b>التتبع</b>: بصمة JA3 + ميتاداتا الـ payload طابقت FIN7.</li>
-              <li><b>التتبع الموسع</b>: Canarytoken داخل ملف وهمي تم تنزيله — أعطى IP حقيقياً قبل دخوله الـ VPN.</li>
-              <li><b>التقرير</b>: مشاركة الـ IOCs في MISP مع CERT.</li>
+              <li><b>تتبع موسع</b>: Canarytoken جوه ملف وهمي اتنزل — كشف الـ IP الحقيقي قبل ما المهاجم يدخل VPN.</li>
+              <li><b>التقرير</b>: شاركنا الـ IOCs في MISP مع الـ CERT.</li>
             </ol>
           </Section>
         </>}

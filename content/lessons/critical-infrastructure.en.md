@@ -37,15 +37,17 @@ Patching is rare. Devices run for 20+ years. A 5-second restart can shut down a 
 
 ### Network architecture (Purdue model)
 
+```terminal
+[ LEVEL 5: ENTERPRISE (INTERNET) ]
+[ LEVEL 4: SITE BUSINESS OPS     ]
+─────────── [ DMZ / FIREWALL ] ───────────
+[ LEVEL 3: SITE OPERATIONS       ]
+[ LEVEL 2: SUPERVISORY (SCADA/HMI)]
+[ LEVEL 1: CONTROLLERS (PLC/RTU) ]
+[ LEVEL 0: PHYSICAL PROCESS      ]
 ```
-Level 5  Enterprise (corporate IT, internet)
-Level 4  Site business
-─── DMZ ───
-Level 3  Site operations (historian, MES)
-Level 2  Supervisory (HMI, SCADA, engineering workstations)
-Level 1  Controllers (PLC, RTU, IED)
-Level 0  Physical process (sensors, actuators)
-```
+
+![Purdue Model Architecture](/images/lessons/purdue_model_en.png)
 
 Adversary path: phish a Level-5 user → pivot through DMZ → reach engineering workstation at L2 → push logic to L1 PLCs.
 

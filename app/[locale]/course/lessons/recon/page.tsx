@@ -6,23 +6,23 @@ export default function Page() {
     <LessonShell slug="recon">
       <L
         ar={<>
-          <Section title="ما هو الاستطلاع و لماذا 70% من نجاح الهجوم يعتمد عليه؟">
-            <p>الاستطلاع (Reconnaissance) هو مرحلة جمع المعلومات قبل أي محاولة اختراق. كلما عرفت أكثر عن الهدف، كلما زادت احتمالية نجاحك دون أن يلاحظك أحد.</p>
-            <Analogy>تخيل لصاً ذكياً يريد سرقة بنك. لن يدخل في اليوم الأول. سيجلس في المقهى المقابل أسبوعاً كاملاً يراقب: متى يأتي الموظفون؟ من يحمل المفاتيح؟ متى تأتي شاحنة النقود؟ هذه بالضبط مهمة الاستطلاع.</Analogy>
+          <Section title="هو إحنا بنعمل Recon ليه أصلاً؟ و ليه 70% من نجاح الهجوم بيتقرر هنا؟">
+            <p>الـ Reconnaissance ببساطة هو إنك تعرف خصمك قبل ما تلمسه. كل ما تجمع معلومات أكتر، كل ما فرصتك تخش من غير ما حد يحس بيك بتزيد. أي حد بيقفز على المرحلة دي بيحرق نفسه.</p>
+            <Analogy>تخيل حرامي محترم بيخطط لسرقة بنك. مش هيدخل أول يوم — هيقعد على القهوة اللي قصاده أسبوع كامل يراقب: الموظفين بييجوا إمتى؟ مين اللي ماسك المفاتيح؟ عربية الفلوس بتنزل الساعة كام؟ ده بالظبط شغلنا في الـ Recon.</Analogy>
           </Section>
-          <Section title="نوعا الاستطلاع">
+          <Section title="نوعين Recon — اعرف الفرق قبل ما تتحرك">
             <TwoCol>
-              <Card title="استطلاع سلبي — Passive" color="amber">بدون لمس الهدف مباشرة. تستخدم محركات بحث، أرشيفات، و قواعد بيانات عامة. الهدف لا يرى أي طلب منك. <b>الأكثر خفاءً</b>.</Card>
-              <Card title="استطلاع نشط — Active" color="red">ترسل طلبات مباشرة للهدف (DNS, HTTP, ports). أسرع و أدقّ، لكن قد يظهر في سجلات الهدف.</Card>
+              <Card title="Passive — استطلاع سلبي" color="amber">من غير ما تلمس الهدف خالص. بتعتمد على محركات بحث و أرشيفات و قواعد بيانات مفتوحة. الهدف مش شايف أي request منك. <b>دي أهدى سكة</b>.</Card>
+              <Card title="Active — استطلاع نشط" color="red">بتبعت requests مباشرة للهدف (DNS, HTTP, ports). أسرع و أدق، بس ممكن يظهر في الـ logs بتاعته.</Card>
             </TwoCol>
           </Section>
-          <Section title="OSINT — الاستخبارات من المصادر المفتوحة">
+          <Section title="OSINT — الذهب اللي مرمي في الشارع">
             <h3>1. معلومات المؤسسة</h3>
             <ul>
-              <li><b>WHOIS</b> — مالك الدومين، تاريخ التسجيل، إيميل المسؤول.</li>
-              <li><b>crt.sh</b> — كل الشهادات SSL الصادرة → كشف الـ subdomains.</li>
-              <li><b>Shodan / Censys / FOFA</b> — محركات بحث لكل جهاز متصل بالإنترنت.</li>
-              <li><b>Wayback Machine</b> — نسخ قديمة من الموقع تكشف endpoints محذوفة.</li>
+              <li><b>WHOIS</b> — صاحب الدومين، تاريخ التسجيل، إيميل المسؤول.</li>
+              <li><b>crt.sh</b> — كل شهادة SSL اتطلعت باسم الشركة → بتفضح الـ subdomains.</li>
+              <li><b>Shodan / Censys / FOFA</b> — محركات بحث لأي جهاز متصل بالنت.</li>
+              <li><b>Wayback Machine</b> — نسخ قديمة من الموقع بتكشف endpoints اتشالت.</li>
             </ul>
             <Terminal lines={[
               { p: "whois target.gov" },
@@ -31,19 +31,19 @@ export default function Page() {
             ]} />
             <h3>2. معلومات الموظفين</h3>
             <ul>
-              <li>LinkedIn — هيكل الشركة، أسماء، تقنيات يستخدمونها.</li>
+              <li>LinkedIn — هيكل الشركة، أسامي، التكنولوجيا اللي شغالين بيها.</li>
               <li>Hunter.io / EmailRep — إيميلات الموظفين.</li>
-              <li>GitHub / GitLab — كود مسرّب، مفاتيح API، أسرار في الـ commits.</li>
-              <li>HaveIBeenPwned / Dehashed — تسريبات سابقة لكلمات مرور الموظفين.</li>
+              <li>GitHub / GitLab — كود متسرب، مفاتيح API، أسرار نسيها حد في الـ commits.</li>
+              <li>HaveIBeenPwned / Dehashed — تسريبات passwords قديمة لموظفين الشركة.</li>
             </ul>
-            <Code lang="GitHub Dorks">{`# ابحث عن أسرار مسرّبة في GitHub
+            <Code lang="GitHub Dorks">{`# دور على أسرار متسربة في GitHub
 "target.gov" password
 "target.gov" filename:.env
 "target.gov" AKIA  # AWS keys
 org:target-gov filename:config.yml`}</Code>
           </Section>
-          <Section title="تعداد الـ Subdomains — قلب الاستطلاع للويب">
-            <p>كل subdomain = سطح هجوم جديد. غالباً ما يكون الـ staging.target.com أو old.target.com أضعف من الموقع الرئيسي.</p>
+          <Section title="Subdomain Enumeration — قلب الـ Web Recon">
+            <p>كل subdomain = سطح هجوم جديد. غالباً الـ staging.target.com أو old.target.com بيكون أضعف بكتير من الموقع الرئيسي — اللي محدش فاكره هو اللي بيتحرق.</p>
             <Terminal lines={[
               { p: "subfinder -d target.gov -all -silent | tee subs.txt" },
               { p: "amass enum -passive -d target.gov >> subs.txt" },
@@ -51,28 +51,28 @@ org:target-gov filename:config.yml`}</Code>
               { p: "sort -u subs.txt | httpx -silent -title -tech-detect -status-code" },
               { o: "https://api.target.gov [200] [API Gateway] [nginx]\nhttps://staging.target.gov [403] [WordPress 5.8]\nhttps://vpn.target.gov [200] [Fortinet SSL VPN]" },
             ]} />
-            <Callout kind="info" title="لماذا تستخدم عدة أدوات؟">كل أداة تستخدم مصادر مختلفة. الجمع بينها يكشف 30-50% أكثر من الـ subdomains.</Callout>
+            <Callout kind="info" title="ليه أكتر من أداة؟">كل أداة بتسحب من مصادر مختلفة. لما تجمعهم بتكشف 30-50% subdomains زيادة. اللي بيكتفي بأداة واحدة بيسيب نص الهدف ورا ضهره.</Callout>
           </Section>
-          <Section title="تتبع التقنيات — Tech Fingerprinting">
+          <Section title="Tech Fingerprinting — اعرف الخصم بيلبس إيه">
             <ul>
-              <li><b>Wappalyzer</b> / <b>WhatWeb</b> — يحدد إطار العمل، الإصدار، الـ CDN.</li>
-              <li><b>BuiltWith</b> — يبيّن مزود الاستضافة و البريد.</li>
-              <li><b>favicon hash</b> — بصمة فريدة قد تكشف منتجات داخلية شائعة.</li>
+              <li><b>Wappalyzer</b> / <b>WhatWeb</b> — بيحدد الـ framework و الإصدار و الـ CDN.</li>
+              <li><b>BuiltWith</b> — بيقولك الاستضافة و مزود الإيميل.</li>
+              <li><b>favicon hash</b> — بصمة فريدة بتفضح منتجات داخلية معروفة.</li>
             </ul>
             <Terminal lines={[
               { p: "whatweb https://target.gov" },
               { o: "nginx[1.24], WordPress[6.2], jQuery[3.6], PHP[8.1]" },
             ]} />
           </Section>
-          <Section title="الدفاع: كيف تجعل الاستطلاع صعباً عليه؟">
+          <Section title="الدفاع: خلي الـ Recon يبقى صداع للمهاجم">
             <ul>
-              <li>أخفِ الـ subdomains الداخلية خلف Cloudflare / WAF و امنع DNS zone transfer.</li>
-              <li>راقب crt.sh لشهادات جديدة تُصدر باسمك (مؤشر استطلاع).</li>
-              <li>افحص GitHub دورياً بـ truffleHog / gitleaks لمنع تسريب الأسرار.</li>
-              <li>درّب الموظفين: لا تنشر تفاصيل التقنيات في LinkedIn / Stack Overflow.</li>
-              <li>راقب User-Agents لأدوات الاستطلاع المعروفة (httpx, nuclei) و سجّلها في SIEM.</li>
+              <li>اخفي الـ subdomains الداخلية ورا Cloudflare / WAF و اقفل الـ DNS zone transfer.</li>
+              <li>راقب crt.sh لو شهادة جديدة طلعت باسمك — ده مؤشر إن حد بيتفرج عليك.</li>
+              <li>اعمل scan دوري على GitHub بـ truffleHog / gitleaks قبل ما الأسرار تتسرب.</li>
+              <li>درّب الناس: بلاش تفاصيل الـ stack تتنشر على LinkedIn و Stack Overflow.</li>
+              <li>راقب User-Agents لأدوات الـ Recon المشهورة (httpx, nuclei) و سجلها في الـ SIEM.</li>
             </ul>
-            <Callout kind="good" title="معلومة">Canary tokens في الـ DNS تعطيك إنذاراً مبكراً عند بدء الاستطلاع.</Callout>
+            <Callout kind="good" title="نصيحة ناشفة">حط Canary tokens في الـ DNS — هتعرف إن حد بدأ يتلصص عليك من أول لحظة.</Callout>
           </Section>
         </>}
         en={<>

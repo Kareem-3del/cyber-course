@@ -6,10 +6,10 @@ export default function Page() {
     <LessonShell slug="linux-fundamentals">
       <L
         ar={<>
-          <Section title="لماذا Linux أولاً">
-            <p>كل أداة هجومية ودفاعية مهمة تعمل على Linux. Kali، Parrot، خوادم الإنترنت، الكثير من ICS، الحاويات، Android تحت كل شيء. لا يمكنك أن تكون مختصاً في الأمن دون إتقان Linux command line.</p>
-            <Callout kind="info" title="الهدف">
-              بعد هذا الدرس ستفهم: نظام الملفات، الصلاحيات، العمليات، الشبكة، والأوامر التي تستخدمها يومياً في الـ pentest.
+          <Section title="ليه Linux الأول قبل أي حاجة؟">
+            <p>كل أداة هجومية ودفاعية مهمة بتشتغل على Linux. Kali، Parrot، سيرفرات الإنترنت، معظم ICS، الـ containers، وحتى Android تحته Linux. ما تقدرش تبقى محترف أمن من غير ما تبقى مرتاح في الـ command line.</p>
+            <Callout kind="info" title="الهدف من الدرس">
+              بعد ما تخلّصه هتفهم: الـ filesystem، الصلاحيات، العمليات، الشبكة، والأوامر اللي هتكتبها كل يوم في أي pentest.
             </Callout>
           </Section>
 
@@ -43,8 +43,8 @@ export default function Page() {
             ]} />
           </Section>
 
-          <Section title="الصلاحيات — أهم مفهوم">
-            <p>كل ملف له ثلاث مجموعات صلاحيات: المالك، المجموعة، الجميع. ولكل مجموعة ثلاث أحرف: <span className="eng">r</span> قراءة، <span className="eng">w</span> كتابة، <span className="eng">x</span> تنفيذ.</p>
+          <Section title="الصلاحيات — أهم مفهوم تفهمه">
+            <p>كل ملف ليه تلات مجموعات صلاحيات: المالك، الجروب، باقي الناس. وكل مجموعة ليها تلات حروف: <span className="eng">r</span> قراءة، <span className="eng">w</span> كتابة، <span className="eng">x</span> تنفيذ. بسيطة لما تستوعبها، خطيرة لما تتجاهلها.</p>
             <Code lang="text">{`-rwxr-xr--  1 alice  staff  120 Apr 30 10:15 script.sh
  │└┬┘└┬┘└┬┘
  │ │  │  └── الجميع: قراءة فقط

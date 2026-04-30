@@ -7,15 +7,16 @@ export default function Page() {
       <L
         ar={<>
           <Section title="مبدأ الدفاع المتعدد الطبقات — Defense in Depth">
-            <Analogy>القلعة في العصور الوسطى لم تعتمد على جدار واحد. كان هناك خندق، ثم سور خارجي، ثم سور داخلي، ثم برج رئيسي، ثم حرّاس. لو سقطت طبقة، تصمد التي تليها. هذا هو <b>Defense in Depth</b>.</Analogy>
+            <Analogy>القلعة في العصور الوسطى ما كانتش بتعتمد على سور واحد. خندق، سور برّاني، سور جوّاني، برج رئيسي، وحرّاس. لو طبقة وقعت، اللي بعدها بتمسك. ده بالظبط <b>Defense in Depth</b>.</Analogy>
+            <p>القاعدة هنا بسيطة: ما تحطش كل بيضك في سلة واحدة. أي طبقة هتفشل يوم ما، وانت عايز اللي بعدها تكون جاهزة.</p>
           </Section>
-          <Section title="مبادئ ذهبية">
+          <Section title="مبادئ ذهبية — احفظهم زي اسمك">
             <ol>
-              <li><b>Least Privilege</b> — أقل صلاحية ممكنة لكل مستخدم و خدمة.</li>
-              <li><b>Zero Trust</b> — لا تثق بأي شخص أو شبكة، تحقق دائماً.</li>
-              <li><b>Assume Breach</b> — افترض أنك مخترق، و خطّط للكشف و الاحتواء.</li>
-              <li><b>Defense in Depth</b> — طبقات متعددة و متنوعة.</li>
-              <li><b>Secure by Default</b> — التكوين الافتراضي آمن.</li>
+              <li><b>Least Privilege</b> — أقل صلاحية ممكنة لكل مستخدم وخدمة. لو الـ app محتاج يقرا بس، ما تديهوش write.</li>
+              <li><b>Zero Trust</b> — ما تثقش في حد ولا في شبكة، تحقق في كل مرة. حتى الجهاز اللي جوّه الـ corporate LAN.</li>
+              <li><b>Assume Breach</b> — افترض إنك متخرق دلوقتي، واشتغل على الكشف والاحتواء.</li>
+              <li><b>Defense in Depth</b> — طبقات كتير ومتنوعة، مش نفس النوع مكرر.</li>
+              <li><b>Secure by Default</b> — الإعداد الافتراضي يكون آمن، الناس مش بتقرا الـ docs.</li>
             </ol>
           </Section>
           <Section title="تصلب نظام Linux">
@@ -38,11 +39,11 @@ ufw allow from 10.0.0.0/8 to any port 22
 # 7) AppArmor / SELinux في وضع enforcing
 # 8) تعطيل خدمات غير مستخدمة
 # 9) blacklist usb-storage`}</Code>
-            <Callout kind="info" title="معايير قابلة للقياس">
+            <Callout kind="info" title="معايير قابلة للقياس — ما تخترعش العجلة">
               <ul>
-                <li>CIS Benchmarks — نقاط محددة بالتفصيل لكل توزيعة.</li>
-                <li>DISA STIGs — معايير وزارة الدفاع الأمريكية.</li>
-                <li>أتمها بـ OpenSCAP / Lynis / Wazuh SCA.</li>
+                <li>CIS Benchmarks — نقاط مفصّلة لكل توزيعة، حد قعد سنين يكتبها.</li>
+                <li>DISA STIGs — معايير وزارة الدفاع الأمريكية، أصرم شوية.</li>
+                <li>أتمتها بـ OpenSCAP / Lynis / Wazuh SCA — مفيش سبب تعمل المسح يدوي.</li>
               </ul>
             </Callout>
           </Section>

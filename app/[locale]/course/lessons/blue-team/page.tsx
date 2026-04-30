@@ -21,14 +21,14 @@ export default function Page() {
           <div>
             <div className="chip chip-blue"><T ar="Blue Team — مسار الدفاع" en="Blue Team — Defensive Track" /></div>
             <h1 className="text-2xl md:text-3xl font-extrabold mt-2">
-              <T ar="بناء حصن متعدد الطبقات يكشف و يستجيب بسرعة"
+              <T ar="ابني حصن متعدد الطبقات يكشف ويرد بسرعة"
                  en="Build a layered fortress that detects and responds fast" />
             </h1>
           </div>
         </div>
         <p className="text-mute leading-relaxed max-w-3xl">
           <T
-            ar="المدافع الناجح هو من يفترض أنه مخترق من اليوم الأول، فيبني طبقات الكشف و الاستجابة قبل الحاجة إليها. هذا المسار يغطي التصلب، الكشف عبر SIEM/EDR، و دورة الاستجابة للحوادث الكاملة وفق معايير NIST."
+            ar="المدافع الشاطر هو اللي بيفترض إنه متخرق من أول يوم، فبيبني طبقات الكشف والاستجابة قبل ما يحتاجها. المسار ده بيغطي التصلب، والكشف عن طريق SIEM/EDR، ودورة الاستجابة للحوادث كاملة على معيار NIST."
             en="A successful defender assumes breach from day one and builds detection and response layers before they're needed. This track covers hardening, SIEM/EDR detection engineering, and the full NIST incident response lifecycle."
           />
         </p>

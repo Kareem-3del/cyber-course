@@ -7,15 +7,15 @@ export default function Page() {
       <L
         ar={<>
           <Section title="لماذا Node.js مختلف عن PHP/Java أمنياً">
-            <p>Node.js يشغّل JavaScript على الخادم. JavaScript لغة <b>دينامية للغاية</b> — كل object قابل للتعديل، كل property قابلة للتجاوز. هذا يفتح فئات هجمات لا توجد في Java أو Go: prototype pollution، NoSQL injection، التلاعب بالـ <span className="eng">require()</span>، الـ deserialization عبر JSON.</p>
-            <Analogy>كمنزل ذكي حيث كل جدار قابل للحركة. مرونة عظيمة، لكن لو عرف الزائر كيف يحرّك الجدران، يصل لكل غرفة. Java كمبنى من الإسمنت — أصعب اختراقاً، أصعب تطويراً.</Analogy>
+            <p>Node.js بيشغّل JavaScript على السيرفر. وJavaScript لغة <b>ديناميكية لأقصى درجة</b> — كل object قابل للتعديل، وكل property ممكن تتعدّى عليها. ده بيفتح فئات هجمات مش موجودة أصلاً في Java أو Go: prototype pollution، NoSQL injection، التلاعب بـ <span className="eng">require()</span>، deserialization عن طريق JSON.</p>
+            <Analogy>تخيل بيت ذكي كل حيطانه بتتحرّك. مرونة جامدة، بس لو الزائر فهم إزاي يحرّكها، هيوصل لكل أوضة. Java زي مبنى أسمنت مسلّح — صعب تخش، صعب تبني فيه.</Analogy>
             <Callout kind="danger" title="تحذير قانوني">
-              كل أمثلة الاستغلال أدناه للتدريب في مختبرك أو في pentest مصرّح به. تطبيقها على نظام إنتاج لا تملكه = جريمة CFAA.
+              أمثلة الاستغلال اللي جايّة كلها للتدريب في معملك أو pentest عليه إذن. تشغّلها على نظام إنتاج مش بتاعك = جريمة CFAA.
             </Callout>
           </Section>
 
           <Section title="Prototype Pollution — أم الثغرات في Node">
-            <p>كل object في JS يرث من <span className="eng">Object.prototype</span>. لو استطاع المهاجم كتابة property على هذا الـ prototype، فهي تظهر على <b>كل object في الـ process</b>. النتائج تتدرّج من DoS إلى RCE.</p>
+            <p>كل object في JS بيورّث من <span className="eng">Object.prototype</span>. المهاجم لو قدر يكتب property على الـ prototype ده، الـ property بتطلع على <b>كل object في الـ process</b>. النتايج بتتدرّج من DoS لحد RCE.</p>
             <Code lang="javascript">{`// كود ضعيف — merge عميق ساذج (مثل lodash.merge قبل الإصلاح)
 function merge(target, source) {
   for (const key in source) {
@@ -44,12 +44,12 @@ app.post('/api/profile', (req, res) => {
 }
 
 // بعد هذا، {} في أي مكان في التطبيق يحوي isAdmin === true`}</Code>
-            <Callout kind="info" title="من DoS إلى RCE">
+            <Callout kind="info" title="من DoS لحد RCE">
               <ul>
-                <li><b>DoS</b> — اكتب <span className="eng">__proto__.toString = null</span> → كل <span className="eng">String(x)</span> ينهار.</li>
-                <li><b>Auth bypass</b> — اكتب <span className="eng">isAdmin: true</span> → كل user object يصبح admin.</li>
-                <li><b>RCE</b> — لو التطبيق يستخدم <span className="eng">child_process.spawn</span> مع <span className="eng">{`{shell: true}`}</span> و options object يأتي من merge، استخدم <span className="eng">__proto__.shell</span> للتحكّم في shell command.</li>
-                <li><b>RCE عبر Express</b> — Express يستخدم <span className="eng">res.render(view, locals)</span>. تلوّث <span className="eng">__proto__.outputFunctionName</span> في bug شهير في pug/handlebars يعطي RCE.</li>
+                <li><b>DoS</b> — تكتب <span className="eng">__proto__.toString = null</span> → أي <span className="eng">String(x)</span> هيقع.</li>
+                <li><b>Auth bypass</b> — تكتب <span className="eng">isAdmin: true</span> → كل user object بيبقى admin.</li>
+                <li><b>RCE</b> — لو التطبيق بيستخدم <span className="eng">child_process.spawn</span> مع <span className="eng">{`{shell: true}`}</span> والـ options جايّة من merge، تلوّث <span className="eng">__proto__.shell</span> وتتحكّم في الـ shell command.</li>
+                <li><b>RCE عن طريق Express</b> — Express بينادي <span className="eng">res.render(view, locals)</span>. التلوّث على <span className="eng">__proto__.outputFunctionName</span> في bug مشهور بـ pug/handlebars بيدّيك RCE.</li>
               </ul>
             </Callout>
             <Code lang="javascript">{`// CVE-2019-10744 (lodash) — مثال PoC للـ RCE عبر pug
@@ -67,17 +67,17 @@ fetch('/api/profile', {
 });`}</Code>
             <Callout kind="good" title="الدفاع">
               <ul>
-                <li>استخدم <span className="eng">Object.create(null)</span> للـ maps المفتوحة من user input.</li>
-                <li>افحص keys: ارفض <span className="eng">__proto__</span>، <span className="eng">constructor</span>، <span className="eng">prototype</span>.</li>
-                <li>استخدم <span className="eng">Map</span> بدل plain objects لـ user-keyed data.</li>
-                <li><span className="eng">--disable-proto=delete</span> flag في Node 20+.</li>
-                <li>حدّث lodash, jQuery, Hoek, set-value — كلها كان لها CVEs.</li>
+                <li>استخدم <span className="eng">Object.create(null)</span> للـ maps اللي بتيجي من user input.</li>
+                <li>افحص الـ keys: ارفض <span className="eng">__proto__</span>، <span className="eng">constructor</span>، <span className="eng">prototype</span>.</li>
+                <li>استخدم <span className="eng">Map</span> بدل plain objects للـ user-keyed data.</li>
+                <li>الـ flag <span className="eng">--disable-proto=delete</span> في Node 20+.</li>
+                <li>حدّث lodash, jQuery, Hoek, set-value — كلها طلعلها CVEs.</li>
               </ul>
             </Callout>
           </Section>
 
           <Section title="SSRF عبر axios / node-fetch / undici">
-            <p>طلب HTTP من الخادم لـ URL يتحكّم به user = SSRF. لكن في Node ميزتان خطرتان: redirect handling تلقائي + DNS rebinding يصلان إلى cloud metadata.</p>
+            <p>طلب HTTP من السيرفر لـ URL متحكّم فيه user = SSRF. وفي Node فيه فخّين: redirect handling تلقائي + DNS rebinding، الاتنين بيوصلوا cloud metadata.</p>
             <Code lang="javascript">{`// كود خطر
 app.get('/fetch-image', async (req, res) => {
   const r = await axios.get(req.query.url, {responseType: 'stream'});
@@ -128,17 +128,17 @@ const { execFile } = require('child_process');
 execFile('ping', ['-c', '4', '--', host], (err, out) => ...);
 // لاحظ '--' لمنع flag injection`}</Code>
             <Callout kind="info" title="فخ شائع">
-              <span className="eng">{`spawn(cmd, args, {shell: true})`}</span> يعيد injection. القاعدة: <b>shell: false دائماً</b> + <b>args array</b> + <b>--</b> لقطع flags.
+              <span className="eng">{`spawn(cmd, args, {shell: true})`}</span> بيرجّعلك الـ injection تاني. القاعدة: <b>shell: false دايماً</b> + <b>args array</b> + <b>--</b> عشان تقطع flags.
             </Callout>
           </Section>
 
           <Section title="Deserialization عبر JSON و serialize-javascript">
-            <p>JSON.parse آمن. لكن مكتبات أخرى تنفّذ كود:</p>
+            <p>JSON.parse آمن. بس مكتبات تانية بتنفّذ كود فعلاً:</p>
             <ul>
-              <li><span className="eng">node-serialize</span> — <span className="eng">unserialize()</span> يقبل <span className="eng">_$$ND_FUNC$$_</span> markers و ينفّذ JS. مهجور لكن لا يزال في كثير من الأنظمة.</li>
-              <li><span className="eng">js-yaml</span> — <span className="eng">yaml.load()</span> القديم يدعم <span className="eng">!!js/function</span>. استخدم <span className="eng">yaml.safeLoad</span> أو <span className="eng">load(s, {`{schema: FAILSAFE_SCHEMA}`})</span>.</li>
-              <li><span className="eng">serialize-javascript</span> CVE-2020-7660 — XSS عبر regex.</li>
-              <li><span className="eng">vm</span> module — <b>ليس sandbox</b>. <span className="eng">this.constructor.constructor("return process")()</span> يهرب.</li>
+              <li><span className="eng">node-serialize</span> — <span className="eng">unserialize()</span> بيقبل markers زي <span className="eng">_$$ND_FUNC$$_</span> وبينفّذ JS. متهجور بس لسه موجود في أنظمة كتير.</li>
+              <li><span className="eng">js-yaml</span> — <span className="eng">yaml.load()</span> القديم بيدعم <span className="eng">!!js/function</span>. استخدم <span className="eng">yaml.safeLoad</span> أو <span className="eng">load(s, {`{schema: FAILSAFE_SCHEMA}`})</span>.</li>
+              <li><span className="eng">serialize-javascript</span> CVE-2020-7660 — XSS من regex.</li>
+              <li><span className="eng">vm</span> module — <b>مش sandbox</b>. <span className="eng">this.constructor.constructor("return process")()</span> بيهرب منه.</li>
             </ul>
             <Code lang="javascript">{`// node-serialize PoC
 {"rce":"_$$ND_FUNC$$_function(){require('child_process').exec('id', (e,o)=>console.log(o))}()"}
@@ -208,21 +208,21 @@ if (!real.startsWith(uploadsRoot)) return res.status(403).end();`}</Code>
 
           <Section title="Express-specific traps">
             <ul>
-              <li><b>express.static + viewEngine</b> — لو static prefix يصل إلى مجلد templates، tampering ممكن.</li>
-              <li><b>req.query parsing</b> — Express يستخدم <span className="eng">qs</span> الذي يدعم arrays و nested objects: <span className="eng">?a[]=1&a[]=2</span>. كود يفترض string قد ينكسر.</li>
-              <li><b>HPP (HTTP Parameter Pollution)</b> — <span className="eng">?id=1&id=2</span> يصبح array. استخدم <span className="eng">hpp</span> middleware.</li>
-              <li><b>Trust proxy misconfig</b> — <span className="eng">app.set('trust proxy', true)</span> الكامل يجعل المهاجم يزوّر <span className="eng">X-Forwarded-For</span> و يتجاوز rate limits / IP allowlists.</li>
-              <li><b>Open redirect</b> — <span className="eng">res.redirect(req.query.next)</span> دون فحص. اقفل على paths نسبية.</li>
-              <li><b>Body size</b> — لا حد افتراضي على JSON body ضخم في بعض إعدادات. ضع <span className="eng">{`express.json({ limit: '100kb' })`}</span>.</li>
+              <li><b>express.static + viewEngine</b> — لو الـ static prefix بيوصل لمجلد الـ templates، فيه تلاعب ممكن.</li>
+              <li><b>req.query parsing</b> — Express بيستخدم <span className="eng">qs</span> اللي بيدعم arrays و nested objects: <span className="eng">?a[]=1&a[]=2</span>. كود بيفترض string هيتكسر.</li>
+              <li><b>HPP (HTTP Parameter Pollution)</b> — <span className="eng">?id=1&id=2</span> بيبقى array. استخدم middleware <span className="eng">hpp</span>.</li>
+              <li><b>Trust proxy misconfig</b> — <span className="eng">app.set('trust proxy', true)</span> الكامل بيخلّي المهاجم يزوّر <span className="eng">X-Forwarded-For</span> ويعدّي rate limits / IP allowlists.</li>
+              <li><b>Open redirect</b> — <span className="eng">res.redirect(req.query.next)</span> من غير فحص. قفّل على paths نسبية بس.</li>
+              <li><b>Body size</b> — مفيش حد افتراضي على JSON body كبير في بعض الإعدادات. حط <span className="eng">{`express.json({ limit: '100kb' })`}</span>.</li>
             </ul>
           </Section>
 
           <Section title="Supply chain — npm كسلاح">
             <ul>
               <li><b>Typosquatting</b> — <span className="eng">expresss</span>, <span className="eng">colorss</span>, <span className="eng">crossenv</span>.</li>
-              <li><b>Dependency confusion</b> — حزمة internal باسم مطابق على npm العام.</li>
+              <li><b>Dependency confusion</b> — حزمة عامة بنفس اسم حزمة داخلية عندك.</li>
               <li><b>Compromised maintainer</b> — event-stream (2018), ua-parser-js (2021), node-ipc (2022 protestware).</li>
-              <li><b>postinstall scripts</b> — تنفّذ تلقائياً عند <span className="eng">npm install</span>. خاصة على CI.</li>
+              <li><b>postinstall scripts</b> — بتشتغل لوحدها مع <span className="eng">npm install</span>. خصوصاً على CI.</li>
             </ul>
             <Code lang="bash">{`# الدفاع
 npm config set ignore-scripts true            # امنع postinstall افتراضياً
@@ -275,11 +275,11 @@ app.use(session({
 
           <Section title="أدوات الفحص">
             <ul>
-              <li><b>npm audit / pnpm audit</b> — أوّل خط.</li>
-              <li><b>Semgrep</b> مع <span className="eng">p/javascript</span> و <span className="eng">p/nodejs</span> ruleset — يكشف eval, child_process, prototype pollution sinks.</li>
-              <li><b>CodeQL</b> — أعمق analysis، query suite للـ JS.</li>
+              <li><b>npm audit / pnpm audit</b> — أول خط دفاع.</li>
+              <li><b>Semgrep</b> مع ruleset <span className="eng">p/javascript</span> و <span className="eng">p/nodejs</span> — بيصطاد eval, child_process, prototype pollution sinks.</li>
+              <li><b>CodeQL</b> — تحليل أعمق، فيه query suite كامل للـ JS.</li>
               <li><b>NodeJsScan</b> — فحص ثابت سريع.</li>
-              <li><b>Burp Suite</b> + <span className="eng">prototype-pollution-finder</span> extension.</li>
+              <li><b>Burp Suite</b> + extension <span className="eng">prototype-pollution-finder</span>.</li>
               <li><b>OWASP ZAP</b> + active scanner للـ NoSQLi.</li>
             </ul>
           </Section>

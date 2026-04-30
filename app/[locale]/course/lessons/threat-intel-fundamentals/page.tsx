@@ -6,30 +6,30 @@ export default function Page() {
     <LessonShell slug="threat-intel-fundamentals">
       <L
         ar={<>
-          <Section title="ما هي Threat Intelligence">
-            <p>الـ CTI (Cyber Threat Intelligence) ليس قائمة IPs. هو <b>معرفة قابلة للتنفيذ</b> تجيب: من يستهدفنا؟ كيف؟ ماذا نفعل؟ تحوّل البيانات الخام إلى قرارات.</p>
-            <Analogy>الـ CTI كقسم استخبارات في جيش. الأقمار الصناعية تجمع بيانات (raw)، المحلّلون يحوّلونها لـ "خصمك يحرّك دبّابتين على الجبهة الشمالية" (intel). القائد يقرّر: نعزّز الجبهة الشمالية أم نتجاهل؟</Analogy>
+          <Section title="إيه هي الـ Threat Intelligence أصلاً؟">
+            <p>الـ CTI مش لستة IPs. هو <b>معرفة قابلة للتنفيذ</b> بترد على: مين بيستهدفنا؟ إزاي؟ نعمل إيه؟ بيحوّل الداتا الخام لقرارات. اللي بيخلط بين الاتنين بيدفن نفسه تحت feeds مفيش منها فايدة.</p>
+            <Analogy>الـ CTI زي قسم الاستخبارات في الجيش. الأقمار بتجمع داتا خام، المحللين بيحوّلوها لـ "العدو حرّك دبابتين على الجبهة الشمالية". القائد بيقرر: نعزّز الجبهة دي ولا نتجاهل؟ مفيش معنى للداتا من غير ما حد ياخد قرار عليها.</Analogy>
           </Section>
 
-          <Section title="مستويات الـ Intel">
+          <Section title="مستويات الـ Intel — كل واحد لجمهوره">
             <TwoCol>
               <Card title="Strategic" color="blue">
-                للقيادة. لا تقني. "هل ينبغي أن نقلق من APT41 هذا الربع؟". مدى زمني: شهور–سنوات.
+                للقيادة. مش تقني. "نقلق من APT41 الربع ده ولا لأ؟". المدى الزمني: شهور لسنين.
               </Card>
               <Card title="Operational" color="amber">
-                للمدراء و leads الـ SOC. "حملة جديدة من Volt Typhoon تستهدف الطاقة بـ TTPs X و Y". مدى: أسابيع–شهور.
+                للمدراء و SOC leads. "حملة جديدة من Volt Typhoon بتضرب الطاقة بـ TTPs كذا و كذا". المدى: أسابيع لشهور.
               </Card>
               <Card title="Tactical" color="red">
-                للمحلّلين. "FIN12 يستخدم Cobalt Strike مع SMB beacon على :445". مدى: أيام–أسابيع.
+                للمحللين. "FIN12 بيستخدم Cobalt Strike مع SMB beacon على :445". المدى: أيام لأسابيع.
               </Card>
               <Card title="Technical" color="green">
-                للأدوات. "هذه الـ hashes/IPs/domains. ابلوكها". مدى: ساعات–أيام (تتقادم بسرعة).
+                للأدوات. "الـ hashes/IPs/domains دي — اقفلها". المدى: ساعات لأيام (بتموت بسرعة).
               </Card>
             </TwoCol>
           </Section>
 
-          <Section title="The Pyramid of Pain — لماذا ليست كل IOCs متساوية">
-            <p>من David Bianco. ترتّب IOCs بمدى صعوبة تغييرها على المهاجم:</p>
+          <Section title="The Pyramid of Pain — مش كل IOC زي التانية">
+            <p>الـ pyramid من David Bianco. بترتب الـ IOCs حسب صعوبة تغييرها على المهاجم:</p>
             <Code lang="text">{`            ┌─────────────┐
             │   TTPs      │  ← تغييرها يكلّف المهاجم أسابيع و إعادة بناء
             ├─────────────┤
@@ -44,13 +44,13 @@ export default function Page() {
             ├─────────────┤
             │ Hash Values │  ← ثواني (يغيّر byte واحد)
             └─────────────┘`}</Code>
-            <Callout kind="info" title="الدرس">
-              لا تطارد hashes فقط. الكشف الأقوى على <b>TTPs</b>: "process tree حيث Word يولّد PowerShell" أكثر قيمة من "block hash X".
+            <Callout kind="info" title="الخلاصة">
+              متجريش ورا الـ hashes بس — ده شغل بدون أمل. الـ detection الجامد بيبقى على الـ <b>TTPs</b>: "process tree فيها Word بيفتح PowerShell" أقوى بكتير من "block hash X".
             </Callout>
           </Section>
 
-          <Section title="Diamond Model — كيف تنظّم تحليل حادث">
-            <p>كل حادث يُحلّل عبر 4 رؤوس Diamond:</p>
+          <Section title="Diamond Model — هيكل تحليل أي حادث">
+            <p>كل حادث بيتفك على 4 رؤوس في الـ Diamond:</p>
             <Code lang="text">{`              [Adversary]
                   |
                   |
@@ -59,18 +59,18 @@ export default function Page() {
                   |
                [Victim]`}</Code>
             <ul>
-              <li><b>Adversary</b> — من؟ (APT29 / Lazarus / criminal group / unknown).</li>
-              <li><b>Capability</b> — ماذا؟ (malware, exploits, social engineering).</li>
-              <li><b>Infrastructure</b> — من أين؟ (C2 servers, phishing domains).</li>
-              <li><b>Victim</b> — على من؟ (sectors, geographies, specific orgs).</li>
+              <li><b>Adversary</b> — مين؟ (APT29 / Lazarus / criminal group / unknown).</li>
+              <li><b>Capability</b> — إيه؟ (malware, exploits, social engineering).</li>
+              <li><b>Infrastructure</b> — منين؟ (C2 servers, phishing domains).</li>
+              <li><b>Victim</b> — على مين؟ (sectors, geographies, specific orgs).</li>
             </ul>
-            <p>أي حادث ابدأ بثلاثة معروفة و pivot للرابعة. مثال: لديك Capability (mimikatz) + Infrastructure (C2 IP) + Victim (your org). Pivot للـ Adversary عبر CTI feeds.</p>
+            <p>في أي حادث، ابدأ بـ 3 رؤوس معروفة و pivot للرابع. مثال: عندك Capability (mimikatz) + Infrastructure (C2 IP) + Victim (شركتك). pivot على الـ Adversary عن طريق الـ CTI feeds.</p>
           </Section>
 
-          <Section title="STIX & TAXII — اللغة الموحدة">
+          <Section title="STIX و TAXII — اللغة الموحدة">
             <ul>
-              <li><b>STIX 2.1</b> — JSON schema لتمثيل intel: indicators, malware, threat actors, attack patterns. أصبح المعيار.</li>
-              <li><b>TAXII 2.1</b> — protocol لنقل STIX بين أنظمة. RESTful API.</li>
+              <li><b>STIX 2.1</b> — JSON schema لتمثيل الـ intel: indicators, malware, threat actors, attack patterns. هو المعيار اللي الكل بيشتغل بيه.</li>
+              <li><b>TAXII 2.1</b> — protocol لنقل الـ STIX بين الأنظمة. RESTful API.</li>
             </ul>
             <Code lang="json">{`{
   "type": "indicator",
@@ -87,7 +87,7 @@ export default function Page() {
           </Section>
 
           <Section title="MISP — منصة CTI مفتوحة المصدر">
-            <p>MISP (Malware Information Sharing Platform) أكثر منصة CTI انتشاراً. يستخدمها CERT-EU و CIRCL و كثير من الـ ISACs.</p>
+            <p>MISP (Malware Information Sharing Platform) هي أكتر منصة CTI منتشرة. CERT-EU و CIRCL و كتير من الـ ISACs بيشتغلوا بيها.</p>
             <Code lang="bash">{`# pyMISP — استعلام برمجي
 from pymisp import PyMISP
 misp = PyMISP('https://misp.target.gov', api_key, ssl=True)
@@ -99,13 +99,13 @@ result = misp.search(controller='attributes', value='aabbccdd...')
 result = misp.search(controller='events', value='1.2.3.4')
 
 # tags بشكل آلي — Galaxy clusters (mitre-attack-pattern, threat-actor)`}</Code>
-            <Callout kind="info" title="بدائل / مكمّلات">
+            <Callout kind="info" title="بدائل و مكمّلات">
               <span className="eng">OpenCTI</span> (واجهة أحدث، graph-based)، <span className="eng">ThreatConnect</span> (تجاري)، <span className="eng">Anomali ThreatStream</span>، <span className="eng">Mandiant Advantage</span>، <span className="eng">CrowdStrike Falcon Intelligence</span>.
             </Callout>
           </Section>
 
           <Section title="IOC Pivoting — فن السلسلة">
-            <p>تنطلق من IOC واحد، تعرف اثنين، ثلاثة، عشرة. هذه المهارة الأهم في CTI.</p>
+            <p>بتبدأ بـ IOC واحد، و بتطلع منه اتنين، تلاتة، عشرة. دي أهم مهارة في الـ CTI كله.</p>
             <Code lang="text">{`بداية: phishing email
   ↓ extract
 sender IP: 185.x.x.x
@@ -121,8 +121,8 @@ SSL cert SHA1: ab12... (also seen on 5 other IPs)
   ↓ VirusTotal — sandbox shows beacon to evil-c2.com (cycle detected)
   ↓ ATT&CK — beacon pattern matches APT-X profile
 
-نتيجة: من email واحد → 30+ IOCs + attribution + TTPs`}</Code>
-            <Callout kind="good" title="مصادر pivoting أساسية">
+نتيجة: من إيميل واحد → 30+ IOCs + attribution + TTPs`}</Code>
+            <Callout kind="good" title="مصادر Pivoting أساسية">
               <ul>
                 <li><b>VirusTotal Intelligence</b> — passive DNS, file behavior, related samples.</li>
                 <li><b>urlscan.io</b> — DOM, screenshots, related submissions.</li>
@@ -137,26 +137,26 @@ SSL cert SHA1: ab12... (also seen on 5 other IPs)
           </Section>
 
           <Section title="OSINT للمحقق — Maltego">
-            <p>Maltego يحوّل pivoting من نشاط يدوي لـ graph visual. كل عنصر "Entity"، كل عملية pivoting "Transform". Transforms من VirusTotal, Shodan, PassiveTotal، DomainTools.</p>
+            <p>Maltego بيحوّل الـ pivoting من شغل يدوي لـ graph بصري. كل عنصر "Entity"، كل عملية pivoting "Transform". فيه Transforms جاهزة لـ VirusTotal و Shodan و PassiveTotal و DomainTools.</p>
             <ul>
-              <li>Maltego Community Edition مجاني (محدود).</li>
+              <li>Maltego Community Edition ببلاش (بحدود).</li>
               <li>Maltego CaseFile للتحقيقات الكبيرة.</li>
-              <li>أمثلة: ابدأ بـ domain → اكتشف email registrant → اكتشف flickr/twitter ذات الإيميل → اكتشف صور geolocated.</li>
+              <li>أمثلة: ابدأ بـ domain → اطلع registrant email → دور على flickr/twitter بنفس الإيميل → ابص على الصور و الـ geolocation.</li>
             </ul>
           </Section>
 
-          <Section title="Threat Actor Profiling — كيف تقرأ تقرير CTI">
-            <Callout kind="good" title="أسئلة تحدد قيمة التقرير">
+          <Section title="Threat Actor Profiling — تقرى تقرير CTI إزاي">
+            <Callout kind="good" title="الأسئلة اللي بتحدد قيمة التقرير">
               <ol>
-                <li><b>من Adversary؟</b> هل هناك attribution مع confidence (high/medium/low)؟</li>
-                <li><b>ما TTPs؟</b> مرتبطة بـ MITRE ATT&CK؟</li>
-                <li><b>ما IOCs؟</b> hashes, IPs, domains, YARA rules — في format machine-readable.</li>
-                <li><b>ما Detection?</b> Sigma rules, KQL queries جاهزة؟</li>
-                <li><b>ما Recommendations؟</b> mitigations محددة؟</li>
-                <li><b>ما الـ Confidence؟</b> ما الذي تعرفه عيناً، ما الذي تستنتجه؟</li>
+                <li><b>مين الـ Adversary؟</b> فيه attribution مع confidence (high/medium/low)؟</li>
+                <li><b>إيه الـ TTPs؟</b> مرتبطة بـ MITRE ATT&CK؟</li>
+                <li><b>إيه الـ IOCs؟</b> hashes, IPs, domains, YARA — في format machine-readable.</li>
+                <li><b>فيه Detection?</b> Sigma rules أو KQL جاهزة؟</li>
+                <li><b>إيه الـ Recommendations؟</b> mitigations محددة؟</li>
+                <li><b>الـ Confidence مستواه إيه؟</b> اللي شايفه بعينك أد إيه، و اللي بتستنتجه أد إيه؟</li>
               </ol>
             </Callout>
-            <p>أفضل مصادر تقارير:</p>
+            <p>أحسن مصادر التقارير:</p>
             <ul>
               <li><b>Mandiant / Google TAG</b> — APT focus.</li>
               <li><b>CrowdStrike Global Threat Report</b> — سنوي مفصّل.</li>
@@ -168,24 +168,24 @@ SSL cert SHA1: ab12... (also seen on 5 other IPs)
             </ul>
           </Section>
 
-          <Section title="بناء برنامج CTI — من الصفر">
+          <Section title="بناء برنامج CTI من الصفر">
             <ol>
-              <li><b>عرّف PIRs</b> (Priority Intelligence Requirements). أمثلة: "أي مجموعة تستهدف قطاعنا؟"، "أي ثغرة جديدة في الأنظمة التي نشغّلها؟". لا تجمع ما لا تستطيع استخدامه.</li>
-              <li><b>اختر مصادرك.</b> 2–3 free + 1–2 paid feeds. ليس كل feed مفيد.</li>
-              <li><b>طبّق tooling.</b> MISP/OpenCTI كـ central platform. اربطها بـ SIEM لـ matching.</li>
-              <li><b>اكتب reports أسبوعية</b> للقيادة (1 صفحة) و SOC (technical).</li>
-              <li><b>قِس قيمة intel</b>: كم تنبيه نتج عن feed X؟ كم منها true positive؟ كم detections جديدة بناءً على intel؟</li>
+              <li><b>عرّف الـ PIRs</b> (Priority Intelligence Requirements). أمثلة: "أنهي مجموعة بتستهدف قطاعنا؟"، "أي ثغرة جديدة في الأنظمة اللي بنشغلها؟". متجمعش حاجة مش هتستخدمها.</li>
+              <li><b>اختار مصادرك بعقل.</b> 2-3 free + 1-2 paid feeds. مش كل feed مفيد.</li>
+              <li><b>ركّب الـ tooling.</b> MISP/OpenCTI كمنصة مركزية. اربطها بالـ SIEM للـ matching.</li>
+              <li><b>اكتب تقارير أسبوعية</b>: للقيادة (صفحة واحدة) و للـ SOC (technical).</li>
+              <li><b>قيس قيمة الـ intel</b>: كام alert جه من feed X؟ كام منهم true positive؟ كام detection جديدة اتبنت على الـ intel؟ مفيش قياس = مفيش تحسن.</li>
             </ol>
           </Section>
 
-          <Section title="Federal context">
+          <Section title="السياق الفيدرالي">
             <Callout kind="info" title="بيئة خاصة">
               <ul>
-                <li><b>USIC</b> (US Intelligence Community) و التعاون مع الـ FBI Cyber Division و NSA و CISA. الفصل بين Title 50 (intel) و Title 18 (law enforcement) جوهري.</li>
-                <li><b>CTIIC</b> (Cyber Threat Intelligence Integration Center) — مركز تكامل tactical/operational/strategic.</li>
-                <li><b>InfraGard</b> — partnership مع private sector. للمحقق طريقة لتلقي/مشاركة intel مع 16 sector.</li>
-                <li><b>Classification</b> — تعلّم نظام (UNCLASSIFIED, FOUO, CUI, CONFIDENTIAL, SECRET, TS, TS/SCI). لا تشارك intel مصنّف خارج clearance.</li>
-                <li><b>TLP</b> (Traffic Light Protocol) — معيار civilian لمشاركة intel: RED, AMBER, GREEN, CLEAR. تعلّمه قبل أن تُشارك أي تقرير.</li>
+                <li><b>USIC</b> (US Intelligence Community) و التنسيق مع FBI Cyber Division و NSA و CISA. الفصل بين Title 50 (intel) و Title 18 (law enforcement) جوهري — لازم تفهمه.</li>
+                <li><b>CTIIC</b> (Cyber Threat Intelligence Integration Center) — هاب التكامل بين الـ tactical/operational/strategic.</li>
+                <li><b>InfraGard</b> — شراكة مع القطاع الخاص. للمحقق سكة لتبادل الـ intel مع 16 قطاع.</li>
+                <li><b>Classification</b> — اتعلم النظام (UNCLASSIFIED, FOUO, CUI, CONFIDENTIAL, SECRET, TS, TS/SCI). متشاركش intel مصنّف برة الـ clearance بتاعك.</li>
+                <li><b>TLP</b> (Traffic Light Protocol) — معيار مدني للمشاركة: RED, AMBER, GREEN, CLEAR. اتعلمه قبل ما تبعت أي تقرير.</li>
               </ul>
             </Callout>
           </Section>

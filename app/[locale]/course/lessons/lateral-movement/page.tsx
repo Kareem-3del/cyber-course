@@ -6,14 +6,16 @@ export default function Page() {
     <LessonShell slug="lateral-movement">
       <L
         ar={<>
-          <Section title="من جهاز واحد إلى الشبكة كلها">
+          <Section title="من جهاز واحد للشبكة كلها">
             <Analogy>
-              تخيل لصاً دخل غرفة فندق. الباب الذي خلفه يفتح على ممر يربط مئة غرفة. الحركة الجانبية = استخدام
-              الاعتمادات أو الأدوات المتوفرة في تلك الغرفة الواحدة لفتح الغرف المجاورة، ثم استخدام كل غرفة جديدة لتعميق الوصول.
+              تخيّل حرامي دخل أوضة في فندق. الباب اللي وراه بيفتح على ممر فيه ميت أوضة. الحركة الجانبية =
+              استخدام الـ credentials أو الأدوات اللي في الأوضة الواحدة دي علشان تفتح اللي جنبها، وكل أوضة جديدة
+              بتعمّقلك الوصول أكتر.
             </Analogy>
             <p>
-              Lateral Movement هو مرحلة ATT&CK TA0008. لا أحد يخترق Domain Admin بسطر واحد. تنتقل من جهاز إلى آخر
-              تجمع credentials في كل خطوة، حتى تصل إلى جهاز عليه session لـ Domain Admin أو DC.
+              Lateral Movement = مرحلة ATT&CK TA0008. محدش بيوصل لـ Domain Admin بسطر واحد. أنت بتنط من جهاز للتاني
+              وتلم credentials في كل وقفة، لحد ما تنزل على جهاز عليه session لـ Domain Admin أو DC. الصبر هنا
+              مهم زي المهارة.
             </p>
           </Section>
 
@@ -92,8 +94,8 @@ secretsdump.py -just-dc-user 'corp\\krbtgt' corp/da@dc01
           </Section>
 
           <Callout kind="danger" title="تحذير قانوني">
-            استخدم هذا في مختبر AD معزول. الحركة الجانبية في شبكة فيدرالية بدون authorization صريح = جناية.
-            بناء lab AD محلي مجاني ومتاح (GOAD على GitHub).
+            استخدم ده في معمل AD معزول. الحركة الجانبية في شبكة فيدرالية من غير authorization صريح = جناية.
+            بناء lab AD محلي ببلاش وموجود (GOAD على GitHub) — مفيش عذر.
           </Callout>
 
           <Callout kind="good" title="الدفاع — كسر سلسلة الحركة الجانبية">

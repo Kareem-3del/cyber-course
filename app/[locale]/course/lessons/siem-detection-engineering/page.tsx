@@ -6,43 +6,43 @@ export default function Page() {
     <LessonShell slug="siem-detection-engineering">
       <L
         ar={<>
-          <Section title="ما الذي يميز detection engineer عن SOC analyst؟">
+          <Section title="إيه الفرق بين Detection Engineer و SOC Analyst؟">
             <Analogy>
-              المحلل (analyst) هو الحارس الذي يستجيب للإنذارات. مهندس الكشف هو الذي يصمم نظام الإنذارات نفسه:
-              يقرر متى يطن الجرس، ومتى يصمت، وأي فناء يحتاج كاميرا أكثر. السؤال الأهم لمهندس الكشف ليس "هل
-              المهاجم هنا؟" بل "لو دخل، هل سأراه؟"
+              الـ Analyst هو الحارس اللي بيرد على الجرس. الـ Detection Engineer هو اللي بيصمم نظام الإنذار من الأول:
+              بيقرر الجرس يطن إمتى، يفضل ساكت إمتى، و أنهي حتة محتاجة كاميرا زيادة. السؤال الأهم عنده مش "المهاجم
+              هنا؟" — السؤال "لو دخل النهارده، هشوفه؟"
             </Analogy>
             <p>
-              Detection Engineering = كتابة قواعد كشف، اختبارها، قياس تغطيتها على ATT&CK، وضبطها لتقليل false
-              positives دون فقدان true positives. هذا هو فرق الـ blue team الناضج عن SOC رد الفعل.
+              الـ Detection Engineering ببساطة = تكتب قواعد كشف، تختبرها، تقيس تغطيتها على ATT&CK، و تضبطها عشان تقلل
+              الـ false positives من غير ما تخسر الـ true positives. ده الفرق بين blue team محترم و SOC شغال بردة الفعل.
             </p>
           </Section>
 
-          <Section title="دورة حياة قاعدة كشف">
-            <Step n={1} title="Hypothesis">
-              "المهاجم يفرّغ LSASS عبر comsvcs.dll" — افتراض محدد، مرتبط بـ ATT&CK technique (T1003.001).
+          <Section title="دورة حياة قاعدة الكشف — من الفكرة لحد الـ runbook">
+            <Step n={1} title="Hypothesis — افتراض محدد">
+              "المهاجم بيفرّغ LSASS عن طريق comsvcs.dll" — جملة واضحة و مربوطة بـ ATT&CK technique (T1003.001).
             </Step>
-            <Step n={2} title="Data source">
-              ما اللوغ الذي سيكشف هذا؟ Sysmon Event ID 10 (Process Access). تأكد أنه فعلاً مفعل ويتدفق إلى الـ SIEM.
+            <Step n={2} title="Data Source — مصدر البيانات">
+              أنهي log هيكشف ده؟ Sysmon Event ID 10 (Process Access). أكّد إنه مفعّل فعلاً و بيوصل للـ SIEM. مفيش data = مفيش detection.
             </Step>
-            <Step n={3} title="Detection logic">
-              صياغة باستعلام SIEM. ابدأ بسيطاً، شدّد حسب الـ noise.
+            <Step n={3} title="Detection Logic — منطق الكشف">
+              اكتب الـ query في الـ SIEM. ابدأ واسع، و ضيّق حسب الـ noise.
             </Step>
-            <Step n={4} title="Validation">
-              اختبر مع Atomic Red Team أو CALDERA. قاعدة لا تطلق على هجوم حقيقي = قاعدة ميتة.
+            <Step n={4} title="Validation — اختبار حقيقي">
+              جرّب بـ Atomic Red Team أو CALDERA. قاعدة مش بتطن على هجوم فعلي = قاعدة ميتة.
             </Step>
-            <Step n={5} title="Tuning">
-              راقب FP rate لمدة أسبوع. إذا فاق 5/يوم، شدّد فلتر السياق.
+            <Step n={5} title="Tuning — التهدئة">
+              راقب الـ FP rate أسبوع. لو عدّت 5/اليوم، ضيّق الـ context filter.
             </Step>
-            <Step n={6} title="Documentation">
-              سجل الـ ATT&CK ID، assumption، known FPs، playbook للاستجابة. القاعدة بدون runbook لا قيمة لها.
+            <Step n={6} title="Documentation — توثيق">
+              سجّل ATT&CK ID، الافتراضات، الـ FPs المعروفة، و runbook للرد. قاعدة من غير runbook = ملهاش لازمة.
             </Step>
           </Section>
 
-          <Section title="Sigma — معيار قواعد الكشف">
+          <Section title="Sigma — لغة قواعد الكشف الموحدة">
             <p>
-              Sigma هو YAML format محايد عن SIEM. اكتب القاعدة مرة، ترجمها إلى Splunk SPL أو KQL أو Elasticsearch
-              عبر sigmac.
+              Sigma هو YAML format مش مرتبط بأي SIEM. اكتب القاعدة مرة، و ترجمها لـ Splunk SPL أو KQL أو Elasticsearch
+              عن طريق sigmac. توفير وقت و عقل.
             </p>
             <Code lang="yaml">{`title: LSASS Memory Dump via comsvcs.dll
 id: a8e2d456-1234-5678-9abc-def012345678
@@ -101,27 +101,27 @@ index=sysmon EventCode=10 TargetImage="*lsass.exe" GrantedAccess IN (0x1010, 0x1
 | where count > 5`}</Code>
           </Section>
 
-          <Section title="تقليل False Positives">
+          <Section title="تقليل الـ False Positives — مفيش حد بيسمع جرس بيطن طول الليل">
             <p>
-              ثلاث تقنيات أساسية:
+              تلات تقنيات أساسية بتفرق:
             </p>
             <TwoCol>
-              <Card title="السياق Process Lineage" color="blue">
-                هل rundll32 أُطلق من cmd مرتبط بـ session تفاعلي؟ هذا أكثر إثارة للقلق من خدمة تشغّل rundll32.
+              <Card title="Process Lineage — السياق" color="blue">
+                rundll32 اتفتح من cmd في session تفاعلي؟ ده مقلق. لأ، اتفتح من service؟ أهدى بكتير. الفرق في النسب.
               </Card>
               <Card title="Allow-list معروف" color="green">
-                EDR vendor قد يحقن أداة legitimate تقرأ LSASS. ضعها في الـ allow list مع توقيع الناشر.
+                ساعات الـ EDR نفسه بيحقن أداة legitimate بتقرا LSASS. حطها في allow-list مع توقيع الناشر. عشان متطنش عبثاً.
               </Card>
             </TwoCol>
             <Card title="Threshold و time-window" color="amber">
-              لو تكنولوجيا تقوم بدفعة admin، ستطلق 50 alert في دقيقة. اجمعها في incident واحد.
+              أداة admin بتشتغل دفعة بتطلع 50 alert في دقيقة. اجمعهم في incident واحد بدل ما المحلل يتحرق.
             </Card>
           </Section>
 
           <Section title="قياس التغطية — ATT&CK Navigator">
             <p>
-              لوّن مصفوفة ATT&CK بحسب ما تكشفه قواعدك. النتيجة = خريطة "ما تراه" مقابل "ما يفعله المهاجم".
-              فجوة تكشف الأولوية التالية.
+              لوّن مصفوفة ATT&CK حسب اللي قواعدك بتكشفه. الناتج = خريطة "أنا شايف إيه" قصاد "المهاجم بيعمل إيه".
+              الفجوة دي بتقولك الأولوية الجاية.
             </p>
             <Terminal lines={[
               { p: "# تصدير coverage matrix إلى ATT&CK Navigator JSON" },
@@ -130,21 +130,21 @@ index=sysmon EventCode=10 TargetImage="*lsass.exe" GrantedAccess IN (0x1010, 0x1
             ]} />
           </Section>
 
-          <Callout kind="good" title="مبادئ مهندس الكشف">
+          <Callout kind="good" title="مبادئ مهندس الكشف — ناشفة">
             <ul>
-              <li><strong>True Positive Rate &gt; Coverage</strong>: قاعدة واحدة تعمل أفضل من 100 قاعدة بـ 95% FP</li>
-              <li><strong>Detect by behavior, not by IoC</strong>: signature لـ hash يموت في يوم؛ سلوك LSASS access يبقى</li>
-              <li><strong>Test كل قاعدة</strong>: Atomic Red Team أو CALDERA يومياً</li>
-              <li><strong>Versioning</strong>: قواعدك في git، code review، تاريخ تعديل</li>
-              <li><strong>كل alert = runbook</strong>: ماذا يفعل المحلل في أول 5 دقائق؟</li>
+              <li><strong>True Positive Rate أهم من الـ Coverage</strong>: قاعدة واحدة شغالة أحسن من 100 قاعدة بـ 95% FP.</li>
+              <li><strong>اكشف بالسلوك مش بالـ IoC</strong>: الـ hash بيموت في يوم؛ سلوك الـ LSASS access بيفضل عايش.</li>
+              <li><strong>اختبر كل قاعدة</strong>: Atomic Red Team أو CALDERA — كل يوم.</li>
+              <li><strong>Versioning</strong>: قواعدك في git، code review، تاريخ تعديل. زي الكود بالظبط.</li>
+              <li><strong>كل alert ليه runbook</strong>: المحلل بيعمل إيه في أول 5 دقايق؟ لو مش عارف، الـ alert ضاع.</li>
             </ul>
           </Callout>
 
-          <Section title="مصادر">
+          <Section title="مصادر للتعمق">
             <ul>
               <li>Sigma Project — <span className="eng">github.com/SigmaHQ/sigma</span></li>
               <li>Atomic Red Team — Red Canary</li>
-              <li>The DFIR Report — حالات حقيقية + queries</li>
+              <li>The DFIR Report — حالات حقيقية + queries جاهزة</li>
               <li>SpecterOps — Detection Engineering Methodology</li>
               <li>Florian Roth blog — Sigma و detection engineering</li>
             </ul>

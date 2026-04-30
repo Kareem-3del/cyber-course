@@ -7,43 +7,43 @@ export default function Page() {
       <L
         ar={<>
           <Section title="لماذا الـ Network Forensics لا غنى عنه">
-            <p>المهاجم يستطيع مسح logs على الـ endpoint، يحذف ملفات، يعطّل EDR. لكن لو الشبكة <b>تسجّل ما يمر</b>، لا يستطيع محو ما حدث في السلك. <b>The network never lies</b>.</p>
-            <Analogy>ECG في غرفة العمليات — الجهاز يسجّل كل دقّة قلب لحظياً. الجرّاح قد ينسى، الممرض قد يخطئ، لكن الشريط لا يكذب.</Analogy>
+            <p>المهاجم يقدر يمسح logs الـ endpoint، يشيل ملفات، يقفل EDR. بس الشبكة لو <b>بتسجّل اللي بيمر</b>، مش هيقدر يلغي اللي قاله في السلك. <b>The network never lies</b>.</p>
+            <Analogy>زي الـ ECG في غرفة العمليات — بيسجّل كل دقة قلب لحظة بلحظة. الجراح ممكن ينسى، الممرض ممكن يغلط، الشريط مش بيكدب.</Analogy>
             <Callout kind="info" title="القاعدة">
-              في كل حادث جدّي: ابدأ بسؤال "ما المتاح من traffic data؟" قبل أن تنظر للـ host.
+              في أي حادث جدّي: اسأل الأول "إيه الـ traffic data المتاح؟" قبل ما تبص للـ host خالص.
             </Callout>
           </Section>
 
           <Section title="مصادر البيانات — متى تستخدم ماذا">
             <TwoCol>
               <Card title="Full Packet Capture (PCAP)" color="red">
-                كل byte. أقصى دقة. حجم كبير (TB/يوم). يُخزّن عادةً 7–30 يوماً للـ perimeter.
+                كل byte. أعلى دقة. حجم ضخم (TB/يوم). عادة بيتخزّن 7–30 يوم على المحيط.
               </Card>
               <Card title="Zeek logs (Bro)" color="blue">
-                Metadata غني: connection logs، DNS، HTTP، SSL، files. ~1% من حجم PCAP. ممتاز للبحث الطويل.
+                Metadata غنية: connection logs, DNS, HTTP, SSL, files. ~1% من حجم PCAP. تحفة في الـ hunting الطويل.
               </Card>
               <Card title="NetFlow / IPFIX / sFlow" color="amber">
-                Source/Dest IP, Port, Bytes, Packets. لا content. أصغر بكثير. الأفضل لـ baselining طويل المدى.
+                Source/Dest IP, Port, Bytes, Packets. مفيش content. أصغر بكتير. الأحسن للـ baselining الطويل.
               </Card>
               <Card title="Suricata / Snort alerts" color="red">
-                IDS — تنبيهات على signatures معروفة. يكمّل لا يحلّ محل PCAP.
+                IDS — تنبيهات على signatures معروفة. بيكمّل PCAP، مش بيحلّ محله.
               </Card>
               <Card title="Firewall logs" color="green">
-                Allowed/Denied connections. متاح دائماً، أساسي لـ audit.
+                Allow/Deny. موجود دايماً، أساسي للـ audit.
               </Card>
               <Card title="DNS / DHCP / Proxy logs" color="green">
-                لا تستهين بها. DNS resolution + DHCP lease = من كان IP X في الوقت Y.
+                ماتقللش من قيمتها. DNS + DHCP lease بيقولوك مين كان IP X الساعة كذا.
               </Card>
             </TwoCol>
           </Section>
 
           <Section title="Wireshark — أساسيات حقيقية">
-            <p>افتح pcap، أول ما تفعل:</p>
+            <p>افتح الـ pcap. أول حاجة هتعملها:</p>
             <ol>
-              <li><b>Statistics → Conversations</b> — أيّ IPs تكلّمت أكثر، كم بايت؟</li>
-              <li><b>Statistics → Protocol Hierarchy</b> — توزيع البروتوكولات. شيء غير معتاد؟</li>
-              <li><b>Statistics → Endpoints</b> — قائمة كل المضيفين.</li>
-              <li><b>File → Export Objects</b> — استخرج files من HTTP/SMB/FTP.</li>
+              <li><b>Statistics → Conversations</b> — مين اتكلّم مع مين، وكام بايت؟</li>
+              <li><b>Statistics → Protocol Hierarchy</b> — توزيع البروتوكولات. فيه حاجة شاذة؟</li>
+              <li><b>Statistics → Endpoints</b> — قايمة كل الأجهزة الموجودة.</li>
+              <li><b>File → Export Objects</b> — طلّع الملفات من HTTP/SMB/FTP.</li>
             </ol>
             <Code lang="text">{`# أهم display filters في Wireshark
 ip.addr == 192.168.1.10                  # كل ما يخص IP
@@ -59,14 +59,14 @@ ip.geoip.country != "US"                 # خارج الولايات (يحتاج
           </Section>
 
           <Section title="استعادة محادثة TCP — أهم تقنية">
-            <p>كل اتصال TCP له stream رقم. في Wireshark: <b>Right-click packet → Follow → TCP Stream</b>. ترى المحادثة كاملة كنص.</p>
-            <Callout kind="info" title="حالات نموذجية">
+            <p>كل اتصال TCP ليه stream برقم. في Wireshark: <b>Right-click → Follow → TCP Stream</b>. هتشوف المحادثة كلها كنص.</p>
+            <Callout kind="info" title="إيه اللي هتدور عليه">
               <ul>
-                <li><b>HTTP غير مشفّر</b> — كلمات مرور، session cookies، مرفقات.</li>
-                <li><b>FTP</b> — USER/PASS بنص واضح. حدّد ملفات منقولة.</li>
-                <li><b>SMTP</b> — رسائل، مرفقات base64. يمكن استخراجها.</li>
-                <li><b>Telnet</b> — كل keystroke. (إن وُجد، ابحث في كل pcap عن أوامر مكتوبة).</li>
-                <li><b>SMB</b> — استعراض ملفات منقولة (Wireshark يستخرجها).</li>
+                <li><b>HTTP غير مشفّر</b> — باسوردات، session cookies، مرفقات.</li>
+                <li><b>FTP</b> — USER/PASS صريحين. حدّد الملفات اللي اتنقلت.</li>
+                <li><b>SMTP</b> — رسايل ومرفقات base64، تقدر تطلّعهم.</li>
+                <li><b>Telnet</b> — كل keystroke. لو لقيته، ادور في كل pcap على أوامر مكتوبة.</li>
+                <li><b>SMB</b> — الملفات المنقولة (Wireshark بيطلّعهالك).</li>
               </ul>
             </Callout>
           </Section>
@@ -92,7 +92,7 @@ ip.geoip.country != "US"                 # خارج الولايات (يحتاج
           </Section>
 
           <Section title="Zeek — أداة المحقّقين الجدّية">
-            <p>Zeek يحوّل traffic إلى logs منظمة. ملفات نصية tab-separated، سهلة الـ grep.</p>
+            <p>Zeek بيحوّل الـ traffic لـ logs منظمة. ملفات tab-separated، سهلة جداً مع grep.</p>
             <Code lang="bash">{`# تشغيل Zeek على pcap
 zeek -r capture.pcap
 
@@ -109,12 +109,12 @@ cat files.log | zeek-cut tx_hosts rx_hosts mime_type filename md5 sha1
 # weird.log — شذوذات بروتوكولية
 cat weird.log | zeek-cut id.orig_h name`}</Code>
             <Callout kind="info" title="نصيحة">
-              للـ long-term hunting، مرّر Zeek logs إلى Splunk/ELK. ثم استعلم بالـ SPL/KQL — تجمع بين قوة Zeek و سرعة SIEM.
+              للـ hunting الطويل، شحن Zeek logs على Splunk/ELK. وبعدين استعلم بـ SPL/KQL — تجمع عمق Zeek مع سرعة الـ SIEM.
             </Callout>
           </Section>
 
           <Section title="Suricata — IDS/IPS قوي مفتوح المصدر">
-            <p>Suricata يطبّق rules على traffic مباشر و يطلق تنبيهات. يستخدم نفس صيغة قواعد Snort تقريباً.</p>
+            <p>Suricata بيطبّق rules على ترافيك حي ويطلّع تنبيهات. صيغة القواعد قريبة جداً من Snort.</p>
             <Code lang="text">{`# مثال قاعدة — كشف Cobalt Strike default certificate
 alert tls any any -> any any (msg:"Cobalt Strike default cert"; \\
   tls.cert_subject; content:"CN=major"; \\
@@ -124,26 +124,26 @@ alert tls any any -> any any (msg:"Cobalt Strike default cert"; \\
 alert dns any any -> any any (msg:"DNS query to .top TLD"; \\
   dns.query; content:".top"; endswith; \\
   classtype:bad-unknown; sid:2030002; rev:1;)`}</Code>
-            <p>قواعد جاهزة: <b>Emerging Threats Open</b> (مجاني), <b>ETPro</b> (مدفوع), <b>SELKS</b> (Suricata + ELK package).</p>
+            <p>قواعد جاهزة: <b>Emerging Threats Open</b> (مجاني)، <b>ETPro</b> (مدفوع)، <b>SELKS</b> (Suricata + ELK في باكدج واحد).</p>
           </Section>
 
           <Section title="مؤشّرات شائعة في pcap حادث">
-            <Callout kind="good" title="ابحث عن هذه">
+            <Callout kind="good" title="دور على الحاجات دي">
               <ol>
-                <li><b>Beaconing منتظم</b> — connection كل 60s لنفس domain. مؤشّر C2.</li>
-                <li><b>User-Agent غير معتاد</b> — <span className="eng">curl/8.4</span> من workstation, <span className="eng">python-requests</span>.</li>
-                <li><b>JA3/JA3S hashes</b> — بصمة TLS handshake. malware له JA3 ثابت يكشفه.</li>
-                <li><b>Direct-to-IP HTTPS</b> — اتصال HTTPS بدون DNS lookup سابق = مشبوه.</li>
+                <li><b>Beaconing منتظم</b> — connection كل 60s لنفس الـ domain. ده C2 كلاسيك.</li>
+                <li><b>User-Agent غريب</b> — <span className="eng">curl/8.4</span> من workstation، أو <span className="eng">python-requests</span>.</li>
+                <li><b>JA3/JA3S hashes</b> — بصمة TLS handshake. أغلب malware ليها JA3 ثابت يفضحها.</li>
+                <li><b>HTTPS Direct-to-IP</b> — اتصال TLS من غير ما يحصل DNS lookup قبله = مشبوه.</li>
                 <li><b>SMB من workstation لـ workstation</b> — lateral movement.</li>
                 <li><b>TXT records طويلة</b> — DNS tunneling.</li>
-                <li><b>Burst exfil</b> — 5GB upload في 10 دقائق من host لم يفعل ذلك من قبل.</li>
-                <li><b>RDP خارج ساعات العمل</b> — أو من IP خارجي مباشرة.</li>
+                <li><b>Burst exfil</b> — 5GB upload في 10 دقايق من host ما عملش كده قبل كده.</li>
+                <li><b>RDP بره ساعات الشغل</b> — أو من IP خارجي على طول.</li>
               </ol>
             </Callout>
           </Section>
 
           <Section title="JA3 / JA3S — بصمة TLS">
-            <p>JA3 = MD5 من ترتيب TLS Client Hello extensions. JA3S = نفس الفكرة من Server Hello. كل client/server له بصمة فريدة، malware له JA3 ثابت.</p>
+            <p>JA3 = MD5 لترتيب TLS Client Hello extensions. JA3S = نفس الفكرة بس على الـ Server Hello. كل client/server ليه بصمة، والـ malware عادة بصمته ثابتة.</p>
             <Code lang="bash">{`# tshark استخراج JA3 (يحتاج plugin)
 tshark -r capture.pcap -T fields -e tls.handshake.ja3 -e tls.handshake.ja3_full \\
   -Y 'tls.handshake.type==1' | sort -u
@@ -156,7 +156,7 @@ curl -s "https://sslbl.abuse.ch/api/v1/?ja3_hash=72a589da586844d7f0818ce684948ee
           </Section>
 
           <Section title="RITA — كشف beaconing تلقائياً">
-            <p>RITA (من Black Hills Infosec، مفتوح المصدر) يأخذ Zeek logs و يحلّل الـ frequency و jitter لاكتشاف beacons.</p>
+            <p>RITA (من Black Hills Infosec، مفتوح المصدر) بياخد Zeek logs ويحلّل الـ frequency والـ jitter ليطلّع الـ beacons.</p>
             <Code lang="bash">{`# استيراد Zeek logs
 rita import /opt/zeek/logs/* mydataset
 
@@ -172,13 +172,13 @@ rita show-beacons mydataset
           </Section>
 
           <Section title="Federal context — اعتبارات قانونية">
-            <Callout kind="danger" title="حدود الاستماع للـ Network">
-              التقاط traffic في بيئة فيدرالية يخضع لـ <b>Title III</b> (Wiretap Act) و <b>ECPA</b>. القاعدة العامة:
+            <Callout kind="danger" title="حدود الـ Network capture">
+              التقاط الترافيك في بيئة فيدرالية بيقع تحت <b>Title III</b> (Wiretap Act) و<b>ECPA</b>. القاعدة العامة:
               <ul>
-                <li><b>Banner / acceptable-use policy</b> ضروري — يخبر المستخدم أن الشبكة تُراقب. هذا "consent" قانوني.</li>
-                <li>أي capture خارج consent يحتاج <b>court order / Pen Register / Trap-and-Trace</b> أو full Wiretap warrant.</li>
-                <li>Metadata (NetFlow, headers) قواعد مختلفة عن content (PCAP body).</li>
-                <li>عند الشك — <b>اسأل OGC أو فريق Legal قبل الـ capture</b>. لا تكتب أبداً عن قرارات قانونية في chat.</li>
+                <li><b>Banner / acceptable-use policy</b> ضروري — بيقول للمستخدم إن الشبكة مراقبة. ده "consent" قانوني.</li>
+                <li>أي capture بره الـ consent ده محتاج <b>court order / Pen Register / Trap-and-Trace</b> أو wiretap warrant كامل.</li>
+                <li>Metadata (NetFlow, headers) قواعدها مختلفة عن content (PCAP body).</li>
+                <li>وقت الشك — <b>اسأل OGC أو الـ Legal team قبل الـ capture</b>. ومتناقشش قرارات قانونية في chat أبداً.</li>
               </ul>
             </Callout>
           </Section>
@@ -186,12 +186,12 @@ rita show-beacons mydataset
           <Section title="ممارسات أفضل">
             <ol>
               <li>سجّل JA3/JA3S على كل egress.</li>
-              <li>Zeek على mirror port من core switch — ثم Splunk/ELK.</li>
-              <li>RITA يومياً على آخر 24 ساعة.</li>
-              <li>Suricata مع ETPro rules + custom org rules.</li>
-              <li>Full PCAP على edge بـ rotation 7–14 يوم (depends on storage).</li>
-              <li>NetFlow طويل المدى (90+ يوم) لـ retroactive hunts.</li>
-              <li>أوقف TLS inspection حيث يحظره القانون لكن سجّل Metadata + JA3.</li>
+              <li>Zeek على mirror port من core switch ← Splunk/ELK.</li>
+              <li>RITA يومي على آخر 24 ساعة.</li>
+              <li>Suricata بـ ETPro rules + قواعد خاصة بالمؤسسة.</li>
+              <li>Full PCAP على الـ edge مع rotation 7–14 يوم (على حسب الـ storage عندك).</li>
+              <li>NetFlow طويل المدى (90+ يوم) للـ retroactive hunts.</li>
+              <li>وقّف TLS inspection لو القانون مش سامح، بس سجّل Metadata + JA3.</li>
             </ol>
           </Section>
         </>}

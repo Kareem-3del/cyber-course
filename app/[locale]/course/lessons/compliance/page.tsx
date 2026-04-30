@@ -7,7 +7,7 @@ export default function Page() {
       <L
         ar={<>
           <Section title="من التهديد إلى الامتثال">
-            <Analogy>قبل بناء بيت، المهندس يفكّر: «ما الذي قد يدمّر هذا البيت؟ زلزال؟ فيضان؟ سرقة؟» ثم يصمّم وفقاً لذلك. هذا هو <b>Threat Modeling</b>: فكّر كالمهاجم قبل الكتابة الأولى من الكود.</Analogy>
+            <Analogy>قبل ما المهندس يبني بيت، بيسأل نفسه: «إيه اللي ممكن يهد البيت ده؟ زلزال؟ فيضان؟ حرامي؟» وبعدين يصمّم على الأساس ده. هذه هي فلسفة <b>Threat Modeling</b>: فكّر زي المهاجم قبل ما تكتب أول سطر كود. لو ما عملتش كدة، إنت بتبني على رمل.</Analogy>
           </Section>
 
           <Section title="STRIDE — أبسط نموذج تهديد">
@@ -54,8 +54,8 @@ export default function Page() {
               <li><b>Recover</b> — استعادة الخدمة و الدروس.</li>
             </ol>
             <Callout kind="info" title="نصيحة عملية">
-              ابدأ بـ <b>NIST 800-53</b> (Controls Catalog) كقائمة تنفيذية، و استخدم CSF كـ overlay استراتيجي.
-              للمؤسسات الصغيرة: <b>CIS Controls v8</b> أبسط و عملي جداً (18 control area).
+              ابدأ بـ <b>NIST 800-53</b> (Controls Catalog) كقائمة شغّالة على الأرض، واستخدم CSF فوقه كطبقة استراتيجية.
+              لو المؤسسة صغيرة: <b>CIS Controls v8</b> أبسط وعملي جداً (18 control area) — هتلاقيه يكفّيك.
             </Callout>
           </Section>
 
@@ -109,7 +109,7 @@ export default function Page() {
               <li><b>GRC platforms</b>: Vanta, Drata, Tugboat Logic, Hyperproof — أتمتة الأدلة.</li>
               <li><b>Continuous compliance</b>: ربط الـ controls بـ telemetry حية (logs, configs).</li>
               <li><b>Policy as Code</b>: Open Policy Agent (OPA), Conftest, Cloud Custodian.</li>
-              <li><b>Compliance is a floor, not a ceiling</b> — الامتثال لا يساوي الأمن.</li>
+              <li><b>Compliance is a floor, not a ceiling</b> — الامتثال أرضية، مش سقف. كونك Compliant ما يعنيش إنك Secure.</li>
             </ol>
           </Section>
 
@@ -124,7 +124,7 @@ export default function Page() {
               <li>نتائج تمارين IR (red/purple team) كل ربع.</li>
             </ul>
             <Callout kind="good" title="القاعدة الذهبية للقياس">
-              قِس ما يُحرّك القرار. الأرقام التي لا تغيّر سلوكاً = ضوضاء.
+              قيس اللي بيحرّك القرار. أي رقم ما بيغيّرش سلوك = ضوضاء، ارميه. الـ Dashboard المليان أرقام ما حدش بيتصرف بناءً عليها = عك.
             </Callout>
           </Section>
         </>}

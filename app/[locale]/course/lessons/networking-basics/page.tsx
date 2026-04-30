@@ -7,7 +7,7 @@ export default function Page() {
       <L
         ar={<>
           <Section title="لماذا الشبكات قبل أي recon">
-            <p>كل هجوم يحتاج فهم الشبكات. بدون فهم TCP/IP و DNS و HTTP، Wireshark = هيروغليفية، nmap = أوامر تحفظها بدون فهم. هذا الدرس يبني الجسر.</p>
+            <p>أي هجوم محتاج إنك تكون فاهم الشبكات. من غير TCP/IP وDNS وHTTP، Wireshark بيبقى لغة هيروغليفية، وnmap بيبقى أوامر بتحفظها وأنت مش فاهم. الدرس ده هو الجسر.</p>
           </Section>
 
           <Section title="نموذج OSI — 7 طبقات">
@@ -18,12 +18,12 @@ export default function Page() {
 الطبقة 3  Network          IP, ICMP, routing   ← عناوين IP
 الطبقة 2  Data Link        Ethernet, ARP       ← MAC addresses
 الطبقة 1  Physical         كابل، WiFi`}</Code>
-            <p>القاعدة: <b>كل طبقة تحزّم بيانات الطبقة الأعلى وتضيف header خاصاً بها</b>. كحزمة بريد داخل ظرف داخل صندوق.</p>
-            <p>في الأمن: hackers يهاجمون كل طبقة. Layer 2 = ARP poisoning. Layer 3 = IP spoofing. Layer 4 = SYN flood. Layer 7 = SQLi/XSS.</p>
+            <p>القاعدة: <b>كل طبقة بتلفّ داتا الطبقة اللي فوقها وبتضيف header بتاعها</b>. زي جواب جوّه ظرف جوّه صندوق.</p>
+            <p>أمنياً: المهاجمين بيضربوا كل طبقة. Layer 2 = ARP poisoning. Layer 3 = IP spoofing. Layer 4 = SYN flood. Layer 7 = SQLi/XSS.</p>
           </Section>
 
           <Section title="TCP/IP — النموذج العملي">
-            <p>OSI نظري. الإنترنت يستخدم نموذج TCP/IP بـ 4 طبقات:</p>
+            <p>OSI نظري بحت. الإنترنت بيشتغل بـ TCP/IP، 4 طبقات بس:</p>
             <Code lang="text">{`Application   HTTP, DNS, SSH, …    (= OSI 5-7)
 Transport     TCP, UDP             (= OSI 4)
 Internet      IP, ICMP             (= OSI 3)
@@ -31,12 +31,12 @@ Link          Ethernet, WiFi       (= OSI 1-2)`}</Code>
           </Section>
 
           <Section title="عناوين IP — الجوهر">
-            <p>كل جهاز على شبكة له عنوان IP فريد. IPv4 = 4 أرقام (0-255): <span className="eng">192.168.1.5</span>.</p>
+            <p>كل جهاز على الشبكة ليه IP فريد. IPv4 = 4 أرقام (0-255): <span className="eng">192.168.1.5</span>.</p>
             <ul>
-              <li><b>Public IPs</b> — قابلة للوصول من الإنترنت.</li>
+              <li><b>Public IPs</b> — موصول ليها من الإنترنت.</li>
               <li><b>Private IPs</b> (RFC 1918) — للشبكات الداخلية: <span className="eng">10.0.0.0/8، 172.16.0.0/12، 192.168.0.0/16</span>.</li>
               <li><b>Loopback</b>: <span className="eng">127.0.0.1</span> = الجهاز نفسه.</li>
-              <li><b>Subnet mask</b> يحدد ما هو &quot;شبكتي&quot;. <span className="eng">/24</span> = 255 جهاز.</li>
+              <li><b>Subnet mask</b> بيحدّد &quot;شبكتي&quot; إيه. <span className="eng">/24</span> = 254 جهاز.</li>
             </ul>
             <Code lang="text">{`192.168.1.0/24
         │     │
@@ -51,22 +51,22 @@ Link          Ethernet, WiFi       (= OSI 1-2)`}</Code>
               <Card title="TCP — موثوق" color="blue">
                 <ul>
                   <li>Three-way handshake (SYN → SYN-ACK → ACK).</li>
-                  <li>يضمن الترتيب وعدم الفقد.</li>
-                  <li>يعيد الإرسال لو ضاع شيء.</li>
-                  <li>يستخدم في: HTTP, HTTPS, SSH, SMB, RDP.</li>
+                  <li>بيضمن الترتيب وعدم الفقد.</li>
+                  <li>بيعيد الإرسال لو حاجة ضاعت.</li>
+                  <li>بيستخدم مع: HTTP, HTTPS, SSH, SMB, RDP.</li>
                 </ul>
               </Card>
-              <Card title="UDP — سريع، لا ضمانات" color="amber">
+              <Card title="UDP — سريع وملوش ضمانات" color="amber">
                 <ul>
-                  <li>أرسل وانس (fire-and-forget).</li>
-                  <li>لا handshake.</li>
-                  <li>قد يضيع، قد يصل بالعكس.</li>
-                  <li>يستخدم في: DNS, NTP, VoIP, VPN.</li>
+                  <li>ابعت وانسى (fire-and-forget).</li>
+                  <li>مفيش handshake.</li>
+                  <li>ممكن يضيع، ممكن يوصل مش بالترتيب.</li>
+                  <li>بيستخدم مع: DNS, NTP, VoIP, VPN.</li>
                 </ul>
               </Card>
             </TwoCol>
-            <Callout kind="info" title="لماذا يهم في الأمن">
-              فحص TCP يعرف بدقة (المنفذ مفتوح/مغلق/مفلتر). فحص UDP أبطأ وأقل دقة لأن لا ACK افتراضي.
+            <Callout kind="info" title="ليه ده مهم أمنياً">
+              فحص TCP بيدّيك دقة (open/closed/filtered). فحص UDP أبطأ وأقل دقة، لأن مفيش ACK افتراضي.
             </Callout>
           </Section>
 
@@ -95,21 +95,21 @@ Link          Ethernet, WiFi       (= OSI 1-2)`}</Code>
 5985/5986 WinRM         (PowerShell remote)
 8080     HTTP-alt (proxy)
 8443     HTTPS-alt`}</Code>
-            <p>حفظ هذه القائمة = نصف معركة nmap. منفذ 445 مفتوح = SMB = ربما EternalBlue.</p>
+            <p>تحفظ القايمة دي = ضمنت نص شغل nmap. Port 445 مفتوح = SMB = يمكن EternalBlue.</p>
           </Section>
 
           <Section title="DNS — كيف يصبح اسم IP">
-            <Step n={1} title="تكتب example.com في المتصفح">
-              <p>الجهاز يسأل: &quot;ما IP لـ example.com؟&quot;.</p>
+            <Step n={1} title="بتكتب example.com في المتصفح">
+              <p>الجهاز بيسأل: &quot;إيه الـ IP بتاع example.com؟&quot;</p>
             </Step>
-            <Step n={2} title="استعلام محلي أولاً">
-              <p>يفحص <span className="eng">/etc/hosts</span> (أو <span className="eng">C:\\Windows\\System32\\drivers\\etc\\hosts</span>)، ثم cache.</p>
+            <Step n={2} title="بيدوّر محلياً الأول">
+              <p>بيبص في <span className="eng">/etc/hosts</span> (أو <span className="eng">C:\\Windows\\System32\\drivers\\etc\\hosts</span>)، وبعدين الـ cache.</p>
             </Step>
-            <Step n={3} title="إن لم يجد، يسأل DNS resolver">
-              <p>عادة الـ ISP أو 8.8.8.8 (Google) أو 1.1.1.1 (Cloudflare).</p>
+            <Step n={3} title="ملقاش، يسأل DNS resolver">
+              <p>غالباً الـ ISP، أو 8.8.8.8 (Google)، أو 1.1.1.1 (Cloudflare).</p>
             </Step>
-            <Step n={4} title="الـ resolver يسأل سلسلة">
-              <p>Root → TLD (.com) → authoritative for example.com → الجواب: <span className="eng">93.184.216.34</span>.</p>
+            <Step n={4} title="الـ resolver بيمشي سلسلة">
+              <p>Root → TLD (.com) → authoritative server لـ example.com → الرد: <span className="eng">93.184.216.34</span>.</p>
             </Step>
             <Terminal lines={[
               { p: "dig example.com               # استعلام DNS كامل" },
@@ -118,13 +118,13 @@ Link          Ethernet, WiFi       (= OSI 1-2)`}</Code>
               { p: "dig @8.8.8.8 example.com      # اسأل خادم محدد" },
               { p: "dig -x 93.184.216.34          # عكسي (PTR)" },
             ]} />
-            <Callout kind="info" title="أنواع سجلات DNS مهمة">
+            <Callout kind="info" title="أهم أنواع DNS records">
               <span className="eng">A</span> = IPv4، <span className="eng">AAAA</span> = IPv6، <span className="eng">CNAME</span> = اسم بديل، <span className="eng">MX</span> = خادم بريد، <span className="eng">NS</span> = خادم أسماء، <span className="eng">TXT</span> = نصوص (SPF/DKIM/DMARC مهمة لأمن البريد).
             </Callout>
           </Section>
 
           <Section title="HTTP — لغة الويب">
-            <p>كل صفحة ويب = طلب HTTP + رد. الطلب:</p>
+            <p>كل صفحة ويب = HTTP request + response. الـ request:</p>
             <Code lang="http">{`GET /index.html HTTP/1.1
 Host: example.com
 User-Agent: Mozilla/5.0
@@ -132,7 +132,7 @@ Accept: text/html
 Cookie: session=abc123
 
 `}</Code>
-            <p>الرد:</p>
+            <p>الـ response:</p>
             <Code lang="http">{`HTTP/1.1 200 OK
 Content-Type: text/html
 Content-Length: 1256
@@ -141,14 +141,14 @@ Server: nginx/1.24
 
 <html>...</html>`}</Code>
             <ul>
-              <li><b>أكواد الحالة:</b> 2xx نجح، 3xx إعادة توجيه، 4xx خطأ عميل (404, 401, 403)، 5xx خطأ خادم (500, 502).</li>
+              <li><b>Status codes:</b> 2xx نجاح، 3xx redirect، 4xx خطأ من الـ client (404, 401, 403)، 5xx خطأ سيرفر (500, 502).</li>
               <li><b>Methods:</b> GET (قراءة)، POST (إرسال)، PUT/PATCH (تحديث)، DELETE.</li>
-              <li><b>Headers مهمة في الأمن:</b> <span className="eng">Cookie, Authorization, X-Forwarded-For, Host, Origin, Referer, Content-Security-Policy</span>.</li>
+              <li><b>Headers مهمة أمنياً:</b> <span className="eng">Cookie, Authorization, X-Forwarded-For, Host, Origin, Referer, Content-Security-Policy</span>.</li>
             </ul>
           </Section>
 
           <Section title="ARP — كيف تتحدث الأجهزة فيزيائياً">
-            <p>على شبكة محلية، الأجهزة تتكلم عبر MAC addresses لا IPs. ARP يربط بينهما.</p>
+            <p>على الـ LAN، الأجهزة بتتكلم بـ MAC addresses مش بـ IPs. ARP هو اللي بيربط بينهم.</p>
             <Terminal lines={[
               { p: "# جدول ARP الحالي:" },
               { p: "arp -a                    # كل من تكلمت معه" },
@@ -157,12 +157,12 @@ Server: nginx/1.24
               { o: "10.10.10.5  at  08:00:27:ab:cd:ef  on eth0" },
             ]} />
             <Callout kind="info" title="ARP poisoning">
-              المهاجم يرد على ARP queries بـ MAC الخاص به. يصبح man-in-the-middle لكل traffic بين الضحية و الـ gateway. أسلوب قديم لكن ما زال يعمل على شبكات بدون 802.1X.
+              المهاجم بيرد على ARP queries بالـ MAC بتاعه. بيبقى man-in-the-middle على كل ترافيك ما بين الضحية والـ gateway. أسلوب قديم، بس لسه شغّال على شبكات من غير 802.1X.
             </Callout>
           </Section>
 
           <Section title="Wireshark — قراءة الحزم">
-            <p>Wireshark = أداة التقاط وتحليل الـ packets. إن لم تتقنها لن تكون مدافعاً جاداً ولا مهاجماً قارئاً.</p>
+            <p>Wireshark = أداة التقاط وتحليل الـ packets. لو ما اتقنتهاش، مش هتبقى مدافع جدّي ولا مهاجم بيفهم.</p>
             <Code lang="text">{`فلاتر مفيدة:
 ip.addr == 10.10.10.5         الحزم من/إلى IP
 tcp.port == 443                منفذ محدد
@@ -179,19 +179,19 @@ tls.handshake.type == 1        TLS Client Hello (يكشف SNI)`}</Code>
 
           <Section title="NAT و Firewalls — بسرعة">
             <ul>
-              <li><b>NAT</b>: راوتر بيتك يحوّل عنوان داخلي (192.168.1.10) إلى عنوان عام (203.x.x.x). كل أجهزة بيتك يبدون كـIP واحد على الإنترنت.</li>
-              <li><b>Firewall</b>: قواعد &quot;اسمح / امنع&quot; على المنافذ والـ IPs والبروتوكولات.</li>
-              <li><b>Stateful firewall</b>: يتذكر الجلسات. لو فتحت اتصال خارجاً، يسمح بالرد.</li>
-              <li><b>Egress filtering</b>: تحديد ما يخرج من شبكتك. كثير من المؤسسات تنسى — لذا C2 يعمل بسهولة عبر port 443.</li>
+              <li><b>NAT:</b> راوتر البيت بيحوّل العنوان الداخلي (192.168.1.10) لعنوان عام (203.x.x.x). كل أجهزة البيت من برّه بتبان IP واحد.</li>
+              <li><b>Firewall:</b> قواعد &quot;اسمح/امنع&quot; على البورتات والـ IPs والبروتوكولات.</li>
+              <li><b>Stateful firewall:</b> فاكر الـ sessions. أنت فتحت اتصال للخارج، الرد بيرجعلك تلقائي.</li>
+              <li><b>Egress filtering:</b> تحدّد إيه اللي بيخرج من شبكتك. شركات كتير بتنسى ده — وعشان كده C2 على بورت 443 بيشتغل ببلاش.</li>
             </ul>
           </Section>
 
           <Section title="ممارسة">
             <ol>
-              <li>افتح Wireshark على Kali، التقط 30 ثانية، افهم ما تراه.</li>
-              <li>افتح موقع HTTP بسيط، التقط، تابع TCP stream، اقرأ الـ raw HTTP.</li>
-              <li>افعل <span className="eng">dig</span> على 5 نطاقات مختلفة، انظر اختلاف الـ records.</li>
-              <li>افهم subnet bash:</li>
+              <li>افتح Wireshark على Kali، التقط 30 ثانية، وحاول تفهم اللي قدامك.</li>
+              <li>افتح موقع HTTP عادي، التقط، اعمل Follow TCP Stream، اقرا الـ raw HTTP.</li>
+              <li>اعمل <span className="eng">dig</span> على 5 دومينات مختلفة، شوف فرق الـ records.</li>
+              <li>درّب نفسك على الـ subnetting:</li>
             </ol>
             <Code lang="bash">{`ipcalc 192.168.1.0/24
 # Network:    192.168.1.0

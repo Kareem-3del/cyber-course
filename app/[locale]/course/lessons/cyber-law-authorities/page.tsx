@@ -6,11 +6,11 @@ export default function Page() {
     <LessonShell slug="cyber-law-authorities">
       <L
         ar={<>
-          <Section title="لماذا يحتاج المحلّل التقني فقه القانون">
-            <p>التحقيقات السيبرانية في بيئة فيدرالية لا تجري في فراغ. كل قرار — جمع log، الوصول لـ mailbox، إعادة بناء جلسة شبكة، التواصل مع جهة خاصة — له <b>إطار قانوني</b>. التجاوز يُسقط القضية و يعرّضك شخصياً للمسؤولية.</p>
-            <Analogy>كجرّاح يعرف كيف يقطع، لكن لا يعرف متى يحتاج موافقة المريض. التقنية بدون السلطة القانونية = مخاطرة شخصية و مهنية.</Analogy>
+          <Section title="ليه المحلّل التقني محتاج يفهم في القانون؟">
+            <p>التحقيقات السيبرانية في البيئة الفيدرالية ما بتحصلش في الفراغ. كل قرار — تجمع log، تدخل على mailbox، تعيد بناء جلسة شبكة، تكلّم جهة خاصة — ليه <b>إطار قانوني</b>. لو تجاوزته، القضية تسقط، وإنت شخصياً ممكن تتحاسب.</p>
+            <Analogy>تخيّل جرّاح يعرف يقطع كويس، بس ما يعرفش إمتى محتاج موافقة المريض. التقنية من غير سلطة قانونية = مخاطرة عليك إنت قبل ما تكون مخاطرة على القضية.</Analogy>
             <Callout kind="danger" title="إخلاء مسؤولية">
-              هذا الدرس <b>تمهيدي</b>. يقدّم خريطة عامة فقط. القرارات الحقيقية تتطلب OGC (Office of General Counsel) و AUSA (Assistant US Attorney). <b>لا تستند على هذا الدرس وحده في قرار قانوني فعلي</b>.
+              الدرس ده <b>تمهيدي</b>. بيدّيك خريطة عامة بس. القرارات الفعلية بتحتاج OGC (Office of General Counsel) و AUSA (Assistant US Attorney). <b>متعتمدش على الدرس ده لوحده في أي قرار قانوني حقيقي</b>.
             </Callout>
           </Section>
 
@@ -62,7 +62,7 @@ export default function Page() {
               </Card>
             </TwoCol>
             <Callout kind="danger" title="نقطة جوهرية">
-              التقاط traffic على شبكة المؤسسة يحتاج consent (banner) أو "provider exception". لا تفترض consent — اقرأ banner المؤسسة و سجل acceptable-use الموقّعة.
+              التقاط traffic على شبكة المؤسسة محتاج consent (banner) أو "provider exception". متفترضش الـ consent من نفسك — اقرا الـ banner بتاع المؤسسة وشوف سجل acceptable-use الموقّع. غير كدة، إنت بتمشي على لغم.
             </Callout>
           </Section>
 
@@ -93,7 +93,7 @@ export default function Page() {
               <li><b>Title I FISA</b> — مراقبة "agents of foreign powers" داخل الولايات.</li>
             </ul>
             <Callout kind="danger" title="جدار فاصل">
-              FISA و Title III لا يمتزجان بسهولة. محقّق criminal لا يستطيع استخدام FISA. محلّل intelligence لا يستطيع تحويل intel لـ criminal evidence دون خطوات قانونية محدّدة. الفصل بين <b>Title 50</b> (intel) و <b>Title 18</b> (LE) أساس عمل الـ FBI.
+              FISA وTitle III ما بيتخلطوش بسهولة. المحقّق الجنائي ما يقدرش يستخدم FISA. ومحلّل الـ intel ما يقدرش يحوّل intel لـ criminal evidence من غير خطوات قانونية محدّدة. الفصل بين <b>Title 50</b> (intel) و <b>Title 18</b> (LE) ده أساس شغل الـ FBI — لو خلطت بينهم، حرقت القضية.
             </Callout>
           </Section>
 
@@ -165,12 +165,12 @@ FISA Order         Foreign intel surveillance      FISC approval`}</Code>
             </Callout>
           </Section>
 
-          <Section title="لماذا تحتاج مكتب OGC في حياتك اليومية">
+          <Section title="ليه إنت محتاج OGC في حياتك اليومية">
             <ul>
               <li>قبل أي capture جديد، أي أداة جديدة، أي data sharing جديد.</li>
-              <li>قبل التواصل مع private sector عن حادث.</li>
-              <li>قبل تقديم intel لـ AUSA لـ criminal prosecution.</li>
-              <li>عند الشك: اسأل و وثّق السؤال و الإجابة. هذا يحميك.</li>
+              <li>قبل ما تتواصل مع private sector عن حادث.</li>
+              <li>قبل ما تسلّم intel لـ AUSA لـ criminal prosecution.</li>
+              <li>عند الشك: اسأل، ووثّق السؤال والإجابة. التوثيق ده هو اللي بيحميك إنت شخصياً.</li>
             </ul>
             <Callout kind="good" title="قواعد عملية">
               <ol>

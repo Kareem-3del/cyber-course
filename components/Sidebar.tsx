@@ -8,10 +8,10 @@ import { useProgress } from "@/lib/progress";
 import { Search, X, Check, Square, ChevronDown } from "lucide-react";
 
 const GROUPS: { key: Track; ar: string; en: string }[] = [
-  { key: "intro", ar: "الأساسيات",          en: "Foundations" },
-  { key: "red",   ar: "Red — الهجوم",       en: "Red — Offense" },
-  { key: "blue",  ar: "Blue — الدفاع",      en: "Blue — Defense" },
-  { key: "ops",   ar: "العمليات والتقصي",   en: "Ops & Hunting" },
+  { key: "intro", ar: "الأساسيات والمبادئ",          en: "Foundations" },
+  { key: "red",   ar: "الفرق الحمراء — الهجوم",       en: "Red Team — Offense" },
+  { key: "blue",  ar: "الفرق الزرقاء — الدفاع",      en: "Blue Team — Defense" },
+  { key: "ops",   ar: "العمليات والتقصي الاستخباري",   en: "Ops & Hunting" },
 ];
 
 interface Props { open: boolean; onClose: () => void; }
@@ -83,7 +83,7 @@ export function Sidebar({ open, onClose }: Props) {
             <input
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              placeholder={lang === "ar" ? "ابحث..." : "SEARCH..."}
+              placeholder={lang === "ar" ? "البحث في الوحدات..." : "SEARCH MODULES..."}
               className="w-full text-[13px] font-mono bg-sunken text-black border-[3px] border-black ps-9 pe-3 py-2 outline-none focus:border-[5px] focus:py-[6px] uppercase placeholder:text-black/40"
             />
           </div>

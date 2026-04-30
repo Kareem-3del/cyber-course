@@ -7,55 +7,55 @@ export default function Page() {
       <L
         ar={<>
           <Section title="لماذا USB ما زال السلاح الأخطر في 2026">
-            <p>الفجوة الهوائية (<span className="eng">air gap</span>) — فصل النظام تماماً عن الإنترنت — هي أعلى مستوى دفاع تعرفه البنى التحتية الحرجة (محطات طاقة، منشآت نووية، شبكات تصنيع). USB هو الجسر الوحيد الذي يعبر هذه الفجوة. لذا منذ Stuxnet في 2010 حتى عمليات <span className="eng">Volt Typhoon</span> الأخيرة، USB ظلّ ناقل العدوى الأول للأهداف &quot;المعزولة&quot;.</p>
-            <Analogy>الفجوة الهوائية كجدار حصن. الإنترنت بوابة محروسة. USB — قطعة بريد يضعها موظف في جيبه ويعبر بها الجدار دون تفتيش. لذا كل خصم جاد على بنى تحتية حرجة يستثمر في &quot;كيف ندخل عن طريق جيب موظف&quot;.</Analogy>
-            <Callout kind="danger" title="تحذير قانوني">
-              توصيل جهاز USB بنظام لا تملكه (حتى محطة شحن في مطار) قد يُعتبر &quot;وصولاً غير مصرح&quot; تحت CFAA §1030. هذا الدرس لـ: (1) مختبراتك الخاصة، (2) عمليات red team بعقد، (3) تقييمات تحت تفويض حكومي مكتوب.
+            <p>الـ <span className="eng">air gap</span> — فصل النظام تماماً عن الإنترنت — هو أعلى مستوى دفاع البنى التحتية الحرجة بتعمله (محطات طاقة، منشآت نووية، شبكات تصنيع). الـ USB هو الجسر الوحيد اللي بيعدّي الفجوة دي. علشان كده من Stuxnet في 2010 لحد عمليات <span className="eng">Volt Typhoon</span> الأخيرة، الـ USB لسه ناقل العدوى رقم 1 للأهداف &quot;المعزولة&quot;. السلاح ده عمره 16 سنة ولسه شغال.</p>
+            <Analogy>تخيل الـ air gap حيطة قلعة. الإنترنت بوابة عليها حراسة. الـ USB؟ ده ظرف بريد بيحطه موظف في جيبه ويعدّي الحيطة من غير ما حد يفتشه. علشان كده أي خصم جاد بيستثمر في سؤال واحد: &quot;إزاي ندخل عن طريق جيب موظف؟&quot;</Analogy>
+            <Callout kind="danger" title="تحذير قانوني — اقراه قبل ما تكمل">
+              إنك توصل USB بنظام مش بتاعك (حتى محطة شحن في مطار) ممكن يتحسب &quot;وصول غير مصرّح&quot; تحت CFAA §1030. الدرس ده ينفع فقط في: (1) المعامل الخاصة بيك، (2) عمليات red team بعقد، (3) تقييمات بتفويض حكومي مكتوب. خرجت عن الحدود دي = جناية.
             </Callout>
           </Section>
 
           <Section title="عائلات هجمات USB — اعرف الفرق">
             <TwoCol>
               <Card title="1) USB كقرص ملوث" color="amber">
-                ملف خبيث + إعداد <span className="eng">autorun.inf</span> أو اسم مغرٍ (<span className="eng">salaries.xlsx.lnk</span>). يعتمد على نقر المستخدم. أبسط أشكال الهجوم — وما زال يعمل ضد بيئات ضعيفة الوعي.
+                ملف خبيث + <span className="eng">autorun.inf</span> أو اسم مغري زي (<span className="eng">salaries.xlsx.lnk</span>). بيعتمد على إن المستخدم يضغط. أبسط شكل في اللعبة — ولسه شغال على البيئات اللي وعيها ضعيف.
               </Card>
-              <Card title="2) BadUSB — انتحال الفئة" color="red">
-                الـ firmware في chip الـ USB قابل لإعادة البرمجة. يدّعي أنه HID (لوحة مفاتيح) فيُكتب أوامر بسرعة 1000 wpm. <b>لا يحتاج autorun</b> — النظام يثق بأي keyboard.
+              <Card title="2) BadUSB — انتحال فئة الجهاز" color="red">
+                الـ firmware في شريحة الـ USB قابل لإعادة البرمجة. الجهاز بيقول &quot;أنا HID (كيبورد)&quot; وبيكتب أوامر بسرعة 1000 wpm. <b>مش محتاج autorun</b> — الـ OS بيثق في أي كيبورد على طول.
               </Card>
               <Card title="3) Rubber Ducky / Bash Bunny" color="red">
-                منتجات تجارية (Hak5) تنفّذ BadUSB بلغة سكربت. <span className="eng">DuckyScript</span> يحوّل تسلسل ضربات لوحة مفاتيح إلى ملف .bin، يُسقط في &quot;USB&quot; ثم يكتب نفسه على الهدف خلال ثوانٍ.</Card>
+                منتجات تجارية من Hak5 بتنفذ BadUSB بلغة سكربت. <span className="eng">DuckyScript</span> بيحوّل سلسلة ضربات الكيبورد لملف .bin، تنزله على &quot;USB&quot; وهو بيكتب نفسه على الهدف في ثواني.</Card>
               <Card title="4) USB كمحوّل شبكي (LAN Turtle)" color="red">
-                الجهاز يعرّف نفسه كـ <span className="eng">USB Ethernet adapter</span>. Windows يفضّله تلقائياً على شبكة LAN/WiFi → كل DNS وHTTP يمر عبر الجهاز → MITM فوري.
+                الجهاز بيقدم نفسه كـ <span className="eng">USB Ethernet adapter</span>. Windows بيفضّله تلقائياً على الـ LAN/WiFi → كل DNS وHTTP بيعدي من خلاله → MITM فوري ومن غير ضجة.
               </Card>
-              <Card title="5) USB كمسرّب لاسلكي (O.MG cable)" color="red">
-                يبدو ككبل شحن iPhone. داخله شريحة WiFi + microcontroller. تتصل به من 100م، تنفّذ أوامر، تستخرج بيانات. الضحية لا يعرف أن &quot;الكبل&quot; أصبح C2.
+              <Card title="5) USB لاسلكي (O.MG cable)" color="red">
+                شكله كبل شحن iPhone عادي. جواه شريحة WiFi + microcontroller. المهاجم بيتصل بيه من 100 متر، بينفّذ أوامر، بيسرّب. الضحية معرفش إن &quot;الكبل&quot; بقى قناة C2.
               </Card>
               <Card title="6) USBKill / تخريب فيزيائي" color="red">
-                مكثفات تشحن من خط 5V ثم تطلق ~200V في خطوط الـ USB. تُتلف اللوحة الأم في 0.5 ثانية. ليس &quot;اختراقاً&quot; لكنه ضمن طيف هجمات USB في عمليات تخريب.
+                مكثفات بتتشحن من خط الـ 5V وبعدين بتطلق ~200V على خطوط الـ USB. بتحرق الـ motherboard في نص ثانية. مش &quot;اختراق&quot; بالمعنى المفهوم لكنه جزء من طيف الـ USB في عمليات التخريب.
               </Card>
             </TwoCol>
           </Section>
 
           <Section title="كيف يُنشر USB ملوث في العالم الحقيقي">
             <Step n={1} title="الإسقاط — Drop Attack">
-              <p>دراسة جامعة إلينوي 2016 الكلاسيكية: 297 USB أُلقيت في حرم جامعي. <b>98% أُخذت، 45% وُصلت بحاسوب</b>. معدل النجاح أعلى لو الـ USB موسوم (&quot;السرية&quot;، &quot;رواتب 2026&quot;، شعار الجامعة). في عمليات حقيقية على بيئات حكومية، الموقع يُختار: مواقف السيارات، المصاعد، الكافتيريا.</p>
+              <p>دراسة جامعة إلينوي 2016 الكلاسيكية: 297 USB اترموا في حرم الجامعة. <b>98% اتاخدوا، 45% اتوصّلوا بكمبيوتر</b>. النسبة بترتفع لو الـ USB عليه ملصق (&quot;سري&quot;، &quot;رواتب 2026&quot;، شعار الجامعة). في العمليات الحقيقية على بيئات حكومية، المكان مش عشوائي — مواقف السيارات، المصاعد، الكافيتريا. الفضول البشري ثغرة مفتوحة دايماً.</p>
             </Step>
             <Step n={2} title="الهدية المؤتمر / الترويج">
-              <p>USB &quot;مجانية&quot; توزع في مؤتمر صناعي. حصل في 2018 لمؤتمر شركة طاقة أمريكية كبرى — انتشرت العدوى في 14 مرفق طاقة قبل اكتشاف الحملة. الموزّع نفسه قد يكون بريئاً (شركة طبع البطاقات أُخترقت في سلسلة الإمداد).</p>
+              <p>فلاشات &quot;مجانية&quot; بتتوزّع في مؤتمر صناعي. حصلت في 2018 في مؤتمر شركة طاقة أمريكية كبيرة — العدوى انتشرت في 14 مرفق طاقة قبل ما الحملة تتكشف. الموزّع نفسه ممكن يكون بريء — شركة طباعة الكروت اخترقت في سلسلة الإمداد.</p>
             </Step>
             <Step n={3} title="الموظف الداخلي / المُتعاقد">
-              <p>المسار الذي استُخدم في Stuxnet (2010). إيران كانت معزولة عن الإنترنت في منشأة نطنز. التحليلات تشير إلى أن مقاولاً (روسي على الأرجح) أدخل USB ملوث إلى محطة هندسية. الباقي تاريخ.</p>
+              <p>المسار اللي اتاستخدم في Stuxnet (2010). إيران كانت معزولة عن الإنترنت في منشأة نطنز. التحليلات بتقول إن مقاول (روسي على الأرجح) دخّل USB ملوث على محطة هندسية. الباقي تاريخ معروف.</p>
             </Step>
             <Step n={4} title="محطات الشحن العامة (Juice Jacking)">
-              <p>محطة شحن في مطار/فندق معدّلة. اللحظة التي تصل بها هاتفك بالـ USB، الجهاز يتفاوض على وضع البيانات، يقرأ الصور، يدفع تطبيقاً. FBI Denver أصدر تحذيراً رسمياً 2023.</p>
+              <p>محطة شحن في مطار أو فندق معدّلة. اللحظة اللي بتوصل فيها التليفون بالـ USB، الجهاز بيتفاوض على وضع البيانات، بيقرا الصور، بيدفع تطبيق. FBI Denver طلع تحذير رسمي بيها سنة 2023.</p>
             </Step>
             <Step n={5} title="سلسلة الإمداد">
-              <p>الأخطر. USB يصل ملوثاً من المصنع نفسه. حدث على شحنات مسجلات صوتية أمنية صينية 2022، ولوحات أم Asus (LiveUpdate) 2019. صعب جداً اكتشافه إذا كان التوقيع الرقمي صحيحاً.</p>
+              <p>دي الأخطر بكتير. الـ USB بيوصل ملوّث من المصنع نفسه. حصل على شحنات مسجلات أمنية صينية في 2022، وعلى motherboards من Asus (LiveUpdate) في 2019. صعب جداً تكتشفه طول ما الـ digital signature سليم. اللعبة هنا في غاية الخطورة.</p>
             </Step>
           </Section>
 
           <Section title="كيف يعدي USB الـ &quot;Air-Gap&quot; — قصة Stuxnet مختصرة">
-            <p>Stuxnet هو الـ benchmark. كل عملية USB لاحقة درست منه:</p>
+            <p>Stuxnet هو الـ benchmark. أي عملية USB جت بعده اتعلمت منه. شوف خطواته بالظبط:</p>
             <ol>
               <li><b>الإسقاط الأولي</b> — USB ملوث وصل إلى حواسيب مقاولين متصلين بالإنترنت أولاً.</li>
               <li><b>الانتشار</b> — كل USB يوصل بحاسوب مصاب يُنسخ إليه الحمولة. ينتشر تلقائياً.</li>
@@ -64,13 +64,13 @@ export default function Page() {
               <li><b>الحمولة النهائية</b> — برنامج PLC مُعدّل، يخرّب طرّادات اليورانيوم بأنماط دوّار، بينما يُظهر للمشغّلين قراءات طبيعية.</li>
               <li><b>التغطية</b> — توقيع رقمي مسروق من Realtek وJMicron جعل Windows يثق بالـ drivers.</li>
             </ol>
-            <Callout kind="info" title="الدرس">
-              نظام معزول لا يعني نظام آمن. يعني أن ناقل العدوى يجب أن يكون فيزيائياً — وهذا قيد بشري، لا تقني.
+            <Callout kind="info" title="الخلاصة الناشفة">
+              نظام معزول مش معناه نظام آمن. معناه إن ناقل العدوى لازم يكون فيزيائي — وده قيد بشري مش تقني. والقيود البشرية بتنكسر، دايماً.
             </Callout>
           </Section>
 
           <Section title="BadUSB من الداخل — كيف يكتب أوامر دون نقر">
-            <p>BadUSB يستغل أن بروتوكول USB يسمح للجهاز بأن يدّعي أي &quot;فئة&quot;. الـ firmware يعدّل ليقول: &quot;أنا لوحة مفاتيح Logitech&quot;. النظام يضيفه فوراً بدون أي طلب صلاحيات.</p>
+            <p>هو بيشتغل ليه أصلاً؟ بسيطة: بروتوكول الـ USB بيسمح لأي جهاز إنه يقول &quot;أنا فئة كذا&quot;. الـ firmware بيتعدّل ليقول &quot;أنا كيبورد Logitech&quot;. النظام بيضيفه على طول من غير ما يسأل المستخدم. ثقة عمياء.</p>
             <Code lang="DuckyScript">{`REM === تعليمي بحت — تنفيذه على نظام بدون إذن جريمة ===
 DELAY 1000
 GUI r              REM فتح Run في Windows
@@ -82,7 +82,7 @@ REM هنا في عملية حقيقية يُكتب one-liner C2،
 REM لكن العرض التعليمي يتوقف عند Run فقط
 STRING Write-Host "Educational PoC - red team training"
 ENTER`}</Code>
-            <p>الزمن من توصيل الـ USB إلى تنفيذ أمر: <b>3-7 ثوان</b>. أسرع من أي تنبيه EDR تقليدي.</p>
+            <p>الزمن من إن الـ USB يدخل لحد ما الأمر يتنفّذ: <b>3-7 ثواني</b>. أسرع من أي تنبيه EDR تقليدي. مفيش وقت للسؤال.</p>
             <Callout kind="good" title="الدفاع">
               <ul>
                 <li><b>USB device control:</b> سياسة GPO تمنع HID جديد إلا بعد موافقة (Windows: <span className="eng">Device Installation Restrictions</span>).</li>
@@ -94,7 +94,7 @@ ENTER`}</Code>
           </Section>
 
           <Section title="الـ USB يصبح شبكة — LAN Turtle و O.MG كأمثلة">
-            <p>هنا يبدأ الجواب على سؤالك &quot;كيف يدخل الفيروس الشبكة من USB؟&quot;. الفكرة: الـ USB لا يحقن &quot;فيروس&quot; في الشبكة مباشرة — يحوّل الجهاز المضيف إلى نقطة دخول للمهاجم على الشبكة.</p>
+            <p>هنا الجواب على سؤال &quot;إزاي الفيروس بيدخل الشبكة من USB؟&quot;. الفكرة بسيطة: الـ USB مش بيحقن &quot;فيروس&quot; في الشبكة مباشرة. هو بيحوّل الجهاز المضيف نفسه لنقطة دخول للمهاجم على الشبكة. الـ USB هو الباب، الشبكة هي البيت، المهاجم هو الضيف.</p>
             <TwoCol>
               <Card title="السيناريو 1 — USB Ethernet Adapter خبيث" color="red">
                 LAN Turtle يعرّف نفسه كـ network adapter. Windows/Mac يضيفه تلقائياً ويفضّل route عبره أحياناً. النتيجة: كل DNS, HTTP, SMB يمر بالجهاز. ينفذ المهاجم: DNS spoofing, NTLM relay, captive portal مزيف، أو استخراج hash الـ NetNTLMv2 خلال ثوان.
@@ -124,9 +124,9 @@ ENTER`}</Code>
           </Section>
 
           <Section title="بعد الاتصال بالشبكة — كيف يصل المهاجم إلى الأجهزة الأخرى">
-            <p>هذا هو الجزء الذي سألت عنه: &quot;لو اتصلت بشبكة، كيف أصل إلى الأجهزة؟&quot;. الإجابة عبر مراحل منهجية:</p>
+            <p>دلوقتي السؤال المهم: &quot;طب لو اتصلت بالشبكة، أوصل لباقي الأجهزة إزاي؟&quot;. الإجابة بتيجي على مراحل منهجية، مش بالعشوائية:</p>
             <Step n={1} title="رسم خريطة الشبكة">
-              <p>اكتشاف ما هو موجود قبل أي شيء. أدوات ما تحتاج رفعها: <span className="eng">nmap, arp, netstat, ip route, nslookup</span>. هدفك: subnets، gateway، DHCP، DNS، servers (DC, DB, Print, File).</p>
+              <p>قبل أي حاجة، اعرف اللي قدامك. أدوات مش محتاج ترفعها — كلها موجودة على النظام: <span className="eng">nmap, arp, netstat, ip route, nslookup</span>. هدفك: تعرف الـ subnets والـ gateway والـ DHCP والـ DNS والـ servers (DC, DB, Print, File).</p>
               <Terminal lines={[
                 { p: "# خريطة سريعة للشبكة المباشرة:" },
                 { p: "ip route                          # gateways و subnets المعروفة" },
@@ -136,36 +136,36 @@ ENTER`}</Code>
               ]} />
             </Step>
             <Step n={2} title="جمع المعلومات السلبي — listen قبل أن تتكلم">
-              <p>كل subnet تتدفق فيه broadcasts: ARP, mDNS, LLMNR, NBT-NS, DHCP, SSDP, NetBIOS. <span className="eng">Responder</span> و <span className="eng">Wireshark</span> يخبرانك بأسماء الحواسيب، المستخدمين، أحياناً hashes كاملة قبل أن ترسل حزمة واحدة.</p>
-              <p><b>لماذا هذه الخطوة مهمة:</b> سلبية = صعبة الاكتشاف. ساعة سماع تكشف أكثر من ساعة فحص نشط، ولا تطلق IDS.</p>
+              <p>كل subnet مليان broadcasts بتطفح: ARP, mDNS, LLMNR, NBT-NS, DHCP, SSDP, NetBIOS. <span className="eng">Responder</span> و<span className="eng">Wireshark</span> هيقولوا لك أسماء الأجهزة، المستخدمين، وأحياناً hashes كاملة قبل ما تبعت ولا packet واحد.</p>
+              <p><b>الخطوة دي مهمة ليه؟</b> لأن السلبي = صعب يتكشف. ساعة سماع بتكشفلك أكتر من ساعة فحص نشط، ومش بتطلّع IDS. بصمتك = ضعفك للمدافع.</p>
             </Step>
             <Step n={3} title="LLMNR/NBT-NS Poisoning — أول طريق سهل لـ hashes">
-              <p>عندما حاسوب Windows يطلب اسماً غير موجود في DNS، يُذيع &quot;من اسمه X؟&quot; على LAN. أداة Responder تجيب &quot;أنا!&quot;، فيرسل الحاسوب ضحية NTLMv2 hash لها. تكسرها أو ترحّلها (relay).</p>
+              <p>لما جهاز Windows بيدور على اسم مش موجود في الـ DNS، بيصرخ على الـ LAN: &quot;مين اسمه X؟&quot;. الـ Responder بيرد &quot;أنا!&quot;، فالضحية بيبعت NTLMv2 hash. تكسره offline أو ترحّله (relay) لخدمة تانية.</p>
               <Code lang="bash">{`# في مختبر تملكه:
 sudo responder -I eth0 -wd
 # انتظر hashes → cracking offline بـ hashcat:
 hashcat -m 5600 hashes.txt rockyou.txt`}</Code>
             </Step>
             <Step n={4} title="NTLM Relay — لا تكسر، استخدم">
-              <p>أقوى من cracking. بدل كسر الـ hash، رحّله مباشرة إلى خدمة أخرى تثق بنفس النطاق (LDAP, SMB, MSSQL, ADCS). أداة <span className="eng">impacket-ntlmrelayx</span>. شرط: SMB signing معطّل على الهدف (وهو افتراضياً معطّل على الكثير).</p>
+              <p>أقوى من الـ cracking بكتير. بدل ما تكسر الـ hash، ارمي بيه على خدمة تانية بتثق في نفس الـ domain (LDAP, SMB, MSSQL, ADCS). أداة <span className="eng">impacket-ntlmrelayx</span>. الشرط الوحيد: SMB signing مش مفعّل على الهدف — وده افتراضياً معطّل في معظم البيئات. هدية مجانية.</p>
             </Step>
             <Step n={5} title="استغلال SMB / RCE معروفة">
-              <p>على شبكة مؤسسية غير محدّثة، تجد دائماً جهازاً واحداً عرضة لـ <span className="eng">EternalBlue (CVE-2017-0144)</span>، <span className="eng">PrintNightmare (CVE-2021-34527)</span>، <span className="eng">PetitPotam</span>، أو <span className="eng">ZeroLogon (CVE-2020-1472)</span>. كلها تصبح RCE/Domain Admin بأدوات public.</p>
+              <p>على أي شبكة مؤسسية مش محدّثة، هتلاقي دايماً جهاز واحد على الأقل ضعيف قدام <span className="eng">EternalBlue (CVE-2017-0144)</span>، <span className="eng">PrintNightmare (CVE-2021-34527)</span>، <span className="eng">PetitPotam</span>، أو <span className="eng">ZeroLogon (CVE-2020-1472)</span>. كلها بتتحول لـ RCE/Domain Admin بأدوات عامة. مفيش شطارة.</p>
             </Step>
             <Step n={6} title="الحركة الجانبية — Lateral Movement">
-              <p>بعد كلمة سر/hash واحد، تتنقّل بين الأجهزة بـ:</p>
+              <p>بعد ما تجيب باسورد أو hash واحد، تنقّل بين الأجهزة بـ:</p>
               <ul>
-                <li><b>PsExec / wmiexec / smbexec</b> (impacket) — تنفيذ أوامر عن بُعد عبر SMB.</li>
-                <li><b>WinRM</b> (HTTPS port 5986) — أكثر شرعية، يبدو إدارياً.</li>
-                <li><b>Pass-the-Hash / Pass-the-Ticket</b> — لا تحتاج كلمة السر النصية.</li>
-                <li><b>RDP</b> — مباشر لو فُتح. أكثر صخباً لكن مفيد على workstations.</li>
+                <li><b>PsExec / wmiexec / smbexec</b> (impacket) — تنفيذ أوامر remote عن طريق SMB.</li>
+                <li><b>WinRM</b> (HTTPS port 5986) — أكتر شرعية في الشكل، بيبان إداري عادي.</li>
+                <li><b>Pass-the-Hash / Pass-the-Ticket</b> — مش محتاج تعرف الباسورد النصي أصلاً.</li>
+                <li><b>RDP</b> — مباشر لو مفتوح. صوته عالي شوية بس مفيد على الـ workstations.</li>
               </ul>
             </Step>
             <Step n={7} title="الوصول للـ Domain Controller — &quot;crown jewel&quot;">
-              <p>Active Directory هو الهدف في 95% من الشبكات المؤسسية. مرة واحدة لديك Domain Admin: <span className="eng">DCSync</span> يستخرج كل hashes النطاق، تُعمل golden tickets، الوصول دائم.</p>
+              <p>الـ Active Directory هو الهدف في 95% من الشبكات المؤسسية. لما تطلع Domain Admin مرة واحدة: <span className="eng">DCSync</span> بيسحبلك كل hashes الـ domain، تعمل golden tickets، والوصول بقى دايم مهما غيّروا باسوردات.</p>
             </Step>
-            <Callout kind="info" title="ملاحظة مهنية">
-              هذه ليست &quot;خطوات يقفز بها فيروس USB تلقائياً&quot;. هذه خطوات <b>يدوية</b> ينفذها المشغّل بعد أن يفتح USB له shell على جهاز داخلي. الـ malware لا يحل محل المهاجم — يضعه على الكرسي.
+            <Callout kind="info" title="ملاحظة مهنية مهمة جداً">
+              الخطوات دي مش حاجة بتقفز فيها فلاشة لوحدها أوتوماتيكياً. دي خطوات <b>يدوية</b> بينفذها المشغّل (operator) بعد ما الـ USB بيفتحله shell على جهاز داخلي. الـ malware مش بياخد مكان المهاجم — هو بيقعّده على الكرسي بس. الباقي شغل بشري.
             </Callout>
           </Section>
 

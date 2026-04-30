@@ -7,13 +7,13 @@ export default function Page() {
       <L
         ar={<>
           <Section title="نطاق هذا الدرس">
-            <p>الدرس السابق (<span className="eng">usb-network-implants</span>) شرح <i>ماذا</i> ولماذا. هذا الدرس يجيب على <i>كيف نبنيها بأيدينا</i> في مختبر مرخّص — وكيف نكتشفها كمدافعين. كل أمثلة الكود هنا <b>تعليمية</b>: تفتح Notepad، تكتب علامة في ملف، تطبع رسالة. <u>لا تحتوي C2 ولا سرقة بيانات</u>.</p>
-            <Analogy>الفرق بين دراسة القفل وكسره. هنا نفكّ القفل في الورشة، نرسم آليته، ثم نصنع قفلاً أصعب. لا نستخدم المهارة على بيت الجار.</Analogy>
+            <p>الدرس اللي فات (<span className="eng">usb-network-implants</span>) شرح <i>الإيه</i> و<i>الليه</i>. الدرس ده هيرد على سؤال <i>إزاي نبنيها بإيدينا</i> في lab مرخّص — وإزاي نكتشفها كـ defenders. كل الأكواد اللي هتشوفها هنا <b>تعليمية بحتة</b>: بتفتح Notepad، بتكتب علامة في ملف، بتطبع رسالة. <u>مفيش C2، مفيش سرقة بيانات</u>. إحنا بنتعلم نفكّ، مش نسرق.</p>
+            <Analogy>الفرق بين إنك تدرس القفل وإنك تكسر قفل بيت حد. إحنا هنا في الورشة، بنفك القفل، نرسم ميكانيكيته، وبعد كده نصمم قفل أصعب. المهارة دي مش بتتنقل لباب الجار.</Analogy>
             <Callout kind="danger" title="حدود قانونية صارمة">
               <ul>
-                <li>كل سكربت هنا <b>قانوني فقط</b> داخل: حاسوبك، VM في مختبرك، عقد red team موقّع، أو تقييم تحت تفويض حكومي.</li>
-                <li>تشغيل أيٍ منها على كمبيوتر زميل/عائلة/شركة بدون إذن مكتوب = جناية تحت CFAA §1030(a)(5)(A).</li>
-                <li>حتى &quot;مزحة&quot; على جهاز شخص آخر يمكن أن تنتج ملفاً جنائياً فيدرالياً.</li>
+                <li>كل سكربت هنا <b>قانوني بس</b> على: جهازك، VM في الـ lab بتاعك، عقد red team موقّع، أو تقييم بتفويض حكومي.</li>
+                <li>تشغيل أي حاجة من دول على كمبيوتر زميل/أهل/شركة من غير ورق = جناية تحت CFAA §1030(a)(5)(A).</li>
+                <li>حتى &quot;هزار&quot; على جهاز حد تاني ممكن يفتحلك ملف فيدرالي. متعكش.</li>
               </ul>
             </Callout>
           </Section>
@@ -34,12 +34,12 @@ export default function Page() {
               </ul>
             </Step>
             <Step n={4} title="منطق &quot;canary&quot; في كل سكربت تجريبي">
-              <p>لتجنب كارثة، اجعل كل سكربت يبحث عن ملف <span className="eng">C:\\LAB_OK.txt</span> ولا ينفذ شيئاً إن لم يجده. هكذا لو ضاع USB من الطاولة لن يضرّ جهازاً عشوائياً.</p>
+              <p>علشان نتجنب الكارثة، خلي كل سكربت يدوّر على ملف <span className="eng">C:\\LAB_OK.txt</span> الأول، ولو ملقاهوش يخرج فوراً من غير ما يعمل حاجة. لو الـ USB وقع منك على الأرض ولقاه حد ووصّله بجهازه، مش هيحصل أي حاجة. ده اسمه &quot;canary&quot; — حياتك المهنية متعتمدش على إنك متفقدش حاجة.</p>
             </Step>
           </Section>
 
           <Section title="مثال 1 — DuckyScript: &quot;hello world&quot; لـ BadUSB">
-            <p>هذا أبسط سكربت ممكن. يفتح Notepad ويكتب نصاً. الهدف: فهم بنية DuckyScript قبل أي شيء أعقد.</p>
+            <p>أبسط سكربت ممكن في الدنيا. بيفتح Notepad ويكتب فيه. هدفنا الوحيد دلوقتي: نفهم بنية DuckyScript قبل ما نروح لأي حاجة معقدة. خد الحاجة على مهلك.</p>
             <Code lang="DuckyScript">{`REM أبسط PoC تعليمي — يفتح Notepad ويكتب علامة
 DELAY 1500            REM انتظر تعرّف النظام على "لوحة المفاتيح"
 GUI r                 REM Win+R = فتح Run
@@ -50,7 +50,7 @@ DELAY 800
 STRING USB lab test - educational only - $(Get-Date)
 ENTER
 STRING This file proves the HID could type. No payload executed.`}</Code>
-            <p><b>ما الذي يعلّمه:</b> ضربات المفاتيح (<span className="eng">STRING</span>)، المفاتيح الخاصة (<span className="eng">GUI, ENTER</span>)، وأهمية <span className="eng">DELAY</span> — بدونها السكربت يكتب قبل أن يفتح Notepad فيضيع الإدخال.</p>
+            <p><b>اللي بنتعلمه من ده:</b> ضربات المفاتيح (<span className="eng">STRING</span>)، المفاتيح الخاصة (<span className="eng">GUI, ENTER</span>)، وأهمية <span className="eng">DELAY</span> — لو شيلتها، السكربت هيكتب قبل ما Notepad يفتح، والإدخال هيضيع في الهوا. التوقيت هو نص اللعبة.</p>
           </Section>
 
           <Section title="مثال 2 — DuckyScript بـ canary وحدود تنفيذ آمنة">
@@ -60,21 +60,21 @@ GUI r
 DELAY 300
 STRING powershell -w hidden -nop -c "if (Test-Path C:\\LAB_OK.txt) { Add-Content C:\\LAB_OK.txt ('USB-PoC ran at ' + (Get-Date)) } else { exit }"
 ENTER`}</Code>
-            <p>سطر واحد PowerShell يتحقق من وجود علامة. لو فتحت USB بالخطأ على جهاز ليس فيه <span className="eng">C:\\LAB_OK.txt</span>، لا يحدث شيء. هذا نمط &quot;safety net&quot; مهم في مختبرات التدريب.</p>
-            <Callout kind="info" title="لماذا canary مهم">
-              في تدريب 2019، فريق جامعي فقد USB &quot;معطّل&quot; في مقهى. شخص أوصله بحاسوبه. لو كان فيه canary، لما حدث شيء؛ بدونه، الفريق دفع غرامة و كاد يفقد ترخيصه.
+            <p>سطر واحد PowerShell بيتأكد إن العلامة موجودة. لو الـ USB دخل على جهاز مفهوش <span className="eng">C:\\LAB_OK.txt</span>، مش هيحصل ولا حاجة. ده نمط &quot;safety net&quot; لازم في أي معمل تدريب محترم.</p>
+            <Callout kind="info" title="ليه الـ canary مش رفاهية">
+              في تدريب 2019، فريق جامعي ضيّع USB &quot;متعطّل&quot; في كافيه. حد لقاه ووصّله بلابتوبه. لو كان عليه canary، مكنش هيحصل ولا حاجة؛ من غيره، الفريق دفع غرامة وكاد يخسر شهادته. الـ canary هو الفرق بين شغل محترم وكارثة.
             </Callout>
           </Section>
 
           <Section title="مثال 3 — اكتشاف بيئة قبل الإقلاع">
-            <p>سكربت تعليمي يطبع نوع نظام التشغيل ولغة لوحة المفاتيح إلى ملف. هذا نمط حقيقي يستخدمه المهاجمون لتعديل لاحق للحمولة — لكن هنا نوقف عند &quot;اعرف فقط&quot;.</p>
+            <p>سكربت تعليمي بيكتب نوع الـ OS ولغة الكيبورد في ملف. ده نمط بيستخدمه المهاجمين فعلاً علشان يعدّلوا الحمولة بناءً على البيئة — بس إحنا هنا بنقف عند حد &quot;اعرف بس&quot;، مش أكتر.</p>
             <Code lang="DuckyScript">{`REM PoC: enumerate environment, write to file, exit
 DELAY 1500
 GUI r
 DELAY 300
 STRING powershell -w hidden -nop -c "if (-not (Test-Path C:\\LAB_OK.txt)) { exit }; $info = @{ os = $PSVersionTable.OS; user = $env:USERNAME; lang = (Get-Culture).Name; time = (Get-Date) }; $info | Out-File C:\\LAB_OK.txt -Append"
 ENTER`}</Code>
-            <p><b>القيمة الدفاعية:</b> فهم أن المهاجم يحتاج <i>5–15 ثانية</i> ليجمع هذه المعلومة الأولية. EDR الذي يصطاد &quot;PowerShell hidden launched seconds after USB plug&quot; يكسر السلسلة قبل أن تبدأ.</p>
+            <p><b>القيمة الدفاعية:</b> لازم تفهم إن المهاجم محتاج من <i>5 لـ 15 ثانية</i> علشان يجمع المعلومة الأولية دي. EDR بيصطاد &quot;PowerShell hidden اشتغل بعد ثواني من USB plug&quot; بيكسر السلسلة كلها قبل ما تبدأ أصلاً.</p>
           </Section>
 
           <Section title="مثال 4 — Raspberry Pi Pico كـ BadUSB بـ $4">
@@ -120,12 +120,12 @@ layout.write("No network, no exec, no payload.\\n")
 while True:
     time.sleep(60)`}</Code>
             <Callout kind="info" title="لماذا Pico أهم تعليمياً من Rubber Ducky">
-              Rubber Ducky &quot;صندوق أسود&quot; — تشتري وتستخدم. Pico مفتوح: ترى الـ firmware، ترى التوقيت، ترى كل API. تتعلم كيف يعمل الـ enumeration، تتعلم لماذا تأخير 2.5 ثانية، تتعلم كيف يتغيّر الـ <span className="eng">VID/PID</span>. هذا ما يجعل المدافع أفضل في الكشف.
+              الـ Rubber Ducky صندوق أسود — تشتريه وتستخدمه وخلاص. الـ Pico مفتوح: بتشوف الـ firmware، التوقيت، كل API. بتتعلم الـ enumeration بيشتغل إزاي، بتفهم ليه التأخير 2.5 ثانية تحديداً، بتشوف بعينك الـ <span className="eng">VID/PID</span> بيتغير إزاي. ده بالظبط اللي بيخلّيك defender شاطر.
             </Callout>
           </Section>
 
           <Section title="مثال 5 — انتحال جهاز موثوق (VID/PID spoofing)">
-            <p>كل جهاز USB يقدّم نفسه بـ <span className="eng">Vendor ID + Product ID</span>. أنظمة GPO تسمح أحياناً بـ &quot;Logitech keyboards&quot; فقط. الهجوم: عدّل descriptors لتقول إنك Logitech.</p>
+            <p>كل جهاز USB بيقدم نفسه بـ <span className="eng">Vendor ID + Product ID</span>. أنظمة الـ GPO أحياناً بتسمح بـ &quot;Logitech keyboards&quot; بس. الهجوم؟ عدّل الـ descriptors تقول إنك Logitech، وخلاص دخلت.</p>
             <Code lang="python">{`# في boot.py على Pico — قبل أي شيء آخر
 import usb_hid
 import supervisor
@@ -139,12 +139,12 @@ supervisor.set_usb_identification(
     pid=0xC31C,
 )`}</Code>
             <Callout kind="good" title="الدفاع — لماذا VID/PID وحده لا يكفي">
-              قاعدة whitelist بـ VID/PID فقط = أمن مزيف. الدفاع الجاد يطلب: <b>(VID + PID + Serial Number)</b>. الـ Serial فريد لكل جهاز فعلي. <span className="eng">USBGuard</span> على Linux و <span className="eng">Device Installation Restrictions</span> على Windows يدعمان هذا. كل لوحة مفاتيح مؤسسية مسجّلة بـ serial، أي جديدة = مرفوض.
+              whitelist بـ VID/PID لوحدها = أمن مزيف، تياترو. الدفاع الجاد محتاج: <b>(VID + PID + Serial Number)</b>. الـ Serial ده فريد لكل جهاز مادي. <span className="eng">USBGuard</span> على Linux و<span className="eng">Device Installation Restrictions</span> على Windows بيدعموا الكلام ده. كل كيبورد في الشركة مسجّل بـ serial، وأي حاجة جديدة = مرفوضة على باب المصنع.
             </Callout>
           </Section>
 
           <Section title="مثال 6 — autorun الكلاسيكي (لِمَ ما زال يهم)">
-            <p>منذ Windows 7 SP1 معطّل افتراضياً، لكن: (أ) أنظمة OT/ICS كثيرة ما زالت تعمل XP/7 RTM، (ب) بعض GPO تعيد تفعيله للـ &quot;ملاءمة&quot;.</p>
+            <p>متعطّل افتراضياً من أيام Windows 7 SP1، بس: (أ) أنظمة OT/ICS كتير لسه شغالة على XP أو 7 RTM لحد دلوقتي، (ب) في GPOs بتعيد تشغيله علشان &quot;الراحة&quot;. الكلاسيك مش بيموت.</p>
             <Code lang="ini">{`; autorun.inf تعليمي — على XP/7 RTM يفتح ملف عند الإدخال
 [autorun]
 open=demo.exe
@@ -161,7 +161,7 @@ action=Open lab demo`}</Code>
           </Section>
 
           <Section title="مثال 7 — رؤية ما يحدث على الناقل (USBPcap)">
-            <p>قبل أن تدافع، شاهد. <span className="eng">Wireshark + USBPcap</span> على Windows أو <span className="eng">usbmon</span> على Linux يظهران كل packet HID.</p>
+            <p>قبل ما تدافع، شوف. <span className="eng">Wireshark + USBPcap</span> على Windows أو <span className="eng">usbmon</span> على Linux بيوريك كل packet من الـ HID. اللي مش بتشوفه، مش هتقدر تمسكه.</p>
             <Terminal lines={[
               { p: "# Linux — مراقبة USB bus 1:" },
               { p: "sudo modprobe usbmon" },
@@ -172,7 +172,7 @@ action=Open lab demo`}</Code>
               { o: "URB_INTERRUPT in   0x04 0x00 0x15 0x00 0x00 ...   ← keystroke 'r'" },
               { o: "URB_INTERRUPT in   0x00 0x00 0x00 0x00 0x00 ...   ← key release" },
             ]} />
-            <p>هذه الرؤية تكشف: Pico/Ducky يطلق <b>عشرات keystrokes في ثانية واحدة</b>. لا بشري يكتب بهذا الإيقاع. التوقيع التحليلي بسيط جداً للـ EDR ليكتشفه.</p>
+            <p>الرؤية دي بتكشف حقيقة بسيطة: الـ Pico/Ducky بيطلع <b>عشرات الـ keystrokes في الثانية الواحدة</b>. مفيش بني آدم بيكتب بالإيقاع ده. التوقيع التحليلي بسيط جداً والـ EDR بيمسكه من غير مجهود.</p>
           </Section>
 
           <Section title="بناء الدفاع طبقة طبقة">

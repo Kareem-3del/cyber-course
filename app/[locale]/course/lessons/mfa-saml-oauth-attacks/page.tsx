@@ -6,22 +6,23 @@ export default function Page() {
     <LessonShell slug="mfa-saml-oauth-attacks">
       <L
         ar={<>
-          <Section title="لماذا MFA لا يعني نهاية الهجوم">
+          <Section title="ليه MFA مش معناها انتهى الهجوم؟">
             <Analogy>
-              تخيل قفلين على باب بيتك: مفتاح ورمز. لو كان أحدهما مكسوراً (mfa fatigue، تطبيق phishing لا يفرّق بين
-              الأصلي والمزور)، فالقفل الثاني وحده لا يكفي. MFA يقلل المخاطر بنسبة 99%، لكنه ليس صفراً، والـ 1% المتبقية
-              هي ما يستهدفه المهاجمون اليوم.
+              تخيّل قفلين على باب بيتك: مفتاح وكود. لو واحد فيهم مكسور (MFA fatigue، أو موقع phishing بيعمل proxy
+              للأصلي)، التاني لوحده مش هيكفي. MFA بيقلّل الخطر بـ 99%، لكنه مش 100%، والـ 1% الباقية هي بالظبط
+              اللي المهاجمين بيشتغلوا عليها النهارده.
             </Analogy>
             <p>
-              في 2024-2025، أكبر اختراقات الشركات (Uber, MGM, Snowflake) لم تتجاوز كلمات المرور بل MFA. هذا الدرس
-              يغطي أربعة محاور: MFA fatigue، Adversary-in-the-Middle مع Evilginx، token theft، Golden SAML.
+              في 2024-2025، أكبر اختراقات الشركات (Uber، MGM، Snowflake) ما عدّوش الـ password — عدّوا الـ MFA.
+              الدرس ده هيغطي أربع محاور: MFA fatigue، Adversary-in-the-Middle مع Evilginx، token theft،
+              وGolden SAML.
             </p>
           </Section>
 
           <Section title="1. MFA Fatigue / Push Bombing">
             <p>
-              المهاجم يعرف كلمة المرور. يضغط زر "تسجيل الدخول" 50 مرة. الضحية يتلقى 50 push notification في 10 دقائق
-              ويوافق على واحدة فقط ليتوقف الضجيج. هذا ما حدث لـ Uber في سبتمبر 2022.
+              المهاجم عارف الـ password. بيدوس "تسجيل دخول" 50 مرة. الضحية بيوصله 50 push notification في 10 دقايق،
+              وبيوافق على واحدة منهم علشان الإشعارات تسكت. ده بالظبط اللي حصل لـ Uber في سبتمبر 2022.
             </p>
             <Code lang="bash">{`# سيناريو متكرر:
 1. credentials من phishing أو credential stuffing
@@ -40,9 +41,9 @@ export default function Page() {
           </Section>
 
           <Section title="2. Adversary-in-the-Middle مع Evilginx">
-            <Step n={1} title="ما هو AiTM phishing؟">
-              ليست صفحة phishing عادية. إنها reverse proxy بين الضحية و Microsoft / Okta الحقيقي. الضحية يدخل
-              كلمة المرور، يحل MFA حقيقي، ثم Evilginx يسرق session cookie الناتج.
+            <Step n={1} title="إيه هو AiTM phishing؟">
+              مش صفحة phishing عادية. ده reverse proxy بين الضحية وMicrosoft / Okta الحقيقي. الضحية بيكتب
+              الـ password، بيعمل MFA حقيقي، وEvilginx بيلمّ الـ session cookie اللي راجع.
             </Step>
             <Step n={2} title="آلية العمل">
               <Code lang="text">{`Victim → evilginx.attacker.com → real Microsoft Login
@@ -132,8 +133,8 @@ mimikatz # vault::cred /patch
           </Section>
 
           <Callout kind="danger" title="تحذير قانوني">
-            بناء phishing domains، إرسال email، أو سرقة tokens من نظام لا تملكه = جرائم اتحادية متعددة. كل
-            مثال هنا في مختبرك مع authorization مكتوب.
+            بناء phishing domains، أو إرسال إيميل، أو سرقة tokens من نظام مش بتاعك = جرايم فيدرالية متعددة. كل
+            مثال هنا مكانه معملك أنت ومعاه authorization مكتوب.
           </Callout>
 
           <Section title="مصادر">

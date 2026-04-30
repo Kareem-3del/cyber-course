@@ -81,7 +81,7 @@ export function LessonShell({ slug, children }: { slug: string; children: React.
         ) : <div className="p-5 bg-sunken" />}
         {nx ? (
           <Link href={`/course/lessons/${nx.slug}`} className="p-5 hover:bg-black hover:text-white text-end">
-            <div className="text-[10px] uppercase tracking-[0.16em] font-bold mb-1 flex items-center gap-1 justify-end"><T ar="التالي" en="Next" />{arrowToNext}</div>
+            <div className="text-[10px] uppercase tracking-[0.16em] font-bold mb-1 flex items-center gap-1 justify-end"><T ar="الوحدة التالية" en="Next Unit" />{arrowToNext}</div>
             <div className="font-display text-lg leading-tight">{nx.title[lang]}</div>
           </Link>
         ) : <div className="p-5 bg-sunken" />}
@@ -210,3 +210,4 @@ export function Analogy({ children }: { children: React.ReactNode }) {
 }
 
 export { L, T };
+;

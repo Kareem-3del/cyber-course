@@ -7,40 +7,40 @@ export default function Page() {
       <L
         ar={
           <>
-            <Section title="ما هي Burp Suite — و لماذا يعتمد عليها المحترف؟">
+            <Section title="إيه هي Burp Suite — وليه المحترفين بيعتمدوا عليها؟">
               <Analogy>
-                تخيّل المتصفح كنافذة. الـ Burp يضع طاولة قراءة بينك و الموقع: كل طلب يمرّ منها، تستطيع التقاطه، تعديله،
-                إعادة إرساله ألف مرة، أو فحصه آلياً. هي ليست أداة "تخترق لك" — هي <b>عدسة مكبّرة + مفتاح ربط</b> يُحوّل
-                المتصفح إلى مختبر.
+                تخيل المتصفح شباك. Burp بتحط طاولة قراءة بينك وبين الموقع: كل request بيعدي عليها، إنت تقدر تلقطه،
+                تعدّل فيه، تبعته ألف مرة، أو تفحصه أوتوماتيك. مش أداة "بتخترق لك" — هي <b>عدسة مكبرة + مفتاح ربط</b> بتحول
+                المتصفح بتاعك لمعمل كامل.
               </Analogy>
-              <Callout kind="danger" title="استخدام مصرّح به فقط">
-                Burp قانونية تماماً، لكن استخدامها على نطاق غير مفوّض = جريمة. اعمل دائماً داخل scope مكتوب: pentest، bug bounty،
-                أو مختبرك الخاص (Juice Shop, DVWA, PortSwigger Academy).
+              <Callout kind="danger" title="إذن رسمي بس">
+                Burp قانونية على طول الخط، بس استخدامها بره الـ scope = جريمة. اشتغل دايماً جوه scope مكتوب: pentest، bug bounty،
+                أو معملك الخاص (Juice Shop, DVWA, PortSwigger Academy).
               </Callout>
               <p className="opacity-80">
-                هذا الدرس عملي بحت: ليس "ما هي Repeater؟" — بل <b>كيف يستخدمها أبطال bug bounty</b> لإيجاد ثغرات يدفع فيها
-                Google أو Microsoft 50,000 دولار.
+                الدرس ده عملي خالص: مش "إيه هي Repeater؟" — لكن <b>إزاي أبطال bug bounty بيستخدموها</b> عشان يلاقوا ثغرات
+                Google وMicrosoft بيدفعوا فيها 50 ألف دولار.
               </p>
             </Section>
 
-            <Section title="الإصدارات و الترخيص">
+            <Section title="الإصدارات والترخيص">
               <ul className="list-disc pe-6 space-y-2 opacity-90">
-                <li><b>Community (مجاني)</b>: Proxy، Repeater، Decoder. Intruder بطيء جداً (rate-limited)، لا scanner. كافٍ للتعلم.</li>
-                <li><b>Professional (~$475/سنة)</b>: Intruder سريع، Scanner، Collaborator، BCheck، Extender كامل. هذا ما يستخدمه 99% من المحترفين.</li>
-                <li><b>Enterprise</b>: للفرق و CI/CD. لا علاقة لها بالـ pentest اليدوي.</li>
+                <li><b>Community (مجاني)</b>: Proxy، Repeater، Decoder. الـ Intruder بطيء جداً (rate-limited)، مفيش scanner. كفاية للتعلم.</li>
+                <li><b>Professional (~$475/سنة)</b>: Intruder سريع، Scanner، Collaborator، BCheck، Extender كامل. ده اللي 99% من المحترفين بيستخدموه.</li>
+                <li><b>Enterprise</b>: للفرق وCI/CD. مالهاش علاقة بالـ pentest اليدوي.</li>
               </ul>
             </Section>
 
-            <Section title="الإعداد الأولي — 10 دقائق توفّر عليك سنوات">
-              <Step n={1} title="تركيب شهادة Burp في المتصفح">
-                <p>بدون الشهادة لن ترى HTTPS. شغّل Burp، افتح متصفح embedded أو أعدّ Firefox/Chrome.</p>
+            <Section title="الإعداد الأولي — 10 دقايق هتوفر عليك سنين">
+              <Step n={1} title="ركّب شهادة Burp في المتصفح">
+                <p>من غير الشهادة مش هتشوف HTTPS. شغّل Burp، افتح المتصفح الـ embedded أو ظبط Firefox/Chrome.</p>
                 <Code lang="bash">{`# 1) Burp يستمع على 127.0.0.1:8080
 # 2) Firefox: Settings → Network → Manual proxy → 127.0.0.1:8080
 # 3) زُر http://burp → Download CA → استورد للمتصفح كـ "Trusted CA for websites"
 # أو استخدم Foxy Proxy + Burp embedded browser (الأسهل)`}</Code>
               </Step>
-              <Step n={2} title="ضبط الـ Scope">
-                <p><b>أهم خطوة على الإطلاق</b>. بدون scope، Burp يسجّل كل طلب من المتصفح (Twitter, Gmail, إلخ) و تختنق الـ history.</p>
+              <Step n={2} title="ظبط الـ Scope">
+                <p><b>أهم خطوة في الموضوع كله</b>. من غير scope، Burp بيسجل كل request من المتصفح (Twitter، Gmail، أي حاجة) والـ history بتختنق.</p>
                 <Code lang="text">{`Target → Scope → Add
 Use advanced scope control → Include in scope:
   Protocol: Any
@@ -48,7 +48,7 @@ Use advanced scope control → Include in scope:
   Port: ^443$
 ثم في Proxy → Options → "Drop all out-of-scope items"`}</Code>
               </Step>
-              <Step n={3} title="إعدادات Repeater و Intruder للسرعة">
+              <Step n={3} title="إعدادات Repeater وIntruder عشان السرعة">
                 <Code lang="text">{`User options → Misc → Updates → Disable auto-update
 User options → Display → Font → ضع Mono و كبّره
 Project options → Sessions → Cookie jar = scope only

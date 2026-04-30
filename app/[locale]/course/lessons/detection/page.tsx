@@ -6,18 +6,18 @@ export default function Page() {
     <LessonShell slug="detection">
       <L
         ar={<>
-          <Section title="ماذا نراقب و لماذا؟">
-            <Analogy>الكاميرات في المتجر مفيدة فقط لو يشاهدها أحد. كذلك السجلات (logs): مفيدة فقط لو وصلت إلى نظام مركزي يحلّلها و ينبّه عند الحوادث.</Analogy>
+          <Section title="بنراقب إيه وليه؟">
+            <Analogy>الكاميرات في المحل مفيدة بس لو في حد بيتفرّج عليها. الـ logs نفس الكلام: ما تنفعش لو راحت تتكدّس على قرص ومحدش بيقراها. لازم توصل لنظام مركزي يحلّلها وينبّه لما حاجة تحصل.</Analogy>
           </Section>
           <Section title="هندسة الكشف — Detection Engineering">
-            <p>هرم Bianco للأدلة (Pyramid of Pain) — كلما صعدنا، كلما آذينا المهاجم أكثر:</p>
+            <p>هرم Bianco للأدلة (Pyramid of Pain) — كل ما طلعنا فوق، كل ما وجعنا المهاجم أكتر:</p>
             <ol>
-              <li>Hash values — سهل للمهاجم تغييرها.</li>
-              <li>IP addresses — يبدلها بسهولة.</li>
-              <li>Domain names — أصعب قليلاً.</li>
+              <li>Hash values — المهاجم بيغيّرها في ثواني.</li>
+              <li>IP addresses — بيبدّلها بسهولة.</li>
+              <li>Domain names — أصعب شوية.</li>
               <li>Network/Host artifacts.</li>
               <li>Tools.</li>
-              <li><b>TTPs</b> — أصعب شيء على المهاجم تغييره. هنا نُركّز.</li>
+              <li><b>TTPs</b> — ده أصعب حاجة على المهاجم يغيّرها. هنا بنركّز كل مجهودنا.</li>
             </ol>
           </Section>
           <Section title="مصادر السجلات الأساسية">

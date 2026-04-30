@@ -7,18 +7,18 @@ export default function Page() {
       <L
         ar={<>
           <Section title="جبهات هجوم خارج السيرفر">
-            <Analogy>السيرفر هو القلعة، لكن المؤسسة الحديثة فيها أيضاً: هواتف الموظفين، الكاميرات، الطابعات، أجهزة التكييف الذكية، خطوط الإنتاج. كل واحد منها = نقطة دخول محتملة. حادثة Target الشهيرة بدأت من ثلاجة ذكية لمزود خدمة.</Analogy>
+            <Analogy>السيرفر هو القلعة، أيوة. بس أنت بقى عندك في الشركة: موبايلات الموظفين، الكاميرات، الطابعات، التكييف الذكي، حتى خطوط الإنتاج. كل واحدة من دي خرم محتمل يدخلوا منه. حادثة Target الشهيرة بدأت من ثلاجة ذكية تبع شركة صيانة — وبعدها وقعت كل الـ POS.</Analogy>
           </Section>
 
           <Section title="أمن Android">
             <h3>سطح الهجوم</h3>
             <ul>
-              <li><b>Manifest misconfig</b> — exported activities/services بدون حماية.</li>
-              <li><b>Insecure storage</b> — SharedPreferences بدون تشفير.</li>
-              <li><b>Hard-coded secrets</b> داخل APK.</li>
-              <li><b>Insecure WebView</b> — JavaScript bridge.</li>
-              <li><b>Cleartext traffic</b> — لو لم يُمنع في networkSecurityConfig.</li>
-              <li><b>SSL Pinning</b> ضعيف أو مفقود.</li>
+              <li><b>Manifest misconfig</b> — exported activities/services سايبها مفتوحة من غير حماية.</li>
+              <li><b>Insecure storage</b> — SharedPreferences من غير تشفير، يبقى أي حد جذره الجهاز شايف كل حاجة.</li>
+              <li><b>Hard-coded secrets</b> جوّه الـ APK — افتكر إن الـ APK ممكن أي حد يفكّه.</li>
+              <li><b>Insecure WebView</b> — JavaScript bridge مفتوح = RCE من صفحة ويب.</li>
+              <li><b>Cleartext traffic</b> — لو ما منعتهوش في networkSecurityConfig، التطبيق هيقبل HTTP عادي.</li>
+              <li><b>SSL Pinning</b> ضعيف أو مش موجود — يبقى Burp بيقرا كل الترافيك.</li>
             </ul>
             <h3>الأدوات الأساسية</h3>
             <Code lang="bash">{`apktool d app.apk            # فك التغليف
@@ -37,33 +37,33 @@ drozer                       # Android attack framework`}</Code>
 
           <Section title="أمن iOS">
             <ul>
-              <li>الـ jailbreak مطلوب لمعظم الفحوصات (palera1n, Dopamine).</li>
-              <li>أدوات: <b>Frida, Objection, Needle, Hopper, Ghidra</b>.</li>
-              <li>Keychain misuse، Insecure Data Protection class، URL schemes hijacking.</li>
-              <li>iOS أصعب اختراقاً من Android لكن الثغرات (مثل سلسلة Pegasus) تكون مدمّرة.</li>
+              <li>الـ jailbreak لازم لمعظم الفحوصات (palera1n, Dopamine). من غيره مش هتلمس الـ runtime.</li>
+              <li>الأدوات: <b>Frida, Objection, Needle, Hopper, Ghidra</b>.</li>
+              <li>Keychain misuse، Data Protection class ضعيف، URL scheme hijacking.</li>
+              <li>iOS أصعب من Android، صح. بس لما حاجة زي سلسلة Pegasus تخرج — تخرّب القرية كلها.</li>
             </ul>
             <Callout kind="info" title="MASVS / MASTG">
-              معيار OWASP الموحّد لاختبار الموبايل — استخدمه كقائمة فحص شاملة.
+              معيار OWASP الموحّد لفحص الموبايل. خليه قايمتك وأنت بتراجع — مش حاجة تقراها مرة.
             </Callout>
           </Section>
 
           <Section title="MDM و الدفاع على الموبايل">
             <ul>
-              <li><b>MDM/UEM</b>: Intune, Jamf, Workspace ONE — تطبيق سياسات + remote wipe.</li>
-              <li><b>App attestation</b>: Play Integrity API, App Attest.</li>
-              <li>عزل البيانات (work profile / managed apps).</li>
-              <li>منع الـ jailbreak/root من الوصول للتطبيقات الحساسة (RootBeer, IOSSecuritySuite).</li>
-              <li>Mobile Threat Defense (Lookout, Zimperium) للكشف عن التطبيقات الخبيثة.</li>
+              <li><b>MDM/UEM</b>: Intune, Jamf, Workspace ONE — بتفرض سياسات + remote wipe لما الجهاز يضيع.</li>
+              <li><b>App attestation</b>: Play Integrity API و App Attest — تتأكد إن التطبيق ده فعلاً اللي طلعته.</li>
+              <li>عزل البيانات (work profile / managed apps) — الشغل في حتة لوحده.</li>
+              <li>امنع الـ jailbreak/root من تطبيقاتك الحساسة (RootBeer, IOSSecuritySuite).</li>
+              <li>Mobile Threat Defense (Lookout, Zimperium) عشان يصطاد التطبيقات الخبيثة.</li>
             </ul>
           </Section>
 
           <Section title="IoT — Firmware Hacking">
             <h3>الحصول على الـ firmware</h3>
             <ul>
-              <li>تنزيل من موقع المصنع.</li>
-              <li>اعتراض تحديثات OTA (mitm).</li>
-              <li>قراءة الـ flash مباشرة عبر <b>UART / JTAG / SPI</b> بمشبك chip-clip و قارئ flashrom/CH341.</li>
-              <li>هجمات side-channel على الـ secure boot.</li>
+              <li>نزّله من موقع المصنّع — أسهل سكة.</li>
+              <li>اعترض تحديثات OTA بـ mitm.</li>
+              <li>اقرا الـ flash نفسه على طول عبر <b>UART / JTAG / SPI</b> بـ chip-clip و قارئ flashrom/CH341.</li>
+              <li>هجمات side-channel على الـ secure boot لما يقفل في وشّك.</li>
             </ul>
             <h3>التحليل</h3>
             <Code lang="bash">{`binwalk -e firmware.bin             # استخراج الـ filesystem
@@ -75,41 +75,41 @@ emba                                # automated firmware analysis
 firmadyne / firmae                  # full emulation`}</Code>
             <h3>أكثر الثغرات شيوعاً</h3>
             <ul>
-              <li>كلمات مرور default/hardcoded.</li>
-              <li>Telnet/SSH backdoors.</li>
-              <li>Buffer overflows في خدمات HTTP/UPnP.</li>
+              <li>باسوردات default أو hardcoded — الكلاسيك.</li>
+              <li>Telnet/SSH backdoors سايبها المصنّع للصيانة وناسي.</li>
+              <li>Buffer overflows في خدمات HTTP/UPnP المكتوبة بـ C قديم.</li>
               <li>Command injection في الـ admin panel.</li>
-              <li>تشفير ضعيف أو غائب على التحديثات.</li>
+              <li>تحديثات من غير توقيع أو تشفير — فعملياً أنت اللي بتحدّث الجهاز.</li>
             </ul>
           </Section>
 
           <Section title="OT / ICS / SCADA — أنظمة التحكم الصناعي">
             <Callout kind="danger" title="حساسية قصوى">
-              هذه الأنظمة تتحكم في محطات الطاقة، المياه، التصنيع. أي تجربة عشوائية قد تتسبب
-              بضرر مادي أو خسائر بشرية. <b>التدريب فقط على بيئات معامل معزولة</b>.
+              الأنظمة دي بتتحكم في محطات الكهربا، المياه، خطوط التصنيع. أي تجربة على الفاضي ممكن
+              تتسبب في ضرر مادي حقيقي أو حتى خسائر في الأرواح. <b>التدريب على بيئات معامل معزولة بس، مفيش كلام تاني</b>.
             </Callout>
             <h3>البروتوكولات</h3>
             <TwoCol>
-              <Card title="Modbus" color="amber">قديم، بدون توثيق، نص واضح. أي شخص على الشبكة يستطيع التحكم.</Card>
-              <Card title="DNP3" color="amber">شائع في الكهرباء. نسخة Secure DNP3 موجودة لكن نادرة.</Card>
-              <Card title="OPC-UA" color="green">حديث، يدعم التشفير و الشهادات. الأفضل أمنياً.</Card>
-              <Card title="S7 / EtherNet/IP / PROFINET" color="amber">بروتوكولات مصنّعين كبار (Siemens, Allen-Bradley).</Card>
+              <Card title="Modbus" color="amber">قديم، من غير توثيق، نص صريح. أي حد على الشبكة يقدر يبعت أوامر.</Card>
+              <Card title="DNP3" color="amber">منتشر في الكهربا. فيه نسخة Secure DNP3 بس قليل اللي بيستخدمها.</Card>
+              <Card title="OPC-UA" color="green">حديث، بيدعم التشفير و الشهادات. أحسن واحد فيهم أمنياً.</Card>
+              <Card title="S7 / EtherNet/IP / PROFINET" color="amber">بروتوكولات الشركات الكبيرة (Siemens, Allen-Bradley).</Card>
             </TwoCol>
             <h3>أمثلة على الحوادث الكبرى</h3>
             <ul>
-              <li><b>Stuxnet (2010)</b> — تخريب أجهزة الطرد المركزي الإيرانية.</li>
-              <li><b>Ukraine Power Grid (2015, 2016)</b> — قطع الكهرباء عن مئات الآلاف.</li>
-              <li><b>Triton/Trisis (2017)</b> — استهداف نظام السلامة Triconex.</li>
-              <li><b>Colonial Pipeline (2021)</b> — رغم أن الهجوم كان على IT، توقف الـ OT احترازياً.</li>
+              <li><b>Stuxnet (2010)</b> — حرق أجهزة الطرد المركزي الإيرانية، هجوم سيبراني بنتايج فيزيائية.</li>
+              <li><b>Ukraine Power Grid (2015, 2016)</b> — قطعوا الكهربا عن مئات الآلاف.</li>
+              <li><b>Triton/Trisis (2017)</b> — استهدفوا نظام السلامة Triconex بالذات، اللي معناه إنهم كانوا عايزين انفجار فعلاً.</li>
+              <li><b>Colonial Pipeline (2021)</b> — الهجوم على IT بس، وقفوا الـ OT بنفسهم خوفاً.</li>
             </ul>
             <h3>الدفاع — Purdue Model</h3>
             <ol>
-              <li>فصل صارم بين IT و OT (Level 3.5 = DMZ صناعي).</li>
-              <li>Data diodes للتدفق أحادي الاتجاه.</li>
-              <li>SIEM متخصص (Claroty, Dragos, Nozomi, Tenable.OT).</li>
-              <li>Configuration management — تتبع كل تغيير على PLCs.</li>
-              <li>Air-gapping للأنظمة الحرجة.</li>
-              <li>تطبيق IEC 62443 و NIST SP 800-82.</li>
+              <li>فصل صارم بين IT و OT (Level 3.5 = DMZ صناعي). مفيش مرور مباشر.</li>
+              <li>Data diodes — التدفق في اتجاه واحد بس، فيزيائياً.</li>
+              <li>مراقبة OT متخصصة (Claroty, Dragos, Nozomi, Tenable.OT).</li>
+              <li>Configuration management — كل تغيير على الـ PLC مرصود.</li>
+              <li>Air-gap للأنظمة الحرجة فعلاً.</li>
+              <li>طبّق IEC 62443 و NIST SP 800-82 — مش اقتراحات، ده الـ baseline.</li>
             </ol>
           </Section>
 

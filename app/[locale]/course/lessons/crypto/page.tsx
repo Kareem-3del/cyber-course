@@ -6,25 +6,25 @@ export default function Page() {
     <LessonShell slug="crypto">
       <L
         ar={<>
-          <Section title="لماذا تحتاج لفهم التشفير حتى لو لم تطبّقه؟">
-            <Analogy>التشفير مثل القفل: لست بحاجة لتصنع القفل بنفسك، لكن إن لم تعرف الفرق بين قفل ورق و قفل فولاذ، ستضع قفلاً ضعيفاً على بابك. معظم اختراقات التشفير ليست كسر الخوارزمية، بل سوء استخدامها.</Analogy>
+          <Section title="ليه لازم تفهم التشفير حتى لو مش هتطبّقه بإيدك؟">
+            <Analogy>التشفير زي القفل: مش لازم تعرف تصنّعه بنفسك، لكن لو ما تعرفش الفرق بين قفل ورق وقفل فولاذ، هتحط قفل هزيل على بابك وتقول لنفسك «أنا مأمّن». الحقيقة: 99% من اختراقات التشفير مش كسر للخوارزمية — هي سوء استخدام منك إنت. الخوارزمية صح، لكن إنت اللي بتستعملها غلط.</Analogy>
           </Section>
 
           <Section title="الأنواع الأساسية">
             <TwoCol>
               <Card title="Symmetric — تماثلي" color="blue">
-                مفتاح واحد للتشفير و فك التشفير. سريع جداً. مثال: <b>AES-GCM, ChaCha20-Poly1305</b>.
-                المشكلة: كيف تشارك المفتاح بأمان؟
+                مفتاح واحد بيشفّر وبيفكّ. سريع جداً. مثال: <b>AES-GCM, ChaCha20-Poly1305</b>.
+                المشكلة الكلاسيكية: إزاي تشارك المفتاح ده مع الطرف التاني بأمان؟
               </Card>
               <Card title="Asymmetric — غير تماثلي" color="blue">
-                مفتاحان: عام و خاص. أبطأ بكثير لكن يحلّ مشكلة المشاركة. مثال: <b>RSA, ECDSA, Ed25519, Curve25519</b>.
+                مفتاحين: عام وخاص. أبطأ بكتير، لكنه بيحل مشكلة المشاركة. مثال: <b>RSA, ECDSA, Ed25519, Curve25519</b>.
               </Card>
               <Card title="Hash" color="green">
-                دالة باتجاه واحد. لا يمكن العكس. مثال: <b>SHA-256, BLAKE2, BLAKE3</b>.
-                <i>ليس تشفيراً</i> — يستخدم للسلامة و التحقق.
+                دالة في اتجاه واحد. مفيش رجوع. مثال: <b>SHA-256, BLAKE2, BLAKE3</b>.
+                <i>ده مش تشفير</i> — ده للسلامة والتحقق بس.
               </Card>
               <Card title="MAC / HMAC" color="green">
-                Hash مع مفتاح — يضمن السلامة و المصدر معاً. مثال: <b>HMAC-SHA256</b>.
+                Hash مع مفتاح — بيضمن السلامة والمصدر مع بعض. مثال: <b>HMAC-SHA256</b>.
               </Card>
             </TwoCol>
           </Section>
@@ -38,8 +38,8 @@ export default function Page() {
               <li><b>هاش عام</b>: SHA-256 / BLAKE3.</li>
               <li><b>RNG</b>: <code>/dev/urandom</code>, <code>getrandom()</code>, <code>crypto.randomBytes</code> — <i>أبداً Math.random()</i>.</li>
             </ul>
-            <Callout kind="warn" title="ما يجب تجنّبه">
-              MD5, SHA-1, RC4, DES/3DES, ECB mode, CBC بدون MAC، RSA بـ PKCS#1 v1.5 padding، الـ hardcoded IVs.
+            <Callout kind="warn" title="ما تقربش من دول">
+              MD5, SHA-1, RC4, DES/3DES, ECB mode, CBC من غير MAC، RSA بـ PKCS#1 v1.5 padding، والـ hardcoded IVs. أي حد بيستخدم حاجة من دول في 2026 = إما ما يعرفش، أو ما يهمّوش.
             </Callout>
           </Section>
 
@@ -109,18 +109,18 @@ salt=128 bits random per password`}</Code>
               <li><b>SLH-DSA (SPHINCS+)</b> — توقيع مبني على hash.</li>
             </ul>
             <Callout kind="warn" title="Harvest now, decrypt later">
-              المهاجمون اليوم يجمعون البيانات المشفّرة و ينتظرون. ابدأ التحوّل الآن لأي بيانات يجب أن تبقى سرّية بعد 10 سنوات.
+              المهاجمين دلوقتي بيجمعوا البيانات المشفّرة وبيستنّوا. أي بيانات لازم تفضل سرية بعد 10 سنين، ابدأ تنقل دلوقتي. لو استنيت لما الـ Quantum يطلع، يبقى فات الأوان.
             </Callout>
           </Section>
 
-          <Section title="نصائح ذهبية">
+          <Section title="القواعد الناشفة">
             <ol>
-              <li><b>لا تخترع تشفيرك</b> — استخدم مكتبات معروفة (libsodium, Tink, BoringSSL).</li>
-              <li>استخدم <b>AEAD</b> دائماً (يدمج التشفير + السلامة).</li>
-              <li><b>Constant-time comparison</b> للمفاتيح و التوكنز (تجنّب timing attacks).</li>
-              <li>لا تعد استخدام nonce/IV مع نفس المفتاح.</li>
-              <li>دوّر المفاتيح دورياً، و خطّط للتدوير قبل الحاجة.</li>
-              <li>وثّق نظام تهديد التشفير (Threat Model) قبل التصميم.</li>
+              <li><b>متخترعش تشفيرك بنفسك</b> — استخدم مكتبات متشهد لها (libsodium, Tink, BoringSSL). أي حد بيقولك «أنا عملت تشفير خاص بيا» = خد بالك، ده لعب.</li>
+              <li>استخدم <b>AEAD</b> دايماً (بيدمج التشفير + السلامة في عملية واحدة).</li>
+              <li><b>Constant-time comparison</b> للمفاتيح والتوكنز (متجاهلش timing attacks).</li>
+              <li>متعيدش استخدام nonce/IV مع نفس المفتاح. ده الخطأ اللي بيقتل الكل.</li>
+              <li>دوّر المفاتيح بانتظام، وخطّط للتدوير قبل ما تحتاجه فعلاً.</li>
+              <li>وثّق Threat Model للتشفير قبل ما تصمّم — مش بعد ما تتحرق.</li>
             </ol>
           </Section>
         </>}

@@ -8,29 +8,29 @@ export default function Page() {
         ar={<>
           <Section title="ما هو OSINT ولماذا يهم محقق فيدرالي؟">
             <Analogy>
-              تخيل أنك تبحث عن شخص في مدينة كبيرة. لا تستطيع كسر الأبواب أو طلب وثائق، لكن يمكنك أن تقرأ لافتاته،
-              تتابع نشاطه على لوحة الإعلانات، وتجمع كل ما يقوله بصوت عالٍ في مكان عام. هذا هو OSINT — جمع المعلومات
-              من مصادر مفتوحة بشكل قانوني، ثم تحويل القطع المتفرقة إلى صورة قابلة للاستخدام في تحقيق.
+              تخيل إنك بتدوّر على واحد في مدينة كبيرة. مينفعش تكسر باب ولا تطلب أوراق، بس تقدر تقرا لافتاته،
+              تتابع إعلاناته، وتسمع أي حاجة هو بنفسه قالها بصوت عالي في الشارع. ده الـ OSINT — جمع معلومات
+              من مصادر مفتوحة وبشكل قانوني، وبعدين تحوّل القطع المبعثرة لصورة تنفع تحقيق فعلي.
             </Analogy>
             <p>
-              OSINT (Open-Source Intelligence) هو الجمع المنظم للمعلومات المتاحة علناً: مواقع، شبكات اجتماعية،
-              سجلات الشركات، نطاقات DNS، صور الأقمار الصناعية، تسريبات بيانات منشورة. كل ما يفعله محقق Red Team أو محلل
-              تهديدات في مرحلة الاستطلاع يبدأ من هنا.
+              OSINT (Open-Source Intelligence) = جمع منظّم لمعلومات متاحة للعامة: مواقع، شبكات اجتماعية،
+              سجلات شركات، DNS، صور أقمار صناعية، تسريبات بيانات منشورة. أي Red Team بيعمل recon أو محلل tehdid
+              بيشتغل في incident — بيبدأ من هنا.
             </p>
           </Section>
 
           <Section title="دورة حياة OSINT — أربع مراحل">
             <Step n={1} title="التخطيط (Planning)">
-              ابدأ بسؤال محدد. "اعرف كل شيء عن الشركة" سؤال سيئ. "ما هي عناوين IP العامة لـ target.gov ومن يدير DNS؟" سؤال جيد.
+              ابدأ بسؤال محدّد. "اعرف كل حاجة عن الشركة" سؤال عك. "إيه الـ public IPs لـ target.gov ومين بيدير الـ DNS؟" سؤال شاطر.
             </Step>
             <Step n={2} title="الجمع (Collection)">
-              اجمع البيانات الخام: subdomains، WHOIS، شهادات TLS، حسابات اجتماعية، صور EXIF، سجلات GitHub.
+              اجمع الـ raw data: subdomains، WHOIS، TLS certs، حسابات اجتماعية، EXIF، GitHub.
             </Step>
             <Step n={3} title="المعالجة والتحقق (Processing)">
-              نظف البيانات، تأكد من المصدر. صورة شخصية على LinkedIn ≠ دليل. فلترة الضوضاء أهم من جمعها.
+              نضّف الـ data وتأكد من المصدر. صورة LinkedIn مش دليل. فلترة الضوضا أهم من إنك تكتر منها.
             </Step>
             <Step n={4} title="التحليل والإسناد (Analysis)">
-              اربط القطع. شخص A يستخدم نفس username في 4 مواقع، يعمل في الشركة X، ظهر في صورة EXIF موقعها بمدينة Y.
+              اربط القطع. واحد بيستخدم نفس الـ username في 4 مواقع، شغّال في شركة X، وفي صورة EXIF موقعها مدينة Y. كده أنت بتـ build a picture.
             </Step>
           </Section>
 
@@ -42,16 +42,16 @@ export default function Page() {
                   <li>crt.sh — شهادات TLS و subdomains</li>
                   <li>Shodan / Censys — أجهزة وخدمات مكشوفة</li>
                   <li>SecurityTrails / DNSdumpster — تاريخ DNS</li>
-                  <li>Wayback Machine — نسخ الصفحات القديمة</li>
+                  <li>Wayback Machine — نسخ صفحات قديمة</li>
                 </ul>
               </Card>
               <Card title="OSINT بشري (HUMINT)" color="amber">
                 <ul>
-                  <li>LinkedIn — هيكل الشركة، التقنيات</li>
-                  <li>GitHub — كود مسرّب، asecrets، أسماء المطورين</li>
-                  <li>Telegram / Discord — قنوات مغلقة</li>
-                  <li>صور EXIF — موقع، كاميرا، وقت</li>
-                  <li>سجلات تسريبات (HIBP, DeHashed) — كلمات مرور قديمة</li>
+                  <li>LinkedIn — الهيكل التنظيمي والتقنيات</li>
+                  <li>GitHub — كود مسرّب، secrets، أسامي المطوّرين</li>
+                  <li>Telegram / Discord — قنوات مقفولة</li>
+                  <li>EXIF في الصور — موقع وكاميرا ووقت</li>
+                  <li>قواعد التسريبات (HIBP, DeHashed) — باسوردات قديمة</li>
                 </ul>
               </Card>
             </TwoCol>
@@ -81,31 +81,31 @@ curl -s "https://web.archive.org/cdx/search/cdx?url=target.gov/*&output=text&fl=
 
           <Section title="OSINT للإسناد — من فعل ماذا؟">
             <p>
-              عند تحليل حملة هجومية، OSINT هو ما يحول "هاكر مجهول" إلى "مجموعة في منطقة زمنية محددة، تستخدم نفس
-              البنية التحتية في حملة سابقة، يكتب اسمها في commits على GitHub". هذا أصعب جزء.
+              لما بتشرّح حملة هجومية، الـ OSINT هو اللي بيحوّل "هاكر مجهول" لـ "مجموعة في منطقة زمنية معيّنة،
+              مستخدمة نفس الـ infrastructure من حملة سابقة، واسمها ظهر في commit على GitHub". وده أصعب شغل.
             </p>
             <Card title="مؤشرات إسناد قوية" color="green">
               <ul>
                 <li>إعادة استخدام الـ infrastructure (نفس IP، نفس registrar، نفس SSL fingerprint)</li>
-                <li>أخطاء OPSEC (نسي VPN، ظهر IP حقيقي في log واحد)</li>
-                <li>أنماط لغوية في المالوير (تعليقات، أخطاء إملائية، توقيت compile)</li>
-                <li>إعادة استخدام usernames أو email aliases</li>
+                <li>غلطات OPSEC — نسي يفتح VPN، فظهر IP حقيقي في log واحد</li>
+                <li>أنماط لغوية في الـ malware (تعليقات، أخطاء إملائية، توقيت الـ compile)</li>
+                <li>إعادة استخدام usernames أو email aliases عبر خدمات مختلفة</li>
               </ul>
             </Card>
           </Section>
 
           <Callout kind="danger" title="حدود قانونية">
-            OSINT قانوني، لكن خطوات مثل تجاوز حواجز الدخول، إنشاء حسابات مزيفة لاختراق مجموعات خاصة، أو الوصول إلى
-            بيانات مسرّبة قد لا تكون قانونية في كل ولاية. اعمل دائماً ضمن authorization مكتوب وراجع
-            <span className="eng"> 18 U.S.C. § 1030</span> ومراسيم الوكالة قبل أي اختبار.
+            الـ OSINT في حد ذاته قانوني، بس حاجات زي تعدية access controls، أو عمل sock puppets عشان تخش جروبات خاصة،
+            أو استخدام breach corpora — مش قانونية في كل دولة. اشتغل دايماً تحت authorization مكتوب، وراجع
+            <span className="eng"> 18 U.S.C. § 1030</span> وتعليمات الوكالة قبل أي اختبار.
           </Callout>
 
-          <Callout kind="good" title="الدفاع — تقليل بصمة OSINT">
+          <Callout kind="good" title="الدفاع — قلّل بصمتك في OSINT">
             <ul>
-              <li>راقب ما يظهر عن منظمتك في crt.sh و Shodan أسبوعياً (digital footprint monitoring)</li>
-              <li>منع تسريب metadata في الصور و PDF قبل النشر</li>
-              <li>سياسة GitHub: scan كل repo بـ TruffleHog قبل الجعل public</li>
-              <li>درّب الموظفين على ما لا يجب نشره على LinkedIn (مكدس تقنيات داخلي مثلاً)</li>
+              <li>راقب اللي بيطلع عن مؤسستك على crt.sh و Shodan أسبوعياً (digital footprint monitoring)</li>
+              <li>شيل metadata من الصور و PDF قبل النشر</li>
+              <li>سياسة GitHub: كل repo يتسكن بـ TruffleHog قبل ما يبقى public</li>
+              <li>درّب الموظفين على اللي ما يتحطش على LinkedIn (الـ stack الداخلي مثلاً)</li>
             </ul>
           </Callout>
 

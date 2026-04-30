@@ -7,10 +7,10 @@ export default function Page() {
       <L
         ar={<>
           <Section title="السيناريو — جامعة state-uni.edu">
-            <p>هذا الدرس يجمع كل ما تعلّمته في &quot;فيلم&quot; واحد. الهدف: <span className="eng">state-uni.edu</span> (وهمية، RFC 2606). فريق أحمر مفوّض كتابياً من إدارة الجامعة لتقييم: نظام التسجيل، شبكة الكاميرات، الطابعات الإدارية، قارئات البطاقات. الفترة: 6 أسابيع. النطاق: كل شيء داخل <span className="eng">203.0.113.0/24</span> و<span className="eng">198.51.100.0/24</span> (RFC 5737).</p>
-            <Analogy>الجامعات هدف ذهبي للهجوم: شبكات مفتوحة بطبيعتها، آلاف الأجهزة غير مُدارة (حواسيب طلاب، IoT)، تمويل أبحاث حساسة (دفاعية أحياناً)، وإدارة IT بميزانية محدودة. كل APT حقيقية درست هذا — Cozy Bear (روسيا) و TA413 (الصين) و Charming Kitten (إيران) لديها حملات جامعية موثّقة.</Analogy>
-            <Callout kind="danger" title="حدود قانونية">
-              كل خطوة في هذا الدرس قانونية فقط ضد الهدف الوهمي أو ضد جامعة وقّعت عقد pentest. اختبار أي تقنية على شبكة جامعتك الفعلية بدون تفويض = جناية CFAA + احتمال طرد + حظر مدى الحياة من العمل الفيدرالي.
+            <p>الدرس ده بيلم كل اللي اتعلمته قبل كده في &quot;فيلم&quot; واحد متكامل. الهدف: <span className="eng">state-uni.edu</span> (وهمية، RFC 2606). إحنا فريق أحمر معانا تفويض مكتوب من إدارة الجامعة نقيّم: نظام التسجيل، شبكة الكاميرات، الطابعات الإدارية، وقارئات البطاقات. المدة: 6 أسابيع. النطاق: كل حاجة جوه <span className="eng">203.0.113.0/24</span> و<span className="eng">198.51.100.0/24</span> (RFC 5737).</p>
+            <Analogy>هو ليه الجامعات تحديداً؟ بسيطة: شبكات مفتوحة بطبيعتها (الثقافة الأكاديمية)، آلاف الأجهزة غير مُدارة (لابتوبات الطلبة، IoT في كل ركن)، أبحاث ممولة فيدرالياً وأحياناً دفاعية، وفريق IT شغال على ميزانية محدودة. كل APT محترمة لعبت في الساحة دي — Cozy Bear (روسيا) وTA413 (الصين) وCharming Kitten (إيران) ليهم حملات جامعية موثقة.</Analogy>
+            <Callout kind="danger" title="حدود قانونية — ركّز هنا قبل ما تكمل">
+              كل خطوة في الدرس ده قانونية بس على الهدف الوهمي أو على جامعة وقّعت عقد pentest. تجرب أي تكنيك من دول على شبكة جامعتك الفعلية من غير تفويض = جناية CFAA + احتمال طرد + حظر مدى الحياة من أي شغل فيدرالي. بلاش عك.
             </Callout>
           </Section>
 
@@ -56,7 +56,7 @@ export default function Page() {
           </Section>
 
           <Section title="A — الاستطلاع السلبي (الأسبوع 1)">
-            <p>القاعدة: لا حزمة واحدة تجاه <span className="eng">state-uni.edu</span> في هذه المرحلة. كل المعلومات من مصادر ثالثة.</p>
+            <p>القاعدة المقدسة هنا: ولا packet واحد يروح ناحية <span className="eng">state-uni.edu</span> في المرحلة دي. كل اللي هتجمعه من مصادر تالتة. لو عطست في وش الهدف من بدري، كل اللي بعد كده هيكون محروق.</p>
             <Terminal lines={[
               { p: "# subdomains من شهادات SSL العامة:" },
               { p: "curl -s 'https://crt.sh/?q=%25.state-uni.edu&output=json' | jq -r '.[].name_value' | sort -u" },
@@ -93,19 +93,19 @@ nuclei -l live-hosts.txt -t cves/ -severity critical,high -o nuclei-results.txt
 
 # 4) BBOT لـ recon آلي شامل:
 bbot -t state-uni.edu -f passive,subdomain-enum,web-basic`}</Code>
-            <p>النتائج المثالية على هدف ضعيف: VPN قديم (Pulse/Fortinet/Citrix بـ CVE قديم)، Outlook Web Access مكشوف، Confluence/Jira داخلية على الإنترنت، وكاميرات IP بدون مصادقة.</p>
+            <p>على هدف عك، اللي بتلاقيه كله نمطي: VPN قديم (Pulse/Fortinet/Citrix على CVE معروف)، Outlook Web Access مفتوح للدنيا، Confluence/Jira داخلية ماشية على الإنترنت زي العسل، وكاميرات IP من غير authentication. كل ده مش &quot;لو&quot;، ده &quot;كم واحد منهم&quot;.</p>
           </Section>
 
           <Section title="C — الوصول الأولي (Initial Access)">
-            <p>3 طرق رئيسية على بيئة جامعية:</p>
+            <p>3 سكك أساسية بتشتغل على بيئة جامعية. اختار اللي يناسب الهدف:</p>
             <Step n={1} title="Phishing لطالب أو موظف">
-              <p>طالب جديد + بوابة دخول مزيفة لـ &quot;portal.state-uni.edu&quot; على نطاق <span className="eng">portal-state-uni.edu</span> (شرطة، لا نقطة) = 30%+ click rate في حملات حقيقية. <b>EvilGinx2</b> أو <b>Modlishka</b> يلتقطان الجلسة بعد MFA (AiTM).</p>
+              <p>طالب جديد + صفحة دخول مزيفة لـ &quot;portal.state-uni.edu&quot; مستضافة على <span className="eng">portal-state-uni.edu</span> (شرطة بدل النقطة، حد بياخد باله؟ لأ) = 30%+ click rate في الحملات الحقيقية. <b>EvilGinx2</b> أو <b>Modlishka</b> بيمسكوا الجلسة بعد الـ MFA كله (AiTM).</p>
             </Step>
             <Step n={2} title="ثغرة ويب على بوابة التسجيل">
-              <p>أنظمة التسجيل الجامعية (Banner, PeopleSoft Campus, Workday Student) كثيراً ما يكون فيها custom code قديم. SQLi على نموذج بحث الطلاب → استخراج hashes → الدخول كأي مستخدم.</p>
+              <p>أنظمة التسجيل (Banner, PeopleSoft Campus, Workday Student) دايماً فيها custom code قديم كاتبه شخص خرج من شغله من 5 سنين. SQLi على نموذج بحث الطلبة → تسحب hashes → تدخل بأي حساب تحبه.</p>
             </Step>
             <Step n={3} title="VPN بـ password spraying">
-              <p>أكثر طريق فعّال: قائمة أسماء مستخدمين من LinkedIn + كلمة سر موسمية (<span className="eng">Spring2026!</span>). 3-7% من الموظفين يستخدمون مثلها. <b>SprayingToolkit</b> ضد بوابة OWA أو VPN.</p>
+              <p>السكة دي بتشتغل تقريباً دايماً: لستة أسماء من LinkedIn + باسورد موسمي زي (<span className="eng">Spring2026!</span>). من 3 لـ 7% من الموظفين بيحطوا حاجة شبهها. <b>SprayingToolkit</b> ضد OWA أو VPN gateway وخلاص.</p>
             </Step>
             <Callout kind="good" title="الدفاع">
               <ul>
@@ -118,16 +118,16 @@ bbot -t state-uni.edu -f passive,subdomain-enum,web-basic`}</Code>
           </Section>
 
           <Section title="D — موطئ القدم">
-            <p>دخلنا. الآن جلسة على workstation موظف &quot;مكتب التسجيل&quot;. الهدف: تثبيت بصمة لكن دون أن نُلاحَظ.</p>
+            <p>دخلنا. عندنا دلوقتي session على workstation موظف في &quot;مكتب التسجيل&quot;. الهدف الحالي: نثبت قدمنا من غير ما حد ياخد بالنا. الـ OPSEC دلوقتي أهم من السرعة.</p>
             <ul>
-              <li>لا تُسقط ثنائية. استخدم PowerShell + WMI الأصلية.</li>
-              <li>سجّل المستخدم نفسه: ما البرامج التي يفتحها؟ متى؟ هذا توقيع &quot;طبيعية الجلسة&quot; نقلّده.</li>
-              <li>أضف نفسك كـ scheduled task يعمل عند login فقط (لا boot — أوضح).</li>
+              <li>متنزلش أي binary على الجهاز. اشتغل بـ PowerShell + WMI الأصلية اللي موجودة.</li>
+              <li>اقعد ساعة بس تتفرج على المستخدم: بيفتح إيه؟ إمتى؟ ده هو &quot;التوقيع الطبيعي&quot; اللي إحنا هنقلّده.</li>
+              <li>حط نفسك كـ scheduled task بيشتغل عند login بس (مش boot — ده أوضح بكتير).</li>
             </ul>
           </Section>
 
           <Section title="E — استطلاع داخلي + BloodHound">
-            <p>لحظة الذهب: AD بأكملها أمامك. <span className="eng">BloodHound</span> + <span className="eng">SharpHound</span> يخططان كل علاقة:</p>
+            <p>دي لحظة الذهب: الـ AD مفتوحة قدامك زي الكتاب. <span className="eng">BloodHound</span> + <span className="eng">SharpHound</span> بيرسموا كل علاقة بين كل حساب وكل جهاز:</p>
             <Terminal lines={[
               { p: "# جمع بيانات AD من workstation موظف عادي:" },
               { p: "SharpHound.exe -c All --zipfilename uni-data.zip" },
@@ -138,11 +138,11 @@ bbot -t state-uni.edu -f passive,subdomain-enum,web-basic`}</Code>
               { p: "# 3) أجهزة بـ &quot;Unconstrained Delegation&quot;" },
               { p: "# 4) GPOs قابلة للتعديل من حسابي" },
             ]} />
-            <p>على شبكة جامعية متوسطة، BloodHound يكشف عادة 3-5 مسارات لـ Domain Admin خلال دقائق. السبب: حسابات service قديمة، delegation سيء، وعضوية مجموعات متراكمة.</p>
+            <p>على شبكة جامعية متوسطة، BloodHound بيكشف عادة من 3 لـ 5 مسارات تودّيك Domain Admin في دقايق. السبب؟ service accounts قديمة من زمن نوح، delegation متظبط بالعك، ومجموعات متراكمة فوق بعض ومحدش بيراجعها.</p>
           </Section>
 
           <Section title="F — التحوّل عبر IoT — كاميرات وطابعات">
-            <p>هنا الجزء الذي سألت عنه. لماذا IoT؟ لأنها: (1) لا EDR عليها، (2) كلمات سر افتراضية شائعة، (3) لا أحد يحدّث firmware، (4) متصلة بـ VLANs &quot;داخلية&quot; أعمق من workstations.</p>
+            <p>هنا الجزء الممتع. هو إحنا بنروح ناحية الـ IoT ليه أصلاً؟ بسيطة: (1) مفيش EDR عليها، خالص. (2) باسوردات افتراضية في كل مكان. (3) محدش بيحدّث firmware من تاريخ التركيب. (4) مربوطة على VLANs &quot;داخلية&quot; أعمق من الـ workstations نفسها. يعني نقطة دخول رخيصة ومخفية.</p>
 
             <h3>الكاميرات IP — التقاط، إنكار، نقطة استمرار</h3>
             <Code lang="bash">{`# 1) اكتشاف كاميرات RTSP في شبكة الجامعة:
@@ -161,10 +161,10 @@ ffmpeg -i rtsp://admin:admin@198.51.100.42:554/Streaming/Channels/101 -t 30 samp
               <li><span className="eng">CVE-2021-36260 (Hikvision)</span> — RCE بدون مصادقة. أعطى Mirai-variants سيطرة على ملايين الكاميرات.</li>
               <li><span className="eng">CVE-2022-30563 (Dahua)</span> — تجاوز مصادقة عبر إعادة تشغيل ONVIF.</li>
             </ul>
-            <p><b>لماذا الكاميرا قيّمة كنقطة استمرار:</b> Linux صغير على ARM، يمكن تثبيت <span className="eng">implant</span> دائم في firmware. لا EDR. تعيش لسنوات. APT أمريكية وصينية موثّق استخدامها لكاميرات كـ &quot;صناديق برمجية&quot; على شبكات الهدف.</p>
+            <p><b>الكاميرا قيمة جداً كـ persistence ليه؟</b> هي جوها Linux صغير شغال على ARM، تقدر تركّب فيها <span className="eng">implant</span> دايم في الـ firmware نفسه. مفيش EDR. بتعيش سنين من غير ما حد يبص ناحيتها. APTs أمريكية وصينية موثّق استخدامها للكاميرات كـ &quot;صناديق سودا&quot; على شبكات الأهداف.</p>
 
-            <h3>الطابعات — أكثر هدف غير مُقدّر في الشبكة</h3>
-            <p>الطابعات MFP (Xerox, HP, Canon, Konica) هي حواسيب كاملة بـ Linux داخلها. تخزّن: نسخ من كل مستند مسحه أحد، بيانات اعتماد LDAP لكي تطبع &quot;Print Anywhere&quot;، شهادات Kerberos.</p>
+            <h3>الطابعات — أكتر هدف الناس بتستهتر بيه على الشبكة</h3>
+            <p>الطابعات MFP (Xerox, HP, Canon, Konica) دي مش طابعات، دي أجهزة Linux كاملة. بتخزّن: نسخ من كل مستند اتمسح فيها، LDAP credentials علشان تشتغل &quot;Print Anywhere&quot;، وKerberos tickets. تخيل الكنز اللي جواها.</p>
             <Code lang="bash">{`# 1) PRET — Printer Exploitation Toolkit (open source)
 pip install colorama
 git clone https://github.com/RUB-NDS/PRET && cd PRET
@@ -180,15 +180,15 @@ nmap -p 631 --script ipp-info 198.51.100.0/24
 
 # 3) Print job capture — تنصّت على ما يطبعه الناس:
 # (في مختبر): اعتراض port 9100 و حفظ الـ PostScript`}</Code>
-            <p><b>سبب أهمية الطابعة:</b></p>
+            <p><b>الطابعة مهمة ليه بالظبط؟</b></p>
             <ul>
-              <li>تحوي <span className="eng">LDAP bind credentials</span> للوصول إلى دفتر العناوين — بحساب نطاق فعلي. سرقتها = حساب AD صالح.</li>
-              <li>طابعة في &quot;مكتب الرئيس&quot; طبعت النسخة الأصلية من كل وثيقة سرية مرّت. الذاكرة الداخلية تحفظ النسخ.</li>
-              <li><b>PrinterNightmare (CVE-2021-34527)</b> ضد Print Spooler يحوّل أي مستخدم نطاق إلى SYSTEM على الـ DC.</li>
+              <li>جواها <span className="eng">LDAP bind credentials</span> علشان توصل لـ address book — مربوطة بـ domain account حقيقي. تسرقها = عندك حساب AD سليم.</li>
+              <li>الطابعة بتاعت &quot;مكتب الرئيس&quot; طبعت النسخة الأصلية من كل ورقة سرية في الجامعة. الذاكرة الداخلية بتحتفظ بالنسخ.</li>
+              <li><b>PrintNightmare (CVE-2021-34527)</b> ضد الـ Print Spooler بيحوّل أي domain user لـ SYSTEM على الـ DC نفسه. ثغرة بتاعتها واحدة فاتحة سكة الكنز.</li>
             </ul>
 
             <h3>قارئات البطاقات والتحكم بالأبواب</h3>
-            <p>أنظمة Lenel, Genetec, HID Global. غالباً MSSQL خلفية + شبكة منفصلة لكنها تُربط بـ corporate لـ &quot;سهولة الإدارة&quot;.</p>
+            <p>أنظمة Lenel, Genetec, HID Global. غالباً MSSQL في الخلفية + شبكة منفصلة، بس دايماً بيوصلوها بـ corporate علشان &quot;سهولة الإدارة&quot;. والعك يبدأ من هنا.</p>
             <ul>
               <li><b>HID iCLASS / Prox</b> قابلة للنسخ بـ <span className="eng">Proxmark3</span> ($300) في 5 ثوان. اختبار في غرفة المصاعد، تستنسخ بطاقة موظف، تدخل أي مكان.</li>
               <li>قواعد بيانات Lenel فيها كثيراً <span className="eng">sa</span> بكلمة سر افتراضية.</li>
@@ -215,7 +215,7 @@ nmap -p 631 --script ipp-info 198.51.100.0/24
           </Section>
 
           <Section title="G — رفع الصلاحيات — Kerberoasting">
-            <p>أبسط طريق على شبكة جامعية: حسابات الخدمة (<span className="eng">SPN</span>) لها كلمات سر قديمة لم تُغيّر منذ سنوات.</p>
+            <p>أسهل سكة على شبكة جامعية: service accounts (<span className="eng">SPN</span>) باسوردها قديمة من أيام الجامعة الأولانية، محدش غيّرها.</p>
             <Code lang="bash">{`# 1) قائمة كل حسابات SPN:
 GetUserSPNs.py state-uni.edu/student.user:Pass123 -dc-ip 203.0.113.10 -request
 
@@ -233,7 +233,7 @@ hashcat -m 13100 spn-hashes.txt rockyou.txt -r best64.rule
           </Section>
 
           <Section title="H — التحرك الجانبي عبر VLANs">
-            <p>الجامعات &quot;مفتوحة&quot; ثقافياً، VLAN segmentation ضعيف. workstation موظف يكلم printer admin VLAN يكلم camera VLAN. كل قفزة تستخدم كلمة سر جديدة من الطبقة السابقة.</p>
+            <p>الجامعات &quot;مفتوحة&quot; بطبعها، فالـ VLAN segmentation عندهم ضعيف. workstation الموظف بيكلم printer admin VLAN، اللي بيكلم camera VLAN. كل قفزة بنستخدم فيها credential جديد جمعناه من الطبقة اللي قبلها — زي السلم.</p>
             <Terminal lines={[
               { p: "# Pass-the-hash من workstation إلى print server:" },
               { p: "psexec.py -hashes :aad3b...:31d6cf... administrator@198.51.100.50" },
@@ -244,7 +244,7 @@ hashcat -m 13100 spn-hashes.txt rockyou.txt -r best64.rule
           </Section>
 
           <Section title="I — السيطرة على النطاق (Domain Dominance)">
-            <p>بعد الوصول لحساب Domain Admin (عبر Kerberoasting أو NTLM relay على PetitPotam):</p>
+            <p>بعد ما وصلنا لـ Domain Admin (سواء عن طريق Kerberoasting أو NTLM relay على PetitPotam) — دلوقتي إحنا بنلعب باللعبة كلها:</p>
             <Code lang="bash">{`# DCSync — استخراج كل hashes النطاق من DC:
 secretsdump.py state-uni.edu/admin@dc01.state-uni.edu -just-dc
 
