@@ -6,9 +6,29 @@ export default function Page() {
     <LessonShell slug="windows-forensics">
       <L
         ar={<>
-          <Section title="فن قراءة ويندوز — البيانات تتكلّم">
-            <p>كل عملية، كل تسجيل دخول، كل اتصال شبكة، كل ما تفتح ملف — بيسيب أثر في مكان معروف. الفرق بين محقق محترف ومبتدئ مش في الأدوات — لأ، الفرق في إنه عارف <b>يبص فين وبأي ترتيب</b>. ويندوز فيه حوالي 40 مصدر artifact، 6 منهم بيكفوك في 80% من القضايا.</p>
-            <Analogy>ويندوز زي بيت فيه آلاف العدادات. عداد الكهرباء العام بيقولك على الاستهلاك الكلي، لكن لو عرفت إن العداد الفرعي للمطبخ علا فجأة الساعة 3 الفجر، تعرف مين كان صاحي وكان بيعمل إيه.</Analogy>
+          <Section title="فن قراءة ويندوز — البيانات بتتكلّم">
+            <Analogy>
+              قدامك جهاز ويندوز فيه اختراق. هتبدأ منين؟
+              تفتح Task Manager وتدور على process مشبوه؟
+              تشغّل antivirus؟
+              تبص في الـ Event Viewer وتقعد تتفرّج؟
+              ده تصرّف على ادهم.
+              ويندوز زي بيت فيه آلاف العدادات. عداد الكهرباء العام بيقولك على الاستهلاك الكلي. بس لو عرفت إن العداد الفرعي للمطبخ علا فجأة الساعة 3 الفجر، تعرف مين كان صاحي وكان بيعمل إيه. الـ forensics هي إنك تعرف &quot;أنهي عداد ينفع تبصله امتى&quot;.
+
+              - طب أنا أبص في كل العدادات يا حضرتك؟؟
+
+              لأ يا مستجد. لو فتحت كل artifact واحدة واحدة من غير فرضية، هتقعد شهر وما تطلعش بحاجة. اشتغل بفرضية: "أنا شاكك في persistence" → روح للـ Run keys + Services + Scheduled Tasks. السؤال الأول، الأداة بعدين.
+            </Analogy>
+            <p>كل عملية، كل تسجيل دخول، كل اتصال شبكة، كل ما تفتح ملف — بيسيب أثر في مكان معروف. الفرق بين محقق محترف ومبتدئ مش في الأدوات. لأ. الفرق في إنه عارف <b>يبصّ فين وبأي ترتيب</b>.</p>
+            <p>ويندوز فيه حوالي 40 مصدر artifact، 6 منهم بيكفوك في 80% من القضايا. اللي عمّال يفتح كل artifact واحدة واحدة بدون فرضية = بيعك في وقته. اشتغل بفرضية: &quot;أنا شاكك إن فيه persistence&quot; → روح للـ Run keys + Services + Scheduled Tasks. مش العكس.</p>
+            <Callout kind="danger" title="غلطات الـ junior في الـ Windows forensics">
+              <ul>
+                <li>بيفتح الـ EVTX على الجهاز نفسه بـ Event Viewer — كده غيّرت الـ <code>$STANDARD_INFORMATION</code> timestamps. الأدلة لمستها بإيدك.</li>
+                <li>بينسى الـ Order of Volatility — بيعمل disk image قبل memory dump. الذاكرة راحت.</li>
+                <li>بيعتمد على Prefetch بس وينسى Amcache. Prefetch ممكن يبقى معطّل، Amcache مش بيتعطّل.</li>
+                <li>بيقرا <code>$STANDARD_INFORMATION</code> ومش بيقارنه بـ <code>$FILE_NAME</code> — ميمكاتز بيغيّر الأول، التاني بيفضح الـ timestomping.</li>
+              </ul>
+            </Callout>
           </Section>
 
           <Section title="الخريطة — أين تبحث عن ماذا">
@@ -172,7 +192,8 @@ vol -f memory.raw windows.dlllist --pid 1234
 vol -f memory.raw windows.hashdump           # SAM hashes
 vol -f memory.raw windows.lsadump            # secrets cached`}</Code>
             <Callout kind="info" title="ترتيب التطايُر (Order of Volatility)">
-              CPU regs → cache → RAM → network state → disk → logs offsite. اجمع بهذا الترتيب — لا تطفئ الجهاز قبل الـ memory!
+              CPU regs → cache → RAM → network state → disk → logs offsite. اجمع بالترتيب ده.
+              اوعى تطفّي الجهاز قبل ما تاخد الـ memory. جدياً.
             </Callout>
           </Section>
 
@@ -189,7 +210,7 @@ vol -f memory.raw windows.lsadump            # secrets cached`}</Code>
           <Section title="منهجية أول 60 دقيقة">
             <Callout kind="good" title="Triage playbook">
               <ol>
-                <li>Memory dump أولاً (قبل أي تغيير).</li>
+                <li>Memory dump أولاً (قبل أي تغيير). كل خطوة تانية بتغيّر الـ RAM.</li>
                 <li>KAPE Triage على القرص.</li>
                 <li>Sysmon + Security + System logs (آخر 30 يوماً).</li>
                 <li>Autoruns full scan (<span className="eng">autorunsc.exe -accepteula -a * -h -s -m -nobanner -c</span>).</li>
@@ -200,6 +221,10 @@ vol -f memory.raw windows.lsadump            # secrets cached`}</Code>
             </Callout>
             <Callout kind="info" title="أدوات أساسية">
               KAPE, Velociraptor, Eric Zimmerman tools (MFTECmd, PECmd, RECmd, EvtxECmd, AmcacheParser), Volatility 3, Plaso, Hayabusa (sigma لـ EVTX), Chainsaw.
+            </Callout>
+            <Callout kind="info" title="الخلاصة الناشفة">
+              ويندوز ما بيكدبش — بس بيقول الحقيقة لمين عارف يسأل صح. الـ artifacts كلها هناك من 2009. اللي بينجح مش اللي عنده أحدث أداة، اللي بينجح اللي عنده أسئلة محددة.
+              اكتبها على شاشة محطة الـ DFIR: السؤال الأول، الأداة تاني.
             </Callout>
           </Section>
         </>}

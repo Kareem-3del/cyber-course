@@ -7,8 +7,25 @@ export default function Page() {
       <L
         ar={<>
           <Section title="إيه هي الـ Threat Intelligence أصلاً؟">
-            <p>الـ CTI مش لستة IPs. هو <b>معرفة قابلة للتنفيذ</b> بترد على: مين بيستهدفنا؟ إزاي؟ نعمل إيه؟ بيحوّل الداتا الخام لقرارات. اللي بيخلط بين الاتنين بيدفن نفسه تحت feeds مفيش منها فايدة.</p>
-            <Analogy>الـ CTI زي قسم الاستخبارات في الجيش. الأقمار بتجمع داتا خام، المحللين بيحوّلوها لـ "العدو حرّك دبابتين على الجبهة الشمالية". القائد بيقرر: نعزّز الجبهة دي ولا نتجاهل؟ مفيش معنى للداتا من غير ما حد ياخد قرار عليها.</Analogy>
+            <p>بُص.</p>
+            <p>الـ CTI مش لستة IPs.
+            مش feed بتشتركه وتسيبه يولّع تنبيهات.
+            مش جمع كل اللي على الإنترنت من IOCs.
+            هو معرفة قابلة للتنفيذ بترد على:
+            مين بيستهدفنا؟
+            إزاي؟
+            نعمل إيه؟
+            اللي بيخلط بين الـ data والـ intel بيدفن نفسه تحت feeds مفيش منها فايدة.</p>
+            <Analogy>
+              الـ CTI زي قسم الاستخبارات في الجيش.
+              الأقمار بتجمع داتا خام..
+              المحللين بيحوّلوها لـ "العدو حرّك دبابتين على الجبهة الشمالية"..
+              القائد بيقرر: نعزّز الجبهة دي ولا نتجاهل؟
+              مفيش معنى للداتا من غير ما حد ياخد قرار عليها.
+            </Analogy>
+            <Callout kind="info" title="SolarWinds 2020 — لما الـ CTI كان السكة الوحيدة">
+              FireEye اكتشفت إنها متخرقة في ديسمبر 2020 لما لقت red team tools مسروقة. الـ analyst لاحظ أن SUNBURST malware بيعمل DNS beacon بنمط معيّن. شارك الـ TTPs مع CISA. الـ TTP ده (مش الـ hash، مش الـ IP) كان السبب إن 18 ألف organization عرفت إنها متخرقة. لو الكل كان بيركّز على hashes، الحملة كانت لسه شغّالة لحد دلوقتي. الـ CTI الحقيقي = TTPs، مش indicators.
+            </Callout>
           </Section>
 
           <Section title="مستويات الـ Intel — كل واحد لجمهوره">
@@ -44,8 +61,8 @@ export default function Page() {
             ├─────────────┤
             │ Hash Values │  ← ثواني (يغيّر byte واحد)
             └─────────────┘`}</Code>
-            <Callout kind="info" title="الخلاصة">
-              متجريش ورا الـ hashes بس — ده شغل بدون أمل. الـ detection الجامد بيبقى على الـ <b>TTPs</b>: "process tree فيها Word بيفتح PowerShell" أقوى بكتير من "block hash X".
+            <Callout kind="info" title="اللي بيحصل فعلياً">
+              متجريش ورا الـ hashes بس — ده شغل بدون أمل، يا مستجد. الـ attacker بيقلب byte ويرميك. الـ detection الجامد بيقعد فوق على الـ <b>TTPs</b>: "process tree فيها Word بيفتح PowerShell" أقوى مية مرة من "block hash X".
             </Callout>
           </Section>
 
@@ -188,6 +205,27 @@ SSL cert SHA1: ab12... (also seen on 5 other IPs)
                 <li><b>TLP</b> (Traffic Light Protocol) — معيار مدني للمشاركة: RED, AMBER, GREEN, CLEAR. اتعلمه قبل ما تبعت أي تقرير.</li>
               </ul>
             </Callout>
+          </Section>
+
+          <Section title="غلطات الـ junior في الـ CTI">
+            <Callout kind="warn" title="بُص بقى — ده اللي بيحصل في معظم الفرق">
+              <ul>
+                <li>بيشترك في 10 feeds مدفوعة. بيدخّلهم في SIEM. الـ alerts ولّعت من 200 لـ 5000 في اليوم. الـ analyst بقى بيقفل بدون قراية. الـ MTTD اتضاعف.</li>
+                <li>بيكتب تقرير CTI 30 صفحة محدش بيقراه. الـ leadership عايزة سطر واحد.</li>
+                <li>بيعمل attribution بـ "high confidence" على هجوم من 4 IOCs. الـ Diamond Model مكسور. الـ FBI بيرفض الـ report.</li>
+                <li>بيشارك intel مصنّف في Slack public channel. الـ clearance بتتلغي. الـ career بيخلص.</li>
+                <li>بيلاحق hashes كل يوم. الـ MITRE ATT&CK بيدوبه. الـ TTPs ما حدش بيشتغل عليها.</li>
+              </ul>
+              <p>اوعى تفتكر إن feeds كتير = CTI. الـ CTI هي القرار اللي اتاخد بناءً على الـ intel. لو الفريق ما عندوش PIRs واضحة، أنت بتجمع noise وبس.</p>
+            </Callout>
+          </Section>
+
+          <Section title="الخلاصة الناشفة">
+            <p>الـ Pyramid of Pain هي الـ compass.</p>
+            <p>اللي بيشتغل تحت = بيتعب نفسه. اللي بيشتغل فوق = بيتعب الـ attacker.</p>
+            <p>اكتبها على ظهر إيدك:</p>
+            <p>كل ساعة تروح في hash، هي ساعة المهاجم كسبها مجاناً.</p>
+            <p>اختار صفك.</p>
           </Section>
         </>}
         en={<>

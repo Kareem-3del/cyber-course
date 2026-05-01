@@ -7,10 +7,30 @@ export default function Page() {
       <L
         ar={<>
           <Section title="ليه Azure مختلف عن AWS و GCP؟">
-            <p>Azure مدمج بعمق مع <b>Entra ID</b> (هوية اليوزرز) ومع <b>Active Directory</b> الكلاسيكي. الاختراق هنا بيقفز بين الطبقات: من حساب M365 → لـ Subscription → لـ VM → لـ on-prem AD. الجسور دي هي اللي بتخلي Azure هدف ذهبي للـ state actors.</p>
-            <Analogy>تخيل مدينتين جنب بعض، بينهم جسور كتير. كل جسر له حارس مختلف، وأغلب الجسور دي محدش بناها بقصد — اتولدت من اتفاقيات قديمة. المهاجم بيدور على أضعف جسر، مش أقصر طريق.</Analogy>
+            <Analogy>
+              ليه Azure شغل الـ state actors؟ ليه روسيا والصين بيستهدفوها بالذات؟
+              مش بس علشان فيها داتا. علشان Azure هي الـ <i>هوية</i> نفسها.
+              <br/><br/>
+              تخيّل مدينتين جنب بعض، بينهم جسور كتير. كل جسر ليه حارس مختلف. وأغلب الجسور دي محدش بناها بقصد — اتولدت من اتفاقيات قديمة وما حدش راجعها.
+              المهاجم بيدوّر على أرخى نقطة في المنظومة، مش أقصر طريق.
+              <br/><br/>
+              - طب يا حضرتك، Microsoft نفسها مش متحصنة؟ هما بيعملوا الـ cloud أصلاً.
+              <br/>
+              يا مستجد. خد بقى. في حادثة Midnight Blizzard (يناير 2024)، روسيا اخترقت Microsoft نفسها عن طريق password spray على tenant قديم بتاع test، ومنه قفزوا لـ OAuth app معاها صلاحيات على الـ corporate tenant. مايكروسوفت! اللي بتعمل Azure أصلاً!
+            </Analogy>
+            <p>
+              Azure مدمج بعمق مع <b>Entra ID</b> (هوية اليوزرز) ومع <b>Active Directory</b> الكلاسيكي. الاختراق هنا بيقفز بين الطبقات: من حساب M365 → لـ Subscription → لـ VM → لـ on-prem AD. الجسور دي هي اللي بتخلي Azure هدف ذهبي للـ state actors.
+            </p>
             <Callout kind="danger" title="تنبيه قانوني">
               كل اللي هنا للتطبيق في بيئاتك الخاصة أو ضمن نطاق Pentest معاك فيه إذن. مهاجمة subscription مش بتاعتك = جريمة فيدرالية في أغلب الدول.
+            </Callout>
+            <Callout kind="warn" title="غلطات الـ junior في Azure">
+              <ul>
+                <li>يخلط بين Entra Roles و Azure RBAC. يفتكر إن Global Admin معاه access على الـ subscriptions أوتوماتيك. لا، لازم يفعّل elevation.</li>
+                <li>يفتكر إن Conditional Access policies مفعّلة على كل المستخدمين. الـ break-glass accounts مستثناة. وفيه يوزر admin من 2018 ما اتغطّاش.</li>
+                <li>يطلب Managed Identity token من VM ما يفتكرش يفحص الـ scope بتاعها قبل ما يشتغل. ممكن تكون Reader، ممكن تكون Owner على الـ subscription كله.</li>
+                <li>ينسى الـ refresh tokens. الـ access token عمره ساعة، الـ refresh token عمره 90 يوم.</li>
+              </ul>
             </Callout>
           </Section>
 
@@ -23,8 +43,8 @@ export default function Page() {
                 صلاحيات على <b>الهوية</b> (User Admin, Global Admin). منفصلة عن RBAC — الـ Global Admin <b>مش بيشوف</b> الـ Subscriptions أوتوماتيك (بس يقدر يرفع نفسه عبر "Access management for Azure resources").
               </Card>
             </TwoCol>
-            <Callout kind="info" title="نقطة الضعف الكلاسيكية">
-              Global Admin → فعّل "User Access Administrator at root" → Owner على كل Subscription. كليكتين بس بين تسريب MFA والسيطرة الكاملة.
+            <Callout kind="info" title="بُص بقى — نقطة الضعف الكلاسيكية">
+              Global Admin → فعّل "User Access Administrator at root" → Owner على كل Subscription. كليكتين بس بين تسريب MFA والسيطرة الكاملة. اوعى تفتكر إن الـ separation ده بيحميك — الباب موجود وبيتفتح بكليك.
             </Callout>
           </Section>
 
@@ -87,7 +107,7 @@ az keyvault secret list --vault-name target-kv --query '[].name' -o tsv \\
 
 # Soft-delete لا يحميك — يمكن استعادة secret محذوف لمدة 90 يوماً
 az keyvault secret list-deleted --vault-name target-kv`}</Code>
-            <Callout kind="good" title="الدفاع">
+            <Callout kind="good" title="الحماية">
               فعّل <b>Purge Protection</b> (مفيش رجوع)، استخدم RBAC mode بدل Access Policies (أدق)، Private Endpoint، وراقب <span className="eng">SecretGet</span> events في Defender.
             </Callout>
           </Section>
@@ -117,7 +137,7 @@ adconnectdump.exe   # أو AADInternals: Get-AADIntSyncCredentials
 mimikatz # lsadump::dcsync /domain:corp.local /user:Administrator /authuser:MSOL_xxx /authpassword:xxx`}</Code>
           </Section>
 
-          <Section title="الكشف والدفاع">
+          <Section title="الكشف والحماية">
             <Callout kind="good" title="اللي لازم الـ Blue Team يشوفه">
               <ul>
                 <li><b>Sign-in Logs</b> — أدمن بيدخل من IP غريب. UEBA risk score &gt; 70 = جرس إنذار.</li>
@@ -135,6 +155,25 @@ mimikatz # lsadump::dcsync /domain:corp.local /user:Administrator /authuser:MSOL
             <Callout kind="info" title="أدوات الـ Red Team">
               <span className="eng">AADInternals, ROADtools, MicroBurst, AzureHound, Stormspotter, MSOLSpray, TokenTactics</span>.
             </Callout>
+          </Section>
+          <Section title="الخلاصة الناشفة">
+            <p>
+              Azure مش subscription فيها VMs. Azure هوية موصولة بكل حاجة في الشركة.
+              <br/>
+              لو الـ Global Admin اتخرق، الـ on-prem AD اتخرق معاه (لو Entra Connect مفعّل). والـ M365 اتخرق. والـ Subscriptions اتخرقت لو فعّل elevation.
+              <br/><br/>
+              الـ junior بيحمي VMs.
+              <br/>
+              الـ pro بيحمي identities.
+              <br/>
+              الـ state actor بيحمي نفسه عن طريق سرقة identity ساكت ويقعد جوه شهور.
+              <br/><br/>
+              لو Conditional Access policies عندك فيها break-glass accounts من غير monitoring، يبقى إنت مش بتدافع — إنت بتسيب باب جانبي وفاكر الموضوع آمن.
+              <br/><br/>
+              اكتبها على screensaver السيرفر:
+              <br/>
+              <b>اللي بيحمي identities بيحمي كل حاجة. اللي بيحمي VMs بيحمي الـ VMs بس.</b>
+            </p>
           </Section>
         </>}
         en={<>

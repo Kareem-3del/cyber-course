@@ -8,14 +8,28 @@ export default function Page() {
         ar={<>
           <Section title="من low-priv user إلى NT AUTHORITY\\SYSTEM">
             <Analogy>
-              Windows مثل قلعة فيها مئات الأبواب الصغيرة، كل باب يفترض أن يكون مغلقاً ولكن أحدهم نسي قفلاً.
-              تصعيد الصلاحيات في Windows = اكتشاف هذه الأبواب: خدمة بـ path ضعيف، DLL يبحث عنه برنامج في
-              مكان يمكنك الكتابة فيه، token من عملية أخرى يمكنك سرقته.
+              يعني إيه إنت user عادي على Windows؟
+              يعني إنت بتتفرّج على شاشة بنسبة 10٪ من الجهاز.
+              ليه نقعد كده؟
+              <br/><br/>
+              - طب أنا user عادي، ايه اللي أنا أقدر أعمله أصلاً يا حضرتك؟؟
+              <br/><br/>
+              يا مستجد، الـ user العادي عنده صلاحية كتابة في أماكن أكتر مما تتخيل. وفيه service نسي الـ admin يقفلها صح. وفيه scheduled task شغّال SYSTEM وبيشغّل سكربت من فولدر إنت كاتب فيه. اللعبة مش "ايه اللي عندي"، اللعبة "ايه اللي مغلطه".
+              <br/><br/>
+              Windows زي قلعة فيها مئات الأبواب الصغيرة. المفروض كلها متقفلة، بس دايماً فيه باب حد نسيه مفتوح. تصعيد الصلاحيات في Windows = إنك تلاقي الأبواب دي: خدمة بـ path ضعيف، DLL برنامج بيدوّر عليه في مكان إنت تقدر تكتب فيه، token عملية تانية إنت تقدر تسرقه.
+              <br/><br/>
+              SYSTEM في Windows أعلى من Administrator في حالات معينة (الوصول للذاكرة، LSASS، tokens). معظم تصعيد الصلاحيات على Windows هدفه يطلع SYSTEM لأنه ده الباب اللي بيفتحلك credential dumping و persistence حقيقي. أقل من كده شغل ناقص.
+              <br/><br/>
+              في 2022، PrintNightmare (CVE-2021-34527) ضرب كل سيرفر Windows على وجه الأرض. أي domain user يقدر يبقى SYSTEM على أي host شغّال Print Spooler. مايكروسوفت أصدرت 4 patches قبل ما يقفلوها صح. شركات لسة شغّالة بـ Print Spooler مفعّل في 2026.
             </Analogy>
-            <p>
-              SYSTEM في Windows أعلى من Administrator في حالات معينة (الوصول للذاكرة، LSASS، tokens). معظم
-              تصعيد الصلاحيات على Windows يهدف إلى SYSTEM لأنه يفتح الباب لـ credential dumping و persistence حقيقي.
-            </p>
+            <Callout kind="warn" title="غلطات الـ junior على Windows">
+              <ul>
+                <li>يلاقي SeImpersonate ويولّع GodPotato من غير ما يفحص الـ Defender. الـ binary معروف من اسمه.</li>
+                <li>يجرّب JuicyPotato على Server 2019+. ما بيشتغلش. اعمل بحث الأول قبل ما تجرب.</li>
+                <li>ينسى يفحص الـ Unquoted Service Paths. كنز قديم لسة موجود في 2026.</li>
+                <li>يعمل mimikatz من غير ما يحقن في عملية موثوقة. الـ EDR بيشوفه قبل ما يكمّل اسم الـ binary.</li>
+              </ul>
+            </Callout>
           </Section>
 
           <Section title="الاستطلاع الأولي">
@@ -40,22 +54,19 @@ Get-HotFix | Sort InstalledOn -Descending | Select -First 20`}</Code>
 
           <Section title="أهم خمس قنوات تصعيد">
             <Step n={1} title="Privilege abuse — SeImpersonate / SeAssignPrimaryToken">
-              لو <span className="eng">whoami /priv</span> أظهر <span className="eng">SeImpersonatePrivilege</span> فأنت
-              قريب جداً من SYSTEM. هذا ما يسمى Potato attacks (RoguePotato, JuicyPotato, GodPotato, SigmaPotato).
+              لو <span className="eng">whoami /priv</span> ورّاك <span className="eng">SeImpersonatePrivilege</span> يبقى إنت قريب جداً من SYSTEM. ده اللي اسمه Potato attacks (RoguePotato, JuicyPotato, GodPotato, SigmaPotato). من هنا للسما.
               <Code lang="powershell">{`# على Windows Server 2019+:
 .\\GodPotato.exe -cmd "cmd /c whoami"
 # => nt authority\\system`}</Code>
             </Step>
             <Step n={2} title="Unquoted Service Path">
-              خدمة عندها path مثل <span className="eng">C:\\Program Files\\My App\\service.exe</span> بدون quotes،
-              ولديك write على <span className="eng">C:\\Program Files\\My.exe</span>؟ Windows سيحاول تنفيذه.
+              خدمة عندها path زي <span className="eng">C:\\Program Files\\My App\\service.exe</span> من غير quotes، وعندك صلاحية كتابة على <span className="eng">C:\\Program Files\\My.exe</span>؟ Windows هيحاول يشغّله. خرم كلاسيكي.
               <Code lang="powershell">{`# ابحث عنها:
 wmic service get name,pathname,startmode | findstr /i /v "C:\\Windows" | findstr /i /v """
 # لو وجدت، استبدل My.exe بـ payload و أعد تشغيل الخدمة`}</Code>
             </Step>
             <Step n={3} title="Service Binary / DLL Hijacking">
-              لو الخدمة تعمل كـ SYSTEM وملفها قابل للكتابة من قبلك، استبدله. أو إذا كانت تستدعي DLL غير موجود في
-              ترتيب البحث، ضع DLL خبيث.
+              لو الخدمة شغالة كـ SYSTEM وملفها قابل للكتابة منك، استبدله ببساطة. أو لو بتستدعي DLL مش موجود في ترتيب البحث، حط DLL خبيث في طريقها.
               <Code lang="powershell">{`# تحقق من ACL:
 icacls "C:\\Path\\To\\service.exe"
 # ابحث عن BUILTIN\\Users:F أو NT AUTHORITY\\Authenticated Users:F`}</Code>
@@ -98,7 +109,7 @@ mimikatz.exe "sekurlsa::minidump lsass.dmp" "sekurlsa::logonpasswords"`}</Code>
             للمختبرات المعزولة أو engagements مع authorization مكتوب.
           </Callout>
 
-          <Callout kind="good" title="الدفاع — ما يجب أن يفعله Blue Team">
+          <Callout kind="good" title="اللي بيشتغل فعلاً للـ Blue Team">
             <ul>
               <li>راقب <span className="eng">SeImpersonatePrivilege</span> abuse: child process من IIS / SQL Server بصلاحية SYSTEM = مشبوه</li>
               <li>Credential Guard لحماية LSASS (Windows 10+ Enterprise)</li>
@@ -122,6 +133,25 @@ mimikatz.exe "sekurlsa::minidump lsass.dmp" "sekurlsa::logonpasswords"`}</Code>
 </Sysmon>`}</Code>
           </Section>
 
+          <Section title="الخلاصة الناشفة">
+            <p>
+              Windows privesc عبارة عن 3 أسئلة تسألهم لنفسك:
+              <br/>
+              1. <code>whoami /priv</code> ورّاك إيه؟ SeImpersonate موجود؟ خلاص، GodPotato.
+              <br/>
+              2. فيه service بـ unquoted path وإنت تقدر تكتب في الـ folder؟ خلاص، DLL hijack.
+              <br/>
+              3. فيه scheduled task شغّال SYSTEM وبيشغّل سكربت إنت تقدر تعدّله؟ خلاص.
+              <br/><br/>
+              الـ junior بيشغّل WinPEAS ويتفرّج على الـ output 5 دقايق ويقول "مفيش حاجة".
+              <br/>
+              الـ pro بيقرا كل سطر، ويفهم ليه الأداة لوّنته أحمر.
+              <br/><br/>
+              السكة من low-priv لـ SYSTEM متفتحة في 80٪ من السيرفرات اللي شفتها. مش علشان Windows ضعيف — علشان admins بيركّبوا وينسوا.
+              <br/><br/>
+              اوعى تفتح WinPEAS وتقفل في دقيقتين. اقعد على الـ output لحد ما تفهم كل سطر أحمر بيحصل ليه.
+            </p>
+          </Section>
           <Section title="مصادر">
             <ul>
               <li>HackTricks — Windows Local Privilege Escalation</li>

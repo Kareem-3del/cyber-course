@@ -6,11 +6,28 @@ export default function Page() {
     <LessonShell slug="web-vuln-research">
       <L
         ar={<>
-          <Section title="لماذا هذا الدرس مختلف">
-            <p>الدروس اللي فاتت (web-attacks، advanced-web، web-redteam-deep) علّمتك إزاي تستغل ثغرات <b>معروفة</b>. الدرس ده هيعلّمك إزاي تلاقي ثغرة <b>محدش اكتشفها لسه</b>، وإزاي تفضل جوه الهدف شهور من غير ما حد ياخد بالك. دي المهارة الحقيقية لفرق العمليات المصرّحة فيدرالياً — لأن الثغرة الجديدة مفيش لها توقيعات IDS وبتديك وصول قبل ما حد يكتب الـ patch أصلاً.</p>
-            <Analogy>الفرق بين اللي بيقرا CVEs والباحث الحقيقي زي الفرق بين اللي بيقرا الجرايد والمحقق الجنائي. الأول عارف اللي حصل؛ التاني عارف اللي <b>هيحصل</b> لأنه بيقرا الكود قبل ما الخصم يقراه.</Analogy>
+          <Section title="ليه الدرس ده مختلف؟">
+            <Analogy>
+              الفرق بين اللي بيقرا CVEs والباحث الحقيقي زي الفرق بين اللي بيقرا الجرايد والمحقق الجنائي.
+              الأول عارف اللي حصل.
+              التاني عارف اللي <b>هيحصل</b> — لأنه بيقرا الكود قبل ما الخصم يقراه.
+
+              - طب أنا لسه junior يا حضرتك، أبدأ منين؟؟
+
+              ابدأ من اللي محدش حابب يبدأ منه يا مستجد: قراءة الكود. مش fuzzer. مش tool. كود. بنسبة 99% أول bug جدي هتلاقيه هيكون من commit واحد قريته بعنايا، مش من scanner شغّلته 10 ساعات.
+            </Analogy>
+            <p>الدروس اللي فاتت (web-attacks، advanced-web، web-redteam-deep) علّمتك إزاي تستغل ثغرات <b>معروفة</b>. الدرس ده هيعلّمك إزاي تلاقي ثغرة <b>محدش اكتشفها لسه</b>، وإزاي تفضل جوه الهدف شهور من غير ما حد ياخد باله.</p>
+            <p>دي المهارة الحقيقية لفرق العمليات المصرّحة فيدرالياً — لأن الثغرة الجديدة مفيش لها توقيعات IDS، وبتديك وصول قبل ما حد يكتب الـ patch أصلاً. مفيش طريق أقصر من ده.</p>
             <Callout kind="danger" title="تحذير قانوني — مفيش ولا منطقة رمادية">
-              كل تكنيك في الدرس ده قانوني بس على: (1) أنظمة بتملكها، (2) برامج bug bounty صريحة، (3) عقد pentest موقّع، (4) تفويض حكومي مكتوب جوه صلاحيات Title 10/50 أو ما يعادلها. تجرب ثغرة &quot;صفرية&quot; على نظام إنتاج من غير إذن = جناية فيدرالية تحت CFAA §1030(a)(5) حتى لو ماستغلتهاش. مش هزار، مش لعب.
+              كل تكنيك في الدرس ده قانوني بس على: (1) أنظمة بتملكها، (2) برامج bug bounty صريحة، (3) عقد pentest موقّع، (4) تفويض حكومي مكتوب جوه صلاحيات Title 10/50 أو ما يعادلها. تجرّب ثغرة &quot;صفرية&quot; على نظام إنتاج من غير إذن = جناية فيدرالية تحت CFAA §1030(a)(5) حتى لو ما استغلتهاش. مش هزار، مش لعب.
+            </Callout>
+            <Callout kind="danger" title="غلطات الـ junior في vuln research">
+              <ul>
+                <li>بيبدأ بـ fuzzer عشوائي على endpoint — أرخص حاجة وأقل عائد. ابدأ بقراءة الكود.</li>
+                <li>بيلاقي ثغرة وبيكتب التقرير على طول — متنساش variant analysis: نفس النمط في 50 مكان تاني.</li>
+                <li>بيتجاهل الـ patch diff — 60% من &quot;الـ 0-days&quot; اللي APT بتستخدمها مش 0-days أصلاً، هي n-days.</li>
+                <li>بينشر PoC عام قبل ما يبلّغ — شغل غير مسؤول وبيحرق سمعتك في المجتمع.</li>
+              </ul>
             </Callout>
           </Section>
 
@@ -79,8 +96,8 @@ where
   call.getFunc().(Attribute).getAttr() = name.getId() and
   not exists(IfStmt guard | guard.getAChild*() = call)
 select call, "Unguarded pickle.loads — RCE primitive"`}</Code>
-            <Callout kind="good" title="الدفاع — تحويل variant analysis ضدّك">
-              فرق الـ AppSec الناضجة تشغّل <span className="eng">CodeQL/Semgrep</span> على كل PR بقواعد مكتوبة من CVEs الماضية للمنتج نفسه. كل ثغرة تُكتشف داخلياً تتحول إلى قاعدة دائمة. هذا يقفل عائلة كاملة من المتغيرات قبل الإنتاج.
+            <Callout kind="good" title="اللي بيشتغل فعلاً ضد variant analysis">
+              فرق الـ AppSec الناضجة بتشغّل <span className="eng">CodeQL/Semgrep</span> على كل PR بقواعد مكتوبة من CVEs اللي اتلقت قبل كده في نفس المنتج. كل ثغرة بتتلقّط جوّه بتتحوّل لقاعدة دايمة. ده اللي بيقفل عيلة المتغيرات كلها قبل ما توصل prod.
             </Callout>
           </Section>
 
@@ -181,7 +198,7 @@ npx jazzer fuzz --sync`}</Code>
             </ul>
           </Section>
 
-          <Section title="الدفاع — كيف يصطاد المدافع البارع كل ما سبق">
+          <Section title="الحماية — كيف يصطاد المدافع البارع كل ما سبق">
             <Callout kind="good" title="ضد Patch Diffing">
               (1) Coordinated disclosure مع backporting كامل — أصلح كل المسارات معاً. (2) Vulnerability-equivalent class scanning بـ <span className="eng">Semgrep/CodeQL</span> قبل الإصدار. (3) Honeypatches — endpoints قديمة تبدو ضعيفة لكنها تنبّه.
             </Callout>
@@ -221,6 +238,11 @@ npx jazzer fuzz --sync`}</Code>
               <li><span className="eng">Mandiant M-Trends</span> السنوي — متوسط dwell time العالمي وكيف يتطور</li>
               <li><span className="eng">USENIX Security &amp; IEEE S&amp;P proceedings</span> — أبحاث أكاديمية تسبق الصناعة بسنتين</li>
             </ul>
+            <Callout kind="info" title="الخلاصة الناشفة">
+              الباحث الحقيقي مش بيدوّر على ثغرات. هو بيدوّر على فرضيات غلط في دماغ المبرمج. لما تلاقي واحدة، الـ codebase كله بيفتحلك. اقرا الكود كأنك بتقرا رواية بوليسية — كل سطر فيه احتمال يكون فيه جريمة.
+              اوعى تستنّى Nuclei يلاقيلك حاجة. لو ده اللي بتعمله، انت مش باحث، انت مستهلك.
+              اكتبها على المكتب: الـ bug في فرضية، مش في سطر.
+            </Callout>
           </Section>
         </>}
 

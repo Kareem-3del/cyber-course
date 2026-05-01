@@ -6,17 +6,31 @@ export default function Page() {
     <LessonShell slug="hardening">
       <L
         ar={<>
-          <Section title="مبدأ الدفاع المتعدد الطبقات — Defense in Depth">
-            <Analogy>القلعة في العصور الوسطى ما كانتش بتعتمد على سور واحد. خندق، سور برّاني، سور جوّاني، برج رئيسي، وحرّاس. لو طبقة وقعت، اللي بعدها بتمسك. ده بالظبط <b>Defense in Depth</b>.</Analogy>
-            <p>القاعدة هنا بسيطة: ما تحطش كل بيضك في سلة واحدة. أي طبقة هتفشل يوم ما، وانت عايز اللي بعدها تكون جاهزة.</p>
+          <Section title="مبدأ الحماية المتعدد الطبقات — Defense in Depth">
+            <Analogy>
+              بُص.
+              القلعة في العصور الوسطى ما كانتش بتعتمد على سور واحد..
+              خندق..
+              سور برّاني..
+              سور جوّاني..
+              برج رئيسي..
+              وحرّاس.
+              لو طبقة وقعت، اللي بعدها بتمسك. ده بالظبط Defense in Depth.
+            </Analogy>
+            <p>القاعدة بسيطة: ما تحطش كل بيضك في سلة واحدة. أي طبقة هتفشل يوم ما — أنت عايز اللي بعدها جاهزة.</p>
+            <Callout kind="info" title="Equifax 2017 — قصة طبقة وحدة سقطت فبيت كله انهار">
+              ثغرة Apache Struts (CVE-2017-5638) اتعلن عنها في مارس. Equifax ما رقّعتش الـ web server. مفيش WAF بيمنع الـ payload. مفيش egress filtering — الـ server طلع بيكلم C2 برّه. مفيش segmentation — من الـ web تنقّل لـ DB سيرفر فيه 147 مليون SSN. كل طبقة كان لازم تكون موجودة. كل طبقة كانت ناقصة. الخسارة: 700 مليون دولار + الـ CEO اتفصل + قضية كونغرس.
+            </Callout>
           </Section>
           <Section title="مبادئ ذهبية — احفظهم زي اسمك">
+            <p>- يا حضرتك أنا بشتغل في حتة موثوقة.. كل الأجهزة بتاعتنا.. هحتاج كل ده ليه؟</p>
+            <p>يا مستجد، متوقّع كالعادة. الثقة دي بالظبط هي اللي بتحرقك. اقرا بقى:</p>
             <ol>
               <li><b>Least Privilege</b> — أقل صلاحية ممكنة لكل مستخدم وخدمة. لو الـ app محتاج يقرا بس، ما تديهوش write.</li>
               <li><b>Zero Trust</b> — ما تثقش في حد ولا في شبكة، تحقق في كل مرة. حتى الجهاز اللي جوّه الـ corporate LAN.</li>
               <li><b>Assume Breach</b> — افترض إنك متخرق دلوقتي، واشتغل على الكشف والاحتواء.</li>
               <li><b>Defense in Depth</b> — طبقات كتير ومتنوعة، مش نفس النوع مكرر.</li>
-              <li><b>Secure by Default</b> — الإعداد الافتراضي يكون آمن، الناس مش بتقرا الـ docs.</li>
+              <li><b>Secure by Default</b> — الإعداد الافتراضي يكون آمن. محدش بيقرا الـ docs.</li>
             </ol>
           </Section>
           <Section title="تصلب نظام Linux">
@@ -42,7 +56,7 @@ ufw allow from 10.0.0.0/8 to any port 22
             <Callout kind="info" title="معايير قابلة للقياس — ما تخترعش العجلة">
               <ul>
                 <li>CIS Benchmarks — نقاط مفصّلة لكل توزيعة، حد قعد سنين يكتبها.</li>
-                <li>DISA STIGs — معايير وزارة الدفاع الأمريكية، أصرم شوية.</li>
+                <li>DISA STIGs — معايير وزارة الحماية الأمريكية، أصرم شوية.</li>
                 <li>أتمتها بـ OpenSCAP / Lynis / Wazuh SCA — مفيش سبب تعمل المسح يدوي.</li>
               </ul>
             </Callout>
@@ -92,10 +106,30 @@ add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'sha25
           <Section title="إدارة الأسرار — Secrets Management">
             <ul>
               <li>HashiCorp Vault, AWS Secrets Manager, Azure Key Vault, GCP Secret Manager.</li>
-              <li>أبداً في الكود أو في الـ .env الذي قد يُرفع.</li>
+              <li>أبداً في الكود أو في .env اللي ممكن يترفع.</li>
               <li>Pre-commit hooks: gitleaks, detect-secrets.</li>
               <li>تدوير دوري + short-lived tokens.</li>
             </ul>
+          </Section>
+
+          <Section title="غلطات الـ junior في الـ hardening">
+            <Callout kind="warn" title="اللي بيحصل فعلياً عند كتير من الجهات عندنا">
+              <ul>
+                <li>عندك CIS Benchmark على ورق — على السيرفرات، الـ SSH لسه root login مفتوح.</li>
+                <li>الـ MFA "إجباري" — ما عدا الـ break-glass account اللي باسوردها على sticky note جنب الموظف.</li>
+                <li>الـ DB في VPC خاص — بس الـ jump host بتاعها مفتوح SSH للإنترنت بـ password auth.</li>
+                <li>الـ secrets في Vault — بس الـ root token محفوظ في wiki داخلي بيقرأه أي حد.</li>
+                <li>الـ patching policy "كل شهر" — السيرفر اللي بيشغل الـ ERP من 2019 وما اتلمسش "علشان حساس".</li>
+              </ul>
+              <p>الخلاصة: الـ hardening مش ورق. لو الـ baseline موجود في policy وغير موجود على disk = أنت بتمثّل أمن. المهاجم بيشوف الـ disk، مش الـ policy.</p>
+            </Callout>
+          </Section>
+
+          <Section title="الخلاصة الناشفة">
+            <p>كل طبقة لوحدها هتفشل يوم ما.</p>
+            <p>ده مش تشاؤم.</p>
+            <p>ده تخطيط.</p>
+            <p>اللي عنده 5 طبقات ضعيفة بيكسب على اللي عنده طبقة واحدة "ممتازة". وأنت ونصيبك في الباقي.</p>
           </Section>
         </>}
         en={<>

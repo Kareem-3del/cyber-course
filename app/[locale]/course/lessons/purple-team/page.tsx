@@ -6,37 +6,68 @@ export default function Page() {
     <LessonShell slug="purple-team">
       <L
         ar={<>
-          <Section title="ما هو Purple Team — لماذا ليس مجرد دمج فريقين">
-            <p>Red Team يثبت أن الاختراق ممكن. Blue Team يبني الكشف و الاستجابة. <b>Purple Team</b> يقيس <b>كم تقنية يكتشفها فعلاً نظامك الحالي</b> — لا في تقرير سنوي، بل قياس مستمر مرتبط بـ ATT&CK.</p>
-            <Analogy>الفرق بين Pentest و Purple Team هو الفرق بين فحص طبي شامل مرة واحدة، و جهاز قياس ضغط دم متصل دائماً. الأول يخبرك "هل أنت مريض الآن؟"، الثاني يخبرك "كيف يتغيّر صحتك مع كل قرار تتخذه".</Analogy>
+          <Section title="إيه الـ Purple Team؟ — مش مجرد دمج فريقين">
+            <p>طب الـ Red Team بيكتشفوا إيه؟ &quot;الاختراق ممكن&quot;.</p>
+            <p>طيب الـ Blue Team بيعملوا إيه؟ &quot;detection rules&quot;.</p>
+            <p>طب مين بيقيس إن الـ rules دي فعلاً بتمسك اللي الـ Red Team بيعمله؟</p>
+            <p>محدش.</p>
+            <p>الـ Pentest بيخلص بتقرير. الـ Detection Engineering بيخلص بـ rule في git. ومحدش بيقعد يربط الاتنين.</p>
+            <p>ده هو المكان اللي الـ Purple Team بتشغل فيه. مش &quot;دمج&quot; للفريقين. هي <b>قياس مستمر</b> لكام تقنية من اللي خصومك بيستخدموها فعلاً، بيمسكها نظامك دلوقتي.</p>
+            <Analogy>الفرق بين Pentest و Purple Team زي الفرق بين فحص طبي شامل مرة في السنة، وجهاز ضغط متوصّل بيك على طول. الأول بيقولك &quot;أنت عيّان دلوقتي؟&quot;. التاني بيقولك &quot;صحتك بتتغيّر إزاي مع كل قرار بتاخده&quot;.</Analogy>
             <Callout kind="info" title="الفكرة الجوهرية">
-              لا تختبر كل شيء — اختبر <b>التقنيات التي يستخدمها خصومك الفعليون</b> (CTI-driven). ثم قِس التغطية و طوّر الكشف عملياً.
+              ما تختبرش كل حاجة — اختبر <b>اللي خصومك الحقيقيين بيستخدموه</b> (CTI-driven). وبعدين قِس التغطية وطوّر الكشف عملياً.
+            </Callout>
+            <Callout kind="warn" title="غلطات الـ junior في Purple Team">
+              <ul>
+                <li>بيختبر بس اللي عارف إنه هيظهر. المؤشّرات تتحسّن في dashboard، الواقع ما اتغيّرش.</li>
+                <li>بيعمل الاختبار في lab بس ومش بيـ extrapolate للـ production. الـ lab مفيهاش الـ noise اللي في البيئة الحقيقية.</li>
+                <li>بينسى الـ cleanup بعد Atomic Red Team — وفجأة الـ rules بتطلق على artifacts قديمة من اختبار قديم.</li>
+                <li>بيكتب rule بدون runbook. الـ alert بيطلق ومحدش عارف يعمل إيه. كده الـ rule = noise مش defense.</li>
+                <li>بيصدّق &quot;EDR vendor قال إنه بيمسك X&quot;. اختبر بنفسك. الـ vendor عنده مصلحة يقول كده.</li>
+              </ul>
             </Callout>
           </Section>
 
+          <Section title="قصة من الواقع — لما الـ EDR ادّعى وما مسكش">
+            <p>2022. Mandiant طلعوا تقرير لافت: في 70% من الـ breaches اللي ردّوا عليها، الضحية كان عنده EDR من &quot;Top 5 vendors&quot;. والـ EDR ماكانش بيمسك التقنية الفعلية اللي اخترقتهم.</p>
+            <p>طب ليه؟</p>
+
+            <p>- علشان الـ EDR وحش يا حضرتك؟</p>
+
+            <p>لأ يا مستجد. الـ EDR كويس. المشكلة:</p>
+            <ul>
+              <li>الـ EDR متضبط بـ policy الـ default. مش متظبط على بيئة الشركة.</li>
+              <li>تنبيهات الـ medium severity مقفولة عشان &quot;noise&quot;.</li>
+              <li>الـ exclusions اللي اتحطت &quot;مؤقتاً&quot; للـ developers بقت دائمة.</li>
+              <li>والـ Red Team ماـ tested ده. الـ Pentest السنوي حلقة كانت آخر مرة من 11 شهر، وكانت في scope محدود.</li>
+            </ul>
+            <p>الـ Red Canary نشروا متوسط: 60% من الـ techniques في ATT&CK ماـ tested في معظم الشركات. والـ &quot;Coverage&quot; اللي الـ vendor بيقولها = نظري. مش فعلي في بيئتك أنت.</p>
+            <p>الـ Purple Team بيحلّ ده. شهرياً، Atomic Red Team على endpoint اختبار. لو الـ rule ماشتغلتش، تتظبّط. لو الـ data source غير موجود، يتفتح. القياس مستمر.</p>
+          </Section>
+
           <Section title="ATT&CK Navigator — خريطة المعركة">
-            <p><span className="eng">attack.mitre.org/matrices/enterprise</span> تحوي ~14 تكتيكاً و &gt;200 تقنية. الـ Navigator (مفتوح المصدر) يلوّن الخريطة حسب:</p>
+            <p><span className="eng">attack.mitre.org/matrices/enterprise</span> فيها ~14 تكتيك و &gt;200 تقنية. الـ Navigator (مفتوح المصدر) بيلوّن الخريطة على حسب:</p>
             <TwoCol>
               <Card title="Threat Layer" color="red">
-                التقنيات التي تستخدمها مجموعات تستهدف قطاعك. مأخوذة من تقارير CTI (Mandiant, CrowdStrike, MITRE Groups).
+                التقنيات اللي مجموعات بتستهدف قطاعك بتستخدمها. جايّة من تقارير CTI (Mandiant, CrowdStrike, MITRE Groups).
               </Card>
               <Card title="Coverage Layer" color="blue">
-                ما يكتشفه نظامك الحالي. مأخوذ من Sigma rules, SIEM detections, EDR.
+                اللي نظامك بيمسكه دلوقتي. مأخوذ من Sigma rules, SIEM detections, EDR.
               </Card>
               <Card title="Gap Layer" color="amber">
-                Threat − Coverage = الفجوات. هذه هي قائمة العمل الحقيقية.
+                Threat − Coverage = الفجوات. دي قايمة شغلك الحقيقية.
               </Card>
               <Card title="Validation Layer" color="green">
-                ما اختبرته فعلياً عبر Atomic / CALDERA. أخضر = اكتُشف، أحمر = لم يُكتشف.
+                اللي أنت اختبرته فعلاً بـ Atomic / CALDERA. أخضر = اتمسك، أحمر = ما اتمسكش.
               </Card>
             </TwoCol>
             <Callout kind="good" title="قاعدة">
-              لا توجد فرصة للتغطية &gt; 100%. الواقعي: 50–60% من التقنيات الأكثر استخداماً، تختبر شهرياً.
+              مفيش حاجة اسمها 100% تغطية. الواقعي: 50–60% من التقنيات الأكتر استخداماً، تختبرها شهرياً.
             </Callout>
           </Section>
 
           <Section title="Atomic Red Team — اختبار فردي لكل تقنية">
-            <p>Atomic = مكتبة من Red Canary فيها &gt;1500 اختبار صغير، كل واحد يطابق تقنية ATT&CK محددة. ينفّذ على endpoint واحد، يتحقق من الكشف، ينظّف.</p>
+            <p>Atomic = مكتبة من Red Canary فيها أكتر من 1500 اختبار صغير، كل واحد متطابق مع تقنية ATT&CK معيّنة. بيشتغل على endpoint واحد، أنت بتتأكد إنه اتمسك، وبعدين تنضّف وراك.</p>
             <Terminal lines={[
               { p: "# تثبيت على Windows" },
               { p: "IEX (IWR 'https://raw.githubusercontent.com/redcanaryco/invoke-atomicredteam/master/install-atomicredteam.ps1' -UseBasicParsing)" },
@@ -51,12 +82,12 @@ export default function Page() {
               { p: "Invoke-AtomicTest T1059.001-1 -Cleanup" },
             ]} />
             <Callout kind="info" title="نموذج تشغيل">
-              قسّم فريقك إلى زوج: المنفّذ يطلق Atomic، المراقب يفتح Splunk/Sentinel و يبحث في الوقت الحقيقي. النتيجة: "هل ظهر؟ في كم ثانية؟ في أي قاعدة؟". وثّق على ATT&CK Navigator.
+              قسّم فريقك جوز: المنفّذ بيشغّل Atomic، والراصد بيفتح Splunk/Sentinel ويراقب لحظياً. النتيجة لكل اختبار: "ظهر؟ في كام ثانية؟ في أي قاعدة؟". ووثّقها على ATT&CK Navigator.
             </Callout>
           </Section>
 
           <Section title="CALDERA — محاكاة مسلسل كامل">
-            <p>Atomic = اختبار واحد. <b>CALDERA</b> (من MITRE) = سلسلة عمليات كاملة. Agent على endpoint يتلقى أوامر، يبني attack chain، يتعلّم من النتائج.</p>
+            <p>Atomic = اختبار واحد. <b>CALDERA</b> (من MITRE) = عملية كاملة. Agent على الـ endpoint بيستقبل أوامر، يبني attack chain، ويتعلّم من النتايج.</p>
             <Code lang="bash">{`# تشغيل CALDERA server
 git clone https://github.com/mitre/caldera.git --recursive
 cd caldera && pip install -r requirements.txt
@@ -67,53 +98,53 @@ python server.py --insecure
 # 2) Deploy agent: واحد سطر PowerShell من Adversaries → Deploy
 # 3) شغّل Adversary: e.g., "Hunter" (UAC bypass + Mimikatz + lateral movement)`}</Code>
             <ul>
-              <li><b>Adversary profile</b> — تجميعة TTPs تحاكي مجموعة (e.g., APT29).</li>
-              <li><b>Operation</b> — تنفيذ Adversary على Agents مع قواعد (autonomous / human-in-the-loop).</li>
-              <li><b>Fact base</b> — معلومات يجمعها Agent (usernames, hashes, networks) ثم يستخدمها في خطوات لاحقة.</li>
+              <li><b>Adversary profile</b> — مجموعة TTPs بتحاكي جروب معيّن (مثلاً APT29).</li>
+              <li><b>Operation</b> — تشغيل Adversary على الـ Agents بقواعد محدّدة (autonomous / human-in-the-loop).</li>
+              <li><b>Fact base</b> — معلومات الـ Agent بيجمعها (usernames, hashes, networks) ويستخدمها في الخطوات اللي بعدها.</li>
             </ul>
           </Section>
 
           <Section title="أدوات أخرى مفيدة">
             <TwoCol>
-              <Card title="Atomic Red Team" color="red">PowerShell + cross-platform tests, granular per-technique. لا يحتاج C2.</Card>
-              <Card title="CALDERA" color="red">Operations كاملة, agent-based, autonomy options.</Card>
-              <Card title="Stratus Red Team" color="amber">DataDog — تركيز على cloud (AWS, Azure, GCP) attack TTPs.</Card>
-              <Card title="Pacu" color="amber">AWS-specific exploitation framework. مفيد لتدريب Detection Engineering على cloud telemetry.</Card>
-              <Card title="Vectr" color="blue">منصة لتسجيل و تتبع نتائج عمليات Purple. أصبحت معياراً.</Card>
-              <Card title="DeTT&CT" color="blue">قياس جودة data sources الخاصة بك. تكمّل ATT&CK Navigator.</Card>
+              <Card title="Atomic Red Team" color="red">PowerShell + اختبارات cross-platform، granular لكل تقنية. مش محتاج C2.</Card>
+              <Card title="CALDERA" color="red">Operations كاملة، agent-based، فيها autonomy options.</Card>
+              <Card title="Stratus Red Team" color="amber">من DataDog — تركيز على cloud (AWS, Azure, GCP) TTPs.</Card>
+              <Card title="Pacu" color="amber">AWS exploitation framework. مفيد لتدريب Detection Engineering على cloud telemetry.</Card>
+              <Card title="Vectr" color="blue">منصة لتتبع حملات Purple Team. بقت معيار صناعي.</Card>
+              <Card title="DeTT&CT" color="blue">بيقيس جودة الـ data sources عندك. بيكمّل ATT&CK Navigator.</Card>
             </TwoCol>
           </Section>
 
           <Section title="دورة عمل أسبوعية مقترحة">
             <ol>
-              <li><b>الإثنين — Threat selection.</b> راجع آخر تقارير CTI تخص قطاعك. اختر 5 تقنيات.</li>
-              <li><b>الثلاثاء — Detection design.</b> اكتب Sigma/KQL rules لها. ضعها في staging.</li>
-              <li><b>الأربعاء — Execution.</b> Atomic/CALDERA على lab + endpoint اختبار في بيئة الإنتاج (مع موافقة).</li>
-              <li><b>الخميس — Tuning.</b> True positive? رفّعها. False positive؟ عدّل threshold/whitelist. لم تظهر؟ افحص data source.</li>
-              <li><b>الجمعة — Document.</b> Vectr + ATT&CK Navigator. تقرير قصير: "تحت/فوق التغطية، التحديات".</li>
+              <li><b>الإتنين — Threat selection.</b> راجع آخر تقارير CTI اللي بتخص قطاعك. اختر 5 تقنيات.</li>
+              <li><b>التلات — Detection design.</b> اكتب Sigma/KQL rules ليها. حطها في staging.</li>
+              <li><b>الأربع — Execution.</b> Atomic/CALDERA على الـ lab + endpoint اختبار في الإنتاج (بموافقة).</li>
+              <li><b>الخميس — Tuning.</b> True positive؟ رفّعها. False positive؟ عدّل threshold/whitelist. ما ظهرتش أصلاً؟ شوف الـ data source.</li>
+              <li><b>الجمعة — Document.</b> Vectr + ATT&CK Navigator. تقرير قصير: "اتغطّى إيه، فاضل إيه، عندي blockers إيه".</li>
             </ol>
             <Callout kind="good" title="مقاييس النضج">
               <ul>
-                <li><b>MTTD</b> (Mean Time To Detect) — هدف &lt; 1 ساعة لتقنيات حرجة.</li>
+                <li><b>MTTD</b> (Mean Time To Detect) — الهدف &lt; ساعة على التقنيات الحرجة.</li>
                 <li><b>Coverage %</b> على ATT&CK Top 20 لخصومك.</li>
-                <li><b>Detection-as-Code</b> — كل قاعدة في git مع unit test (شغّل Atomic ↦ rule fires).</li>
-                <li><b>Repeatability</b> — قياس شهري بنفس المجموعة. هل تحسّنت؟</li>
+                <li><b>Detection-as-Code</b> — كل قاعدة في git ومعاها unit test (تشغّل Atomic ↦ القاعدة بتطلق).</li>
+                <li><b>Repeatability</b> — قياس شهري لنفس المجموعة. أنت متحسّن ولا لأ؟</li>
               </ul>
             </Callout>
           </Section>
 
           <Section title="فخاخ شائعة">
             <ul>
-              <li><b>Cherry-picking.</b> اختبار التقنيات التي تعرف أنها مكتشفة فقط = وهم تغطية.</li>
-              <li><b>Lab-only testing.</b> Lab ≠ Production. اختبر (بحذر) على telemetry الفعلي.</li>
-              <li><b>تجاهل التنظيف.</b> Atomic ينشئ ملفات/registry — Cleanup إجباري في كل تشغيل.</li>
-              <li><b>إنذارات بدون playbook.</b> الكشف بلا استجابة = ضوضاء. كل rule يجب أن تربط بـ runbook.</li>
-              <li><b>Vendor-driven.</b> "EDR يقول إنه يكشف X" ≠ يكشف X في بيئتك. اختبر دائماً بنفسك.</li>
+              <li><b>Cherry-picking.</b> تختبر بس اللي عارف إنه هيظهر = وهم تغطية.</li>
+              <li><b>Lab-only.</b> الـ Lab مش زي الـ Production. اختبر (بحذر) على telemetry حقيقي.</li>
+              <li><b>تنسى التنضيف.</b> Atomic بيعمل ملفات/registry — اعمل -Cleanup كل مرة.</li>
+              <li><b>إنذارات من غير playbook.</b> كشف من غير استجابة = ضوضا. كل rule لازم متربوطة بـ runbook.</li>
+              <li><b>Vendor-driven.</b> "الـ EDR بيقول إنه بيمسك X" ≠ بيمسك X في بيئتك. اختبر بنفسك دايماً.</li>
             </ul>
           </Section>
 
           <Section title="التكامل مع ATT&CK Flow و Threat Informed Defense">
-            <p><b>ATT&CK Flow</b> (مشروع MITRE) يصف سلسلة هجوم كاملة في format قياسي (JSON/STIX). يمكنك استيراد flows جاهزة (e.g., CONTI ransomware) إلى CALDERA و تشغيلها كاملة.</p>
+            <p><b>ATT&CK Flow</b> (مشروع MITRE) بيوصف سلسلة هجوم كاملة في format قياسي (JSON/STIX). تقدر تجيب flows جاهزة (مثلاً CONTI ransomware) وتاخدها على CALDERA وتشغّلها end-to-end.</p>
             <Code lang="bash">{`# مثال Flow بسيط
 # 1) T1566.001 (Spearphishing Attachment)
 # 2) T1059.005 (Visual Basic)
@@ -122,8 +153,12 @@ python server.py --insecure
 # 5) T1021.002 (SMB Lateral)
 
 # CALDERA يأخذ flow ثم ينفّذها على agents مع تكيّف`}</Code>
-            <Callout kind="info" title="الخلاصة">
-              Purple Team ليس حدثاً سنوياً. إنه <b>ممارسة مستمرة</b> تربط CTI ↔ Detection ↔ Validation. الفرق الناضجة لديها لوحة "% coverage" تُحدّث كل أسبوع.
+            <Callout kind="info" title="الخلاصة الناشفة">
+              <p>Purple Team مش &quot;event&quot; سنوي. مش &quot;workshop&quot; ربع سنوي.</p>
+              <p>هي <b>ممارسة مستمرة</b> بتربط CTI ↔ Detection ↔ Validation.</p>
+              <p>كل اللي عندك من EDR و SIEM و SOAR، الـ Purple Team هي اللي بتقيس قيمتها الفعلية. من غيرها، أنت بتدفع فلوس لـ tools ومش عارف بتشتغل ولا لأ.</p>
+              <p>الفرق الناضجة عندها dashboard &quot;% coverage على ATT&CK Top 20 لخصومنا&quot;، بيتحدّث كل أسبوع. لو ما عندكش رقم، أنت ما بتقيسش. ولو ما بتقيسش، أنت ما بتحميش.</p>
+              <p>أنت بتأمّل وبس.</p>
             </Callout>
           </Section>
         </>}

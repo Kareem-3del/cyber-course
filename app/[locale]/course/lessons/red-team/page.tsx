@@ -28,7 +28,7 @@ export default function Page() {
         </div>
         <p className="text-mute leading-relaxed max-w-3xl">
           <T
-            ar="المسار ده بياخدك خطوة خطوة في دورة هجوم كاملة (Cyber Kill Chain) — من جمع المعلومات، للـ scanning، لاستغلال الويب و السيرفرات و الـ Cloud، لحد ما بعد الاختراق. الفكرة مش «إزاي أهاجم» — الفكرة إنك تفهم عقلية المهاجم عشان تقدر تحط له فخ في كل مرحلة لما تبقى Blue Team."
+            ar="المسار ده بياخدك خطوة خطوة في دورة هجوم كاملة (Cyber Kill Chain) — من جمع المعلومات، للـ scanning، لاستغلال الويب والسيرفرات والـ Cloud، لحد ما بعد الاختراق. بس خد بالك: الفكرة مش «إزاي أهاجم». الفكرة إنك تفهم اللي قصادك بيفكر إزاي. عشان لما تقعد على كرسي الـ Blue Team، تبقى عارف هتحط له الفخ فين بالظبط في كل مرحلة. اوعى تتعلم الهجوم عشان الهجوم — ده عبث. اتعلمه عشان الدفاع."
             en="This track walks you step by step through an advanced attack lifecycle (Cyber Kill Chain) — from information gathering through scanning, web/server/cloud exploitation, and post-exploitation. The goal is not 'learning to attack' but building deep understanding so defenders can place traps at every stage."
           />
         </p>

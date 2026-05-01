@@ -7,16 +7,31 @@ export default function Page() {
       <L
         ar={<>
           <Section title="الموجات الراديوية — جدار شفاف">
-            <Analogy>الـ Wi-Fi مثل من يقف في غرفة و يصرخ: «اسم المستخدم: kareem، الرقم السري: 1234». لو كانت الجدران تخرّب الصوت قليلاً (تشفير ضعيف) لا يكفي — أي شخص في الشارع يلتقطها بهوائي قوي. هذه طبيعة الـ wireless.</Analogy>
+            <Analogy>
+              بُص.
+              في فرق بين الكابل والـ Wi-Fi.
+              الكابل لازم تيجي تلمسه. الـ Wi-Fi بيخرج من الحيط ويوصل للشارع.
+              تخيّل واحد واقف في الأوضة بيصرخ: "اليوزر kareem، الباسورد 1234".
+              الحيطة بتعك على الصوت شوية؟ مش كفاية.
+              أي حد في الشارع بهوائي محترم بيمسك الكلمتين.
+              الـ wireless طبيعته كده. اعتبر إن كل byte بتبعته في الهوا منشور في جريدة.
+
+              - طب الـ encryption بيحل المشكلة دي يا حضرتك؟؟
+
+              يا مستجد، الـ encryption بيحوّل الجريدة لـ شفرة. بس لو الشفرة ضعيفة، أو الـ key سهل، أو الـ AP بيقبل client من غير ما يتأكد منه — يبقى رجعنا تاني للجريدة. اوعى تعتمد على كلمة "encrypted" لوحدها. اسأل: encrypted بإيه؟ بأنهي suite؟ ومين بيتأكد من مين؟
+            </Analogy>
+            <Callout kind="info" title="واقعة TJX 2007">
+              45 مليون كارت ائتمان اتسرّقت. الـ attackers قعدوا في باركينج فرع TJX ومسكوا traffic لاسلكي مشفّر بـ WEP. كسروا الـ key في يوم. دخلوا الشبكة الداخلية ولعبوا 18 شهر من غير ما حد ياخد باله. السبب الرئيسي: WEP في 2005 وقالوا "هنغيّره بعدين". ما اتغيّرش. خسارة قدّرت بـ 256 مليون دولار.
+            </Callout>
           </Section>
 
           <Section title="Wi-Fi — التطور و الهجمات">
             <h3>أجيال التشفير</h3>
             <ul>
-              <li><b>WEP</b> (1999) — مكسور تماماً. اختراق في دقائق.</li>
-              <li><b>WPA / TKIP</b> (2003) — مكسور.</li>
-              <li><b>WPA2 / AES-CCMP</b> (2004) — قياسي. ضعيف ضد <b>KRACK</b> و الـ handshake brute.</li>
-              <li><b>WPA3 / SAE</b> (2018) — يحلّ معظم مشاكل WPA2 لكن أصابته ثغرات <b>Dragonblood</b> أوائله.</li>
+              <li><b>WEP</b> (1999) — مكسور بالكامل. بيتفك في دقايق.</li>
+              <li><b>WPA / TKIP</b> (2003) — مكسور هو كمان.</li>
+              <li><b>WPA2 / AES-CCMP</b> (2004) — القياس العام. ضعيف قدام <b>KRACK</b> وbrute على الـ handshake.</li>
+              <li><b>WPA3 / SAE</b> (2018) — بيحل معظم مشاكل WPA2، بس ثغرات <b>Dragonblood</b> ضربته في البداية.</li>
             </ul>
             <h3>الهجمات الكلاسيكية</h3>
             <Code lang="bash">{`# وضع المراقبة
@@ -33,12 +48,12 @@ hashcat -m 22000 cap.hc22000 rockyou.txt
 hcxdumptool / hcxtools للـ PMKID attack (لا يحتاج client)`}</Code>
             <h3>Evil Twin / Rogue AP</h3>
             <ul>
-              <li>إنشاء AP بنفس SSID + إشارة أقوى → الـ clients تتصل تلقائياً.</li>
+              <li>اعمل AP بنفس الـ SSID + إشارة أقوى → الـ clients هتتصل تلقائياً. الأجهزة بتحب الإشارة الأقوى زي ما البني آدم بيحب الكلام الأحلى.</li>
               <li>أدوات: <b>airgeddon, wifiphisher, hostapd-mana, eaphammer</b>.</li>
-              <li>هجوم <b>Karma</b>: AP يجيب على أي probe بـ «نعم أنا تلك الشبكة».</li>
+              <li>هجوم <b>Karma</b>: الـ AP بيرد على أي probe وبيقول &quot;أيوه أنا الشبكة دي&quot;. ثقة عمياء.</li>
             </ul>
             <h3>هجوم WPS</h3>
-            <p>PIN من 8 أرقام → كسر 11000 محاولة فقط (<b>Reaver, Bully, pixiewps</b>).</p>
+            <p>PIN من 8 أرقام → كسر بـ 11000 محاولة بس (<b>Reaver, Bully, pixiewps</b>). تصميم عبقري — للمهاجم.</p>
           </Section>
 
           <Section title="Enterprise Wi-Fi (802.1X / WPA-EAP)">
@@ -47,7 +62,7 @@ hcxdumptool / hcxtools للـ PMKID attack (لا يحتاج client)`}</Code>
               <li><b>EAP-TLS</b> — الأقوى (شهادة على الـ client و السيرفر).</li>
               <li>أداة <b>eaphammer</b> + <b>hostapd-wpe</b> لاصطياد NTLM responses.</li>
             </ul>
-            <Callout kind="good" title="الدفاع">
+            <Callout kind="good" title="الحماية">
               <ul>
                 <li>افرض <b>EAP-TLS</b> فقط، عطّل PEAP/TTLS لو أمكن.</li>
                 <li>على الـ clients: ثبّت CA المؤسسة و اسم السيرفر إجبارياً (<b>strict server validation</b>).</li>
@@ -76,7 +91,7 @@ crackle                # BLE encryption cracking (legacy pairing)
 
 # fuzzing
 sweyntooth, braktooth  # BLE/BR-EDR vuln research`}</Code>
-            <h3>الدفاع</h3>
+            <h3>الحماية</h3>
             <ul>
               <li>استخدم <b>LE Secure Connections</b> فقط (لا Legacy Pairing).</li>
               <li>عطّل الـ Bluetooth عند عدم الحاجة.</li>
@@ -120,7 +135,7 @@ sweyntooth, braktooth  # BLE/BR-EDR vuln research`}</Code>
             </Callout>
           </Section>
 
-          <Section title="الدفاع الشامل اللاسلكي">
+          <Section title="الحماية الشامل اللاسلكي">
             <ol>
               <li><b>WIDS/WIPS</b> (Wireless Intrusion Detection): Aruba, Cisco, Fortinet — يكشفون rogue APs و evil twins.</li>
               <li>مسح دوري للترددات المحيطة (<b>RF site survey</b>).</li>
@@ -130,6 +145,25 @@ sweyntooth, braktooth  # BLE/BR-EDR vuln research`}</Code>
               <li>ثبّت <b>certificate pinning</b> على EAP-TLS.</li>
               <li>BLE/Wi-Fi MAC randomization على أجهزة الموظفين لتقليل التتبع.</li>
             </ol>
+          </Section>
+
+          <Section title="غلطات الـ junior — في الشركات اللي عندنا">
+            <Callout kind="warn" title="اللي بيحصل فعلياً">
+              <ul>
+                <li>الـ guest Wi-Fi و الشبكة الداخلية على نفس الـ VLAN. بيقولوا "الراوتر بيعزل" — لا، ما بيعزلش.</li>
+                <li>الـ EAP-PEAP من غير strict server validation. أنت كده بتطلب من الـ user إنه يوافق على أي شهادة. evil twin بيمسك الـ NTLM hash في 30 ثانية.</li>
+                <li>الـ WPS مفتوح "علشان الزوار". الـ Pixie Dust attack بيكسره في دقيقة.</li>
+                <li>الباسورد للـ Wi-Fi المؤسسي = اسم الشركة + سنة. شفت ده في 4 جهات حكومية لحد دلوقتي.</li>
+                <li>محدش عمل RF site survey. الـ AP بتاع المؤسسة بيوصل لمحطة المترو القريبة. والمهاجم بيشتغل من على القهوة في الشارع.</li>
+              </ul>
+              <p>الخلاصة: في كتير من الجهات عندنا الـ Wi-Fi policy موجودة على ورق وبس. الواقع: الـ AP من 2017 وما اتلمسش. ما بنحلش المشكلة دي بـ tool — بنحلها بقرار إداري.</p>
+            </Callout>
+          </Section>
+
+          <Section title="الخلاصة الناشفة">
+            <p>الـ wireless مش "extension للشبكة". هو perimeter جديد بالكامل.</p>
+            <p>اللي ما بيعملش RF site survey كل 6 شهور = ما بيعرفش حدود شبكته فين فعلاً.</p>
+            <p>اكتبها على باب الـ NOC: حدود الشبكة مش حدود المبنى — حدود إشارتك.</p>
           </Section>
         </>}
         en={<>

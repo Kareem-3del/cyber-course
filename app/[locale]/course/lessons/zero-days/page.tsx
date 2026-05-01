@@ -421,24 +421,39 @@ export default function Page() {
       <L
         ar={
           <>
-            <Section title="ما هي ثغرات Zero-Day؟">
+            <Section title="إيه هي ثغرات Zero-Day؟">
               <Analogy>
-                تخيّل صانع أقفال صنع قفلاً اعتقد أنه آمن، لكن لصاً اكتشف أن مفك براغي معين يفتحه — قبل أن يعرف الصانع. هذا هو
-                الـ zero-day: ثغرة معروفة للمهاجم ومستغلَّة فعلياً (In-The-Wild) قبل أن تصدر لها رقعة. اللحظة التي تُصدر فيها
-                الشركة الرقعة، تنتهي صلاحية الـ "zero-day" وتصبح ثغرة n-day — لكن قبل أن يُحدّث الجميع، تبقى مفيدة جداً.
+                صانع أقفال عمل قفل وفاكره آمن.
+                لصّ اكتشف إن مفك معيّن بيفتحه.
+                قبل ما الصانع نفسه ياخد باله.
+                ده الـ zero-day.
+                ثغرة عارفها المهاجم وبيستغلّها فعلياً (in-the-wild) قبل ما يطلع patch. اللحظة اللي الشركة بتطلع فيها الـ patch، الـ &quot;zero-day&quot; بتنتهي صلاحيته ويبقى n-day. بس قبل ما الكل يحدّث، لسه مفيد جداً جداً.
+
+                - طب يعني المهاجم لما يطلع الـ patch بيرمي الثغرة؟؟
+
+                يا مستجد، متوقّع. لأ مش بيرميها — بيستفيد منها أكتر. بنسبة 99% الناس مش بترقّع في 30 يوم. اللي كان zero-day الأسبوع اللي فات بقى n-day النهارده، وبيشتغل على نص الإنترنت لأن الـ patch ساكت في تيكت محدش فاتحه. اوعى تفتكر إن "اتطلع patch" = "خلصت اللعبة".
               </Analogy>
 
-              <Callout kind="danger" title="تنبيه قانوني — استخدام مصرح به فقط">
-                كل ما هنا موثّق علناً (CISA KEV، نشرات الموردين، تقارير الحوادث). يُستخدم لتدريب فرق الدفاع الحكومية و
-                اختبار الاختراق المصرّح به فقط. تشغيل أي PoC ضد نظام لا تملك إذناً صريحاً عليه = جريمة بموجب أنظمة مكافحة
-                الجرائم المعلوماتية.
+              <p className="opacity-80">
+                مثال واقعي: في 2024، Ivanti Connect Secure ضربها CVE-2023-46805 + CVE-2024-21887 chain. UNC5221 (مجموعة صينية) كانت جوه شركات فيدرالية أمريكية لشهور قبل ما الـ patch يطلع. CISA أصدرت Emergency Directive في 24 ساعة. آلاف الـ VPN gateways اتخرقوا. ده مش سيناريو في فيلم — ده يومين الجمعة والسبت في يناير 2024.
+              </p>
+
+              <Callout kind="danger" title="قانوني — استخدام مصرّح بيه بس">
+                كل اللي هنا موثّق علناً (CISA KEV، نشرات الموردين، تقارير الحوادث). بيتستخدم لتدريب فرق الحماية الحكومية واختبار الاختراق المصرّح بيه بس. تشغّل أي PoC ضد نظام مش معاك إذن صريح عليه = جريمة تحت قوانين مكافحة الجرائم المعلوماتية. مفيش لعب.
               </Callout>
 
               <p className="opacity-80">
-                هذا الكتالوج يلخص أبرز ثغرات Zero-Day الحديثة (2023–2026) التي استُغلّت في الميدان وصدرت لها رقعات.
-                لكل واحدة: المنتج، CVSS، آلية الاستغلال، أمر تنفيذي مرجعي، ورقم الإصدار الذي رقّعها — حتى تتمكن فرق الدفاع
-                من بناء قواعد كشف وتأكد من تثبيت الرقعة.
+                الكتالوج ده بيلخّص أبرز ثغرات Zero-Day الحديثة (2023–2026) اللي اتستغلّت في الميدان وطلع لها patches. لكل واحدة: المنتج، الـ CVSS، آلية الاستغلال، أمر تنفيذي مرجعي، ورقم الإصدار اللي رقّعها — علشان فرق الحماية تقدر تبني قواعد كشف وتتأكد إن الـ patch اتركّب فعلاً.
               </p>
+
+              <Callout kind="danger" title="غلطات الـ junior في التعامل مع zero-days">
+                <ul className="list-disc pe-6 space-y-1">
+                  <li>بيستنّى &quot;الـ vendor يطلع patch&quot; قبل ما يعمل أي حاجة — اللي بيستنّى بيتخرق. اعمل compensating controls فوراً (block, isolate, monitor) من غير ما تستنّى.</li>
+                  <li>بيرقّع KEV CVE واحدة وبينسى الباقي — CISA KEV فيها 1100+ ثغرة، تابعها يومياً مش أسبوعياً.</li>
+                  <li>بيشغّل PoC على prod &quot;عشان يتأكد إنها مرقّعة&quot; — ده بيكسر الإنتاج. استخدم version check بدل exploit check.</li>
+                  <li>بيعتمد على CVSS لوحده في الأولوية — CVSS مش بيشوف إن المنتج ده مفتوح على الإنترنت في شركتك. EPSS + KEV أفضل.</li>
+                </ul>
+              </Callout>
             </Section>
 
             <Section title="موجة 2026 — أحدث ما يجب أن تعرفه">
@@ -453,8 +468,7 @@ export default function Page() {
                 </ul>
               </Callout>
               <p className="opacity-80 mt-3">
-                النمط واضح: <b>أجهزة الحافة و خدمات النواة (kernel) و المتصفحات</b> هي الجبهات الثلاث الساخنة في 2026، مع
-                ظهور لافت لـ <i>الترقيعات الناقصة</i> (Outlook) — حيث يعود نفس الخلل بصياغة جديدة.
+                النمط واضح زي الشمس: <b>أجهزة الحافة وخدمات الـ kernel والمتصفحات</b> دول التلات جبهات الساخنة في 2026، مع ظهور لافت لـ <i>الترقيعات الناقصة</i> (Outlook) — نفس الخلل بيرجع بصياغة جديدة. الترقيع الناقص أخطر من إنه ما يطلعش أصلاً.
               </p>
             </Section>
 
@@ -464,26 +478,26 @@ export default function Page() {
 
             <Section title="أنماط متكررة — اقرأها قبل أن تنسى التفاصيل">
               <ul className="list-disc pe-6 space-y-2 opacity-90">
-                <li><b>أجهزة الحافة (Edge appliances)</b> هي الهدف الأول: Ivanti, Citrix, Palo Alto, Cisco — لأنها مكشوفة للإنترنت ولا تشغّل EDR.</li>
-                <li><b>سلاسل (chains)</b> أكثر من ثغرة واحدة: تجاوز مصادقة + RCE معاً (Ivanti, TeamCity, Confluence).</li>
-                <li><b>أخطاء parser قديمة</b> ترجع: CLFS, IPv6, LDAP — كود نواة قديم ومعقد ولا يُختبر بنفس صرامة الكود الحديث.</li>
-                <li><b>ميزات setup/wizard مكشوفة</b> بعد التثبيت: ScreenConnect, Confluence, PaperCut — جميعها أعادت تشغيل الإعداد بدون مصادقة.</li>
+                <li><b>أجهزة الحافة (Edge appliances)</b> الهدف رقم 1: Ivanti, Citrix, Palo Alto, Cisco — مكشوفة على الإنترنت ومش بتشغّل EDR. هدية مغلفة.</li>
+                <li><b>سلاسل (chains)</b> أكتر من ثغرة واحدة: تجاوز مصادقة + RCE مع بعض (Ivanti, TeamCity, Confluence).</li>
+                <li><b>أخطاء parser قديمة</b> بترجع: CLFS, IPv6, LDAP — كود kernel قديم ومعقد ومش بيتم اختباره زي الكود الحديث.</li>
+                <li><b>ميزات setup/wizard مكشوفة</b> بعد التثبيت: ScreenConnect, Confluence, PaperCut — كلها فتحت الإعداد من غير مصادقة.</li>
                 <li><b>تجاوز Mark-of-the-Web</b> هو سلاح Initial Access الذهبي للمجموعات الحكومية: SmartScreen, search-ms, WinRAR.</li>
-                <li><b>قابلية الاستغلال الجماعي</b>: عندما يكون الاستغلال بسيطاً (curl واحد)، تنتشر العصابات خلال 24 ساعة من نشر الـ PoC.</li>
+                <li><b>قابلية الاستغلال الجماعي</b>: لما الاستغلال بيبقى بسيط (curl واحد)، العصابات بتنتشر في 24 ساعة من نشر الـ PoC. السرعة لعبة.</li>
               </ul>
             </Section>
 
-            <Section title="الدفاع — كيف توقف موجة Zero-Day التالية">
-              <Callout kind="good" title="إجراءات تشغيلية">
+            <Section title="الحماية — كيف توقف موجة Zero-Day التالية">
+              <Callout kind="good" title="إجراءات تشغيلية بتشتغل">
                 <ol className="list-decimal pe-6 space-y-2">
-                  <li><b>تابع CISA KEV يومياً</b> — كل ثغرة في القائمة لها deadline حكومي للتصحيح، استخدمها كأولوية أولى.</li>
-                  <li><b>اعزل سطح الإدارة</b>: لا تكشف Web UI لأجهزة الشبكة (Cisco, Citrix, Ivanti) للإنترنت. ضعها خلف VPN منفصل أو IP allow-list.</li>
-                  <li><b>مراقبة سلوكية لا توقيعية فقط</b>: راقب إنشاء مستخدمين admin مفاجئين، عمليات shell من خدمات web، اتصالات outbound من أجهزة الحافة.</li>
-                  <li><b>عطّل ما لا تستخدم</b>: cups-browsed, RDS Licensing, IPv6 الخارجي، PHP-CGI — كل خدمة معطّلة هي 0-day مستحيل.</li>
-                  <li><b>قاعدة "patch خلال 14 يوم" لـ KEV</b>، 30 يوم للحرجة، 90 يوم للباقي — مع تتبّع SLA حقيقي.</li>
-                  <li><b>EDR مع application allowlisting</b> على نقاط النهاية، خصوصاً ضد سلاسل MOTW bypass و LPE من CLFS/DWM.</li>
-                  <li><b>قسم الشبكة</b>: اعزل أجهزة الحافة عن بقية الشبكة الداخلية. استغلال Ivanti لا يجب أن يصل إلى DC.</li>
-                  <li><b>سجلات IPP/SMB/LDAP في مكان مركزي</b>: حزم مثل CUPS UDP/631 أو Outlook → SMB خارجي تكون صرخة واضحة.</li>
+                  <li><b>تابع CISA KEV يومياً</b> — كل ثغرة في اللستة معاها deadline حكومي للترقيع، اعتبرها أولوية رقم 1.</li>
+                  <li><b>اعزل سطح الإدارة</b>: متفتحش Web UI لأجهزة الشبكة (Cisco, Citrix, Ivanti) على الإنترنت. حطها ورا VPN منفصل أو IP allow-list.</li>
+                  <li><b>مراقبة سلوكية مش توقيعية بس</b>: راقب إنشاء admins فجأة، عمليات shell طالعة من web services، اتصالات outbound من أجهزة الحافة.</li>
+                  <li><b>قفل اللي مش بتستخدمه</b>: cups-browsed, RDS Licensing, IPv6 الخارجي، PHP-CGI — كل خدمة مقفولة دي 0-day مستحيلة.</li>
+                  <li><b>قاعدة &quot;patch خلال 14 يوم&quot; لـ KEV</b>، 30 يوم للحرجة، 90 يوم للباقي — مع تتبّع SLA حقيقي مش على الورق.</li>
+                  <li><b>EDR مع application allowlisting</b> على endpoints، خصوصاً ضد سلاسل MOTW bypass وLPE من CLFS/DWM.</li>
+                  <li><b>قسّم الشبكة</b>: اعزل أجهزة الحافة عن باقي الشبكة الداخلية. استغلال Ivanti مش لازم يوصل لـ DC أبداً.</li>
+                  <li><b>سجلات IPP/SMB/LDAP في مكان مركزي</b>: حزم زي CUPS UDP/631 أو Outlook → SMB خارجي = صرخة واضحة.</li>
                 </ol>
               </Callout>
 
@@ -498,13 +512,18 @@ export default function Page() {
               </Callout>
             </Section>
 
-            <Section title="مصادر للتحقق و البحث">
+            <Section title="مصادر للتحقق والبحث">
               <ul className="list-disc pe-6 space-y-1 opacity-90">
                 <li>CISA KEV: cisa.gov/known-exploited-vulnerabilities-catalog</li>
                 <li>Project Zero ITW 0-day tracking sheet (Google).</li>
                 <li>Mandiant / Volexity / Watchtowr / Rapid7 advisories.</li>
                 <li>MITRE ATT&CK Initial Access (T1190) و Exploitation for Privilege Escalation (T1068).</li>
               </ul>
+              <Callout kind="info" title="الخلاصة الناشفة">
+                الـ 0-day مش رعب. الـ 0-day اللي ما اتطفّتش حتى بعد 30 يوم من الـ patch — ده الرعب الحقيقي. شغلك مش إنك تمنع الـ 0-day؛ ده مستحيل. شغلك إنك تكتشفها بسرعة، تحجّم الضرر، وتقفلها قبل ما تنتشر.
+                اكتبها على شاشة الـ NOC: اللي بيتأخّر في الـ patching أكتر من اللي بيتعرّض لـ 0-day.
+                وأنت ونصيبك — إما عندك SLA حقيقي، أو الـ Ivanti بتاعك مكشوف لـ Mandiant بدل ما تبقى أنت اللي شايفه.
+              </Callout>
             </Section>
           </>
         }

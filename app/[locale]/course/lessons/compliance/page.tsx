@@ -7,18 +7,32 @@ export default function Page() {
       <L
         ar={<>
           <Section title="من التهديد إلى الامتثال">
-            <Analogy>قبل ما المهندس يبني بيت، بيسأل نفسه: «إيه اللي ممكن يهد البيت ده؟ زلزال؟ فيضان؟ حرامي؟» وبعدين يصمّم على الأساس ده. هذه هي فلسفة <b>Threat Modeling</b>: فكّر زي المهاجم قبل ما تكتب أول سطر كود. لو ما عملتش كدة، إنت بتبني على رمل.</Analogy>
+            <Analogy>
+              بُص.
+              قبل ما المهندس يبني بيت بيسأل نفسه: إيه اللي ممكن يهدّ البيت ده؟
+              زلزال؟ فيضان؟ حرامي؟
+              وبعدين يصمّم على الأساس ده.
+              فلسفة Threat Modeling نفس الكلام: فكّر زي المهاجم قبل ما تكتب أول سطر كود.
+              لو ما عملتش كده، أنت بتبني على رمل.
+            </Analogy>
+            <Callout kind="info" title="اوعى تخلط بين Compliance والأمن">
+              - بس يا حضرتك إحنا compliant! عندنا SOC 2!
+
+              يا نجم الجيل.. Equifax كانت SOC 2 + PCI DSS compliant يوم ما اتخرقت. Target كانت PCI compliant أسبوعين قبل breach الـ 40 مليون كارت.
+
+              الورق ما بيوقّفش الـ ransomware. الـ controls فعلياً اللي بتوقّف. الفرق زي الفرق بين رخصة سواقة وقدرتك تسوق فعلاً.
+            </Callout>
           </Section>
 
           <Section title="STRIDE — أبسط نموذج تهديد">
             <p>طورته Microsoft. كل حرف = فئة تهديد:</p>
             <TwoCol>
-              <Card title="S — Spoofing">انتحال هوية. الدفاع: مصادقة قوية (MFA, mTLS).</Card>
-              <Card title="T — Tampering">العبث بالبيانات. الدفاع: integrity checks (HMAC, signing).</Card>
-              <Card title="R — Repudiation">إنكار الفعل. الدفاع: logging موثوق + توقيع.</Card>
-              <Card title="I — Information Disclosure">تسريب بيانات. الدفاع: تشفير + ACLs.</Card>
-              <Card title="D — Denial of Service">إيقاف الخدمة. الدفاع: rate limiting + redundancy.</Card>
-              <Card title="E — Elevation of Privilege">رفع صلاحيات. الدفاع: least privilege + separation of duties.</Card>
+              <Card title="S — Spoofing">انتحال هوية. الحماية: مصادقة قوية (MFA, mTLS).</Card>
+              <Card title="T — Tampering">العبث بالبيانات. الحماية: integrity checks (HMAC, signing).</Card>
+              <Card title="R — Repudiation">إنكار الفعل. الحماية: logging موثوق + توقيع.</Card>
+              <Card title="I — Information Disclosure">تسريب بيانات. الحماية: تشفير + ACLs.</Card>
+              <Card title="D — Denial of Service">إيقاف الخدمة. الحماية: rate limiting + redundancy.</Card>
+              <Card title="E — Elevation of Privilege">رفع صلاحيات. الحماية: least privilege + separation of duties.</Card>
             </TwoCol>
           </Section>
 
@@ -126,6 +140,26 @@ export default function Page() {
             <Callout kind="good" title="القاعدة الذهبية للقياس">
               قيس اللي بيحرّك القرار. أي رقم ما بيغيّرش سلوك = ضوضاء، ارميه. الـ Dashboard المليان أرقام ما حدش بيتصرف بناءً عليها = عك.
             </Callout>
+          </Section>
+
+          <Section title="اوعى تعمل الغلطات دي">
+            <Callout kind="warn" title="اللي بيحصل فعلياً في الجهات">
+              <ul>
+                <li>بيقفل الـ findings بكلمة "accepted risk" من غير صاحب قرار يوقّع. وقت الـ breach، الـ legal بيدوّر على ورقة. مفيش ورقة = ميل تاج على رقبتك.</li>
+                <li>بيـ run nessus قبل الأوديت بأسبوع، ويصلّح اللي طلع بس. اللي ما طلعش = موجود لسه.</li>
+                <li>الـ policy بتقول "MFA on all admin accounts" — بس مفيش enforcement. الـ check الفصلي يدوي وبيلاقي 30% ما عاملينش.</li>
+                <li>بيخلط بين compliance evidence (screenshots) و detection (alerts). الأودِيتور بيشوف ورق جميل، الـ MTTD 14 يوم.</li>
+                <li>بياخد قرار يـ "outsource compliance" لـ Vanta/Drata — وبعدها فاكر إن الـ tool هيأمّن الشركة. لا. الـ tool بيوثّق بس.</li>
+              </ul>
+              <p>الخلاصة: الـ compliance أرضية مش سقف. لو فريقك بيشتغل علشان الأودِيتور، أنت آمن من الأودِيتور. مش آمن من الـ APT.</p>
+            </Callout>
+          </Section>
+
+          <Section title="الخلاصة الناشفة">
+            <p>الورق من غير تطبيق = مسرح.</p>
+            <p>التطبيق من غير توثيق = شغل ضايع وقت الأزمة.</p>
+            <p>الاتنين مع بعض = الفرق بين فريق ناضج وفريق هاوي.</p>
+            <p>اكتبها على المكتب: لو فريقك بيشتغل علشان الأودِيتور، أنت متحصّن من الأودِيتور. مش متحصّن من الـ APT.</p>
           </Section>
         </>}
         en={<>

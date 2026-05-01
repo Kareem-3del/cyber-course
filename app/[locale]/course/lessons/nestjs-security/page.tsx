@@ -6,9 +6,26 @@ export default function Page() {
     <LessonShell slug="nestjs-security">
       <L
         ar={<>
-          <Section title="لماذا NestJS له فئة مخاطر خاصة">
-            <p>NestJS بيركّب فوق Express/Fastify طبقات: <b>Decorators، DI Container، Guards، Pipes، Interceptors، Modules</b>. كل طبقة فيها طريقة تكتبها غلط فتفتح ثغرة مكنتش هتلاقيها في Express العادي. هو إحنا بنحبه ليه؟ الـ "magic". وهو ده نفسه اللي بيضرّك — لأنه بيخبّي عنك اللي بيحصل فعلاً.</p>
-            <Analogy>تخيّلها فلتر مياه بأكتر من مرحلة. لو واحدة منهم مكسورة والباقي شغّال، المياه بتبان نضيفة — وهي مش نضيفة. NestJS كده بالظبط: Guard يعدّي، Pipe يفحص، Interceptor يعدّل — أي حلقة فيهم تخش، السلسلة كلها مكسورة وأنت مش حاسس.</Analogy>
+          <Section title="ليه NestJS له فئة مخاطر خاصة؟">
+            <p>NestJS framework حلو. شغل enterprise، DI، decorators، كل حاجة "magic".</p>
+
+            <p>- طب ما هو ده اللي بيدّيله أمان أصلاً، صح؟</p>
+
+            <p>متوقّع كالعادة يا مستجد. الـ magic ده بيخبّي إيه؟ بيخبّي إن في 6 طبقات بين الـ request والـ logic بتاعتك. كل طبقة فيهم لو اتكتبت غلط = ثغرة.</p>
+            <Analogy>
+              تخيّل فلتر مياه بـ 6 مراحل.
+              لو واحدة منهم مكسورة والباقي شغّال، المياه بتبان نضيفة — وهي مش نضيفة.
+              NestJS كده: Guard يعدّي، Pipe يفحص، Interceptor يعدّل.
+              أي حلقة فيهم تخش، السلسلة كلها مكسورة وإنت مش حاسس.
+              في Express لو نسيت auth middleware، بتلاقيه فوراً. في Nest لو الـ Guard مش متربّط على الـ controller، الـ endpoint مفتوح وإنت فاكره مقفول.
+            </Analogy>
+            <Callout kind="info" title="حكاية: ValidationPipe ناقصة = breach كامل">
+              startup كاتبة <span className="eng">@Body() dto</span> من غير <span className="eng">whitelist: true</span> globally.
+              المهاجم بعت <code>{`{"isAdmin": true}`}</code>. الـ ORM (TypeORM) خد الـ payload كله وحفظه.
+              خلاص. الـ user بقى admin.
+              مفيش 0day، مفيش APT — بس setting واحد ناقص في main.ts.
+              ده اسمه Mass Assignment، ومش مشكلة Nest — مشكلة إن الناس بتثق في الـ "magic".
+            </Callout>
             <Callout kind="danger" title="تحذير قانوني">
               الأمثلة دي للتدريب في المعمل بتاعك. ما تجربش على إنتاج مش بتاعك.
             </Callout>
@@ -338,6 +355,27 @@ bootstrap();`}</Code>
               <li><b>Burp + Postman collection</b> — جرّب كل endpoint بـ IDOR/BOLA.</li>
               <li>كتاب "NestJS in Practice" + قسم Security من docs.nestjs.com.</li>
             </ul>
+          </Section>
+
+          <Section title="غلطات الـ junior في Nest">
+            <Callout kind="danger" title="اللي بيحصل لما الـ junior يثق في الـ magic">
+              <ul>
+                <li><b>ValidationPipe على controller واحد بس</b> — والباقي مفتوح. اعملها global في main.ts.</li>
+                <li><b>@UseGuards على method، مش على class</b> — وبعدين بتضيف method جديد وتنسى الـ guard. اخلّيها على الـ class.</li>
+                <li><b>JWT secret في @Module constructor</b> — مش في Vault ولا KMS. بيتسرّب أول ما الـ source code يطلع.</li>
+                <li><b>Custom Decorator بياخد user من request</b> — من غير ما يتأكد إن الـ user authenticated. الـ decorator نفسه ممكن يكون الثغرة.</li>
+                <li><b>RolesGuard بـ @SetMetadata('roles', ['admin'])</b> — بس مفيش default deny. لو نسيت تحط الـ decorator، الـ endpoint مفتوح للكل.</li>
+                <li><b>Exception filter بيرجّع stack trace</b> — في production. الـ attacker شاكر.</li>
+              </ul>
+            </Callout>
+          </Section>
+
+          <Section title="الخلاصة الناشفة">
+            <p>NestJS مش "أكثر أماناً من Express" — هو بس "أكثر تنظيماً".</p>
+            <p>التنظيم بيدّيك مكان واحد تحط الحماية فيه (global pipes، global guards، global filters). بس لازم تحطها فعلاً.</p>
+            <p>الـ magic بتاع DI بيخفي الأخطاء، فمحدش بيلاحظها لحد ما تطلع breach في تويتر.</p>
+            <p>اكتبها على كشكولك:</p>
+            <p>Default deny. Whitelist everything. والـ class-validator على كل DTO. اوعى تستثني واحد.</p>
           </Section>
         </>}
         en={<>

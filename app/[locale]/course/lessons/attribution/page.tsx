@@ -6,9 +6,40 @@ export default function Page() {
     <LessonShell slug="attribution">
       <L
         ar={<>
-          <Section title="مين المهاجم؟ — فن الـ Attribution">
-            <Analogy>المحقق في مسرح الجريمة مش بيدور على البصمة بس، هو بيدور على أسلوب الجريمة، نوع السلاح، ميعاد التنفيذ، وحتى ريحة المعطف. كدة بنتبع المهاجم: مش IP واحد، إحنا بندور على <b>باترن كامل</b>.</Analogy>
-            <Callout kind="warn" title="تنبيه مهم">الـ attribution صعب وفي أغلب الأوقات بيكون <i>احتمالي</i> مش قاطع. المحترفين بيستخدموا false flags عشان يوجهوا التهمة لجهة تانية. متبنيش قرار قانوني على دليل واحد لوحده.</Callout>
+          <Section title="مين المهاجم؟ — فن الـ Attribution، أو فخ الـ Attribution؟">
+            <p>- يا حضرتك، أنا لقيت comment بالروسي في الكود.. الفاعل روسي صح؟</p>
+            <p>- ولو الـ compile timestamp بتوقيت بكين، يبقى صيني؟</p>
+            <p>- ولو IP من St. Petersburg، خلاص نقفل القضية؟</p>
+            <p>يا مستجد. لأ. ولا واحدة من دول.</p>
+            <p>كل واحدة من الإشارات دي ممكن تكون مزروعة <b>قصد</b> عشان تضلّلك. الـ Attribution مش لعبة بصمات — هي لعبة احتمالات على شبكة من الأدلة، كل دليل لوحده ضعيف، الأدلة كلها مع بعض ممكن تشاور.</p>
+            <Analogy>المحقق في مسرح الجريمة مش بيدور على البصمة بس. هو بيدور على أسلوب الجريمة، نوع السلاح، ميعاد التنفيذ، حتى ريحة المعطف. كدة بنتبع المهاجم: مش IP واحد، إحنا بندور على <b>باترن كامل</b>.</Analogy>
+            <Callout kind="warn" title="اوعى — الـ Attribution فخ كبير">
+              المحترفين بيستخدموا false flags بطرق متطورة جداً. متبنيش قرار قانوني — أو تصريح علني — على دليل واحد لوحده. الـ Attribution احتمالي. دايماً.
+            </Callout>
+            <Callout kind="warn" title="غلطات الـ junior في الـ attribution">
+              <ul>
+                <li>بيشوف Russian comment في الكود ويصيح &quot;APT28!&quot;. والـ APT الصيني كان بيقصد ده بالظبط.</li>
+                <li>بيعتمد على IP geolocation. الـ residential proxies حلّت الموضوع ده من 5 سنين.</li>
+                <li>بيخلط بين &quot;التشابه&quot; و &quot;الإسناد&quot;. مجرد إن الـ TTPs تشبه APT29 ما بتعنيش هما.</li>
+                <li>بيـ publish attribution على Twitter قبل ما يكون عنده أدلة كافية. ويوم الكارثة يلاقي إنه اتهم البلد الغلط.</li>
+              </ul>
+            </Callout>
+          </Section>
+
+          <Section title="قصة الـ false flags الكبرى — Olympic Destroyer 2018">
+            <p>فبراير 2018. أوليمبياد PyeongChang الشتوية. حفل الافتتاح. ساعات قبل البدء، malware اسمه Olympic Destroyer ضرب البنية التحتية للأوليمبياد. مواقع الفعالية وقعت، Wi-Fi بطل، شاشات العرض اتعطّلت، وكل ده مع الـ Pre-show التلفزيوني العالمي.</p>
+            <p>أول تحليل: &quot;Lazarus! كوريا الشمالية!&quot;. ليه؟ لأن الـ malware فيه كود يشبه Lazarus، فيه strings بكورية، وفيه نفس persistence patterns.</p>
+            <p>تاني تحليل (بعد أيام): &quot;لأ، ده APT3 الصيني!&quot;. لأن أجزاء من الـ wiper code شبه APT3.</p>
+            <p>تالت تحليل: &quot;لأ! مفيش! هما Sandworm الروس!&quot;. لأن النمط الكلي بيشبه شغل GRU.</p>
+            <p>الإجابة الأخيرة (بعد شهور من تحليل Kaspersky و Cisco Talos): <b>Sandworm الروس</b>. هما اللي عملوها. وهما اللي زرعوا الأدلة الكورية والصينية بـ <b>قصد</b> — كل سطر من الـ false flags كان مدروس.</p>
+            <p>ده الفرق. مش هكر بيخبّي، ده عمليات استخباراتية بتستخدم الـ malware كأداة سياسية. لو كانت Attribution طلعت كورية أو صينية، كان دبلوماسياً موقف مختلف.</p>
+            <p>Igor Soumenkov من Kaspersky عمل الـ talk الأسطوري &quot;The Devil's in the Rich Header&quot; في BlueHat 2019 شرح فيه إزاي اكتشفوا الخدعة. اقراه. لو هتدخل مجال forensics، ده compulsory reading.</p>
+          </Section>
+
+          <Section title="Lazarus بتقلّد Sandworm — والعكس صحيح">
+            <p>Lazarus (كوريا الشمالية) في عمليات كتيرة بتزرع أدلة بترمي للروس. ليه؟ لأن لو الـ Attribution كورية شمالية، الـ sanctions هتزيد عليهم. لو روسية، Lazarus بتنفّذ المهمة وأمريكا بتعاقب موسكو. كسب مزدوج.</p>
+            <p>وكمان Sandworm في NotPetya 2017 زرعوا strings تشبه Petya القديم (criminal ransomware) عشان النية الأولى تبان مالية مش سياسية.</p>
+            <p>Pyramid of Pain من David Bianco (2014) مهم جداً هنا: الـ IOCs البسيطة (hashes, IPs) سهل المهاجم يغيّرها. الـ TTPs (السلوكيات) أصعب. الـ Tradecraft و culture (إزاي الفريق بيفكّر) أصعب حاجة في الإسناد.</p>
           </Section>
           <Section title="هرم الأدلة والـ TTPs">
             <p>إحنا بنلم المؤشرات (IOCs) والسلوكيات (TTPs) ونقارنهم بمكتبة الـ threat actors المعروفين (APT28, APT29, Lazarus, Conti...).</p>
@@ -114,6 +145,16 @@ mitre.org/groups`}</Code>
               <li><b>تتبع موسع</b>: Canarytoken جوه ملف وهمي اتنزل — كشف الـ IP الحقيقي قبل ما المهاجم يدخل VPN.</li>
               <li><b>التقرير</b>: شاركنا الـ IOCs في MISP مع الـ CERT.</li>
             </ol>
+          </Section>
+
+          <Section title="الخلاصة الناشفة">
+            <p>الـ Attribution مش لعبة CSI. هي لعبة احتمالات.</p>
+            <p>أي Attribution في تقرير محترم بييجي بمستوى ثقة: high / moderate / low confidence. الـ &quot;low confidence&quot; مش ضعف، ده أمانة فكرية.</p>
+            <p>المهاجم اللي بيهمّك Attribution بتاعه = APT بيستخدم false flags بكفاءة. والـ false flag ده مش حادثة — هو جزء أصيل من العملية.</p>
+            <p>اللي يفرق فعلاً هو <b>تتبّع الـ TTPs على مدى وقت طويل</b>. مفيش APT بتقدر تغيّر شخصيتها كاملة. هي بتشتغل بأنماط، والأنماط دي بتظهر عبر عشرات العمليات.</p>
+            <p>وأخيراً: Attribution مش هدفها &quot;نقول مين الفاعل&quot;. هدفها <b>منع الكارثة الجاية</b>. لو وصلت لـ Attribution وما عندكش خطة استجابة، الـ Attribution مالهاش لازمة.</p>
+            <p>اكتبها على غلاف التقرير قبل ما تبعته:</p>
+            <p><b>Attribution من غير confidence level = إشاعة بـ logo شركة. اوعى تحرق سمعتك على tweet.</b></p>
           </Section>
         </>}
         en={<>

@@ -7,18 +7,27 @@ export default function Page() {
       <L
         ar={<>
           <Section title="ليه لازم تبني المعمل قبل أي حاجة تانية؟">
-            <p>كل تقنية في الكورس ده بتفترض إن عندك مكان <b>قانوني وآمن</b> تجرّب فيه. المعمل البيتي = VMs معزولة. ما تلمسش الإنترنت، ما تلمسش شبكة بيتك، ومحدش بيتأذى لو حاجة انفجرت جوّه.</p>
-            <Callout kind="danger" title="القاعدة الذهبية — مفيش استثناء">
-              ما تنفّذش أي تقنية من الدروس على شبكة بيتك ولا الشركة ولا أي نظام مش بتاعك. كل حاجة جوّه الـ VMs المعزولة بس. ولو في شك، اعتبره ممنوع.
+            <p>تخيل السيناريو ده. أنت قاعد بجهازك الشخصي، عايز تتعلم AD attacks. فتحت Kali، شغّلت <span className="eng">nmap -sS</span> على شبكة بيتك "علشان تجرّب". بعد ساعتين، الـ ISP بعتلك إيميل: "نشاط مشبوه على الـ line بتاعك". أو أسوأ: أنت قاعد على wifi الشغل، الـ SOC شافك، خرجت من الشغل ومعاك خطاب إنذار.</p>
+            <p>ليه حصل ده؟ علشان ما عندكش معمل.</p>
+            <p>المعمل = شوية VMs معزولة. ما بتلمسش الإنترنت، ما بتلمسش شبكة بيتك، ولا بتلمس أي حاجة بتاعة حد تاني. لو حاجة انفجرت جوّه، تنفجر هناك وتقف. snapshot، ارجع، كمّل.</p>
+            <p>كل درس في الكورس ده بيفترض إن المعمل ده موجود. مفيش "أنا هجرب بسرعة على الـ router بتاع البيت". لا.</p>
+            <Callout kind="danger" title="اوعى تنسى السطر ده — مفيش استثناء">
+              ما تنفّذش أي تقنية من الدروس على شبكة بيتك، ولا الشركة، ولا حتى wifi الكافيه. كل حاجة جوّه الـ VMs المعزولة. ولو عندك شك لحظة واحدة "هل ده عادي؟" — يبقى مش عادي.
+            </Callout>
+            <Callout kind="danger" title="حصلت فعلاً">
+              زميل ليّا كان في فترة التعلم، شغّل <span className="eng">responder</span> على لابتوب الشغل في الـ break room "علشان يشوف هيطلع إيه". طلعت hashes للـ DC. الـ SOC قفل اللابتوب في 4 دقايق. اتحوّل لـ HR. فقد شغله.
+              <br /><br />
+              التقنية مكنتش غلط. المكان كان غلط. <b>المعمل بيحميك من نفسك قبل ما يحميك من القانون.</b>
             </Callout>
           </Section>
 
-          <Section title="المتطلبات الأساسية">
+          <Section title="القصة كاملة — ابني المعمل في 30 دقيقة">
+            <p>هنمشي مع بعض دلوقتي خطوة بخطوة. الهدف: بعد نص ساعة يكون عندك Kali + Windows + Ubuntu، كلهم على شبكة معزولة، وكل واحد فيهم عليه snapshot نضيف ترجع له لما تخرّب حاجة (وهتخرّب).</p>
             <ul>
-              <li><b>حاسوب مضيف</b>: 16GB RAM (الحد الأدنى 8GB)، 200GB قرص فارغ، CPU يدعم virtualization (VT-x/AMD-V).</li>
-              <li><b>VirtualBox</b> (مجاني) أو <b>VMware Workstation Player</b>.</li>
-              <li>صور ISO: Kali Linux، Windows 10/11 trial، Ubuntu 22.04 Server، Windows Server 2022 evaluation.</li>
-              <li>اتصال إنترنت لتحميل الصور أول مرة فقط.</li>
+              <li><b>الجهاز المضيف:</b> 16GB RAM (الحد الأدنى 8GB، بس هتعاني)، 200GB قرص فاضي، CPU بيدعم virtualization. روح <span className="eng">BIOS</span> وفعّل <span className="eng">VT-x/AMD-V</span> — لو مش مفعّلة، الـ VMs هتزحف.</li>
+              <li><b>الـ Hypervisor:</b> VirtualBox مجاني وكفاية للبداية. VMware Workstation أسرع شوية بس مدفوع. ما تبدأش بـ Hyper-V لو ما تعرفوش — بيتعارض مع VirtualBox على نفس الجهاز.</li>
+              <li><b>الـ ISOs اللي محتاجها:</b> Kali Linux (image جاهزة من kali.org)، Windows 10/11 trial من Microsoft، Ubuntu 22.04 Server، و — لو هتلعب AD — Windows Server 2022 evaluation.</li>
+              <li><b>الإنترنت:</b> محتاجه مرة واحدة بس — تنزّل الصور وخلاص. بعدها افصل الـ VMs.</li>
             </ul>
           </Section>
 
@@ -31,8 +40,15 @@ export default function Page() {
                 { p: "# على macOS: brew install --cask virtualbox" },
               ]} />
             </Step>
-            <Step n={2} title="إنشاء شبكة معزولة">
-              <p>هذه أهم خطوة. الـ VMs ستتكلم مع بعضها لكن لن تصل للإنترنت أو شبكة بيتك.</p>
+            <Step n={2} title="إنشاء شبكة معزولة — أهم خطوة في الدنيا">
+              <p>بُص. لو عملت كل حاجة صح وفشلت في الخطوة دي، أنت لسه على شبكة بيتك. الـ VMs لازم يتكلموا مع بعض، بس ما يوصلوش للإنترنت ولا للراوتر بتاعك.</p>
+              <p>VirtualBox عنده 4 أنواع networking لازم تعرف الفرق بينهم:</p>
+              <ul>
+                <li><b>NAT:</b> الـ VM بيوصل للإنترنت من خلال الجهاز. آمن نسبياً، بس مش هينفع لو عايز VMs يكلموا بعض.</li>
+                <li><b>Bridged:</b> الـ VM بياخد IP من الراوتر بتاعك مباشرة. <b>كأنه جهاز تاني في بيتك.</b> أي scan بتعمله بيظهر للـ ISP. <span style={{color: '#ff6b6b'}}>ابعد عنه.</span></li>
+                <li><b>Host-only:</b> شبكة معزولة تماماً بين الـ VMs والجهاز المضيف بس. مفيش إنترنت. <b>ده اللي عايزينه.</b></li>
+                <li><b>Internal:</b> VMs بيكلموا بعض بس، الجهاز المضيف نفسه مش شايفهم. للسيناريوهات الأكثر عزلاً.</li>
+              </ul>
               <Terminal lines={[
                 { p: "# في VirtualBox: File → Host Network Manager → Create" },
                 { p: "# أعطها اسم vboxnet0 و subnet 10.10.10.0/24" },
@@ -45,21 +61,35 @@ export default function Page() {
             </Step>
             <Step n={3} title="VM 1 — Kali Linux (المهاجم)">
               <ul>
-                <li>حمّل صورة Kali من <span className="eng">kali.org/get-kali</span> (VirtualBox image جاهزة).</li>
-                <li>RAM: 4GB، CPUs: 2، Disk: 40GB.</li>
-                <li>Network: <b>Host-only Adapter</b> = vboxnet0.</li>
-                <li>كلمة سر افتراضية: <span className="eng">kali / kali</span>.</li>
+                <li>حمّل image جاهزة من <span className="eng">kali.org/get-kali</span> — اختار "Virtual Machines" → VirtualBox. ما تنزّلش الـ ISO وتثبت من الأول، ضيعة وقت.</li>
+                <li><b>RAM:</b> 4GB كافية. لو هتشغّل Burp Suite + Bloodhound مع بعض، خليها 6GB.</li>
+                <li><b>CPUs:</b> 2 cores. أكتر من كده مش هيفرق إلا في الـ wordlist cracking.</li>
+                <li><b>Disk:</b> 40GB dynamic. الصورة الأساسية 15GB، الباقي للـ tools اللي هتنزّلها.</li>
+                <li><b>Network:</b> Host-only Adapter = vboxnet0. مش NAT. مش Bridged.</li>
+                <li>كلمة سر افتراضية: <span className="eng">kali / kali</span>. غيّرها أول حاجة.</li>
+                <li><b>Snapshot:</b> بعد ما تخلّص setup وتعمل update — اسم الـ snapshot: <span className="eng">kali-clean-base</span>.</li>
               </ul>
             </Step>
             <Step n={4} title="VM 2 — Windows 10 (الضحية)">
               <ul>
-                <li>حمّل ISO من <span className="eng">microsoft.com/software-download/windows10</span>.</li>
-                <li>RAM: 4GB، CPUs: 2، Disk: 60GB.</li>
-                <li>Network: Host-only adapter = vboxnet0.</li>
-                <li>أنشئ مستخدم محلي عادي (لا تدخل بحساب Microsoft).</li>
-                <li><b>Snapshot</b> فور الانتهاء من التثبيت — هذا ما ترجع إليه بعد كل تجربة.</li>
+                <li>نزّل الـ ISO من <span className="eng">microsoft.com/software-download/windows10</span>. trial 90 يوم — كفاية لكورس كامل.</li>
+                <li><b>RAM:</b> 4GB. أقل من كده Windows هيخنق.</li>
+                <li><b>CPUs:</b> 2. <b>Disk:</b> 60GB dynamic.</li>
+                <li><b>Network:</b> Host-only = vboxnet0.</li>
+                <li>وقت التثبيت: اعمل local user، <b>ما تدخلش بحساب Microsoft</b>. ليه؟ علشان لو الـ VM اتصلت بالإنترنت بالغلط، Microsoft هيشوف نشاط غريب على الحساب.</li>
+                <li><b>Snapshot لازم بعد التثبيت مباشرة</b> — قبل ما تعمل أي update، قبل ما تحط أي tool. اسمه: <span className="eng">win10-clean-baseline</span>. ده اللي هترجعله بعد كل تجربة.</li>
+                <li>Snapshot تاني بعد ما تثبّت .NET + Sysmon (لو هتدرس detection): <span className="eng">win10-monitored</span>.</li>
               </ul>
             </Step>
+            <Callout kind="warn" title="استراتيجية الـ snapshots — حاجة محدش بيقولهالك">
+              مفيش snapshot واحد بيكفي. خد 3 على الأقل لكل VM:
+              <ol>
+                <li><b>baseline:</b> بعد التثبيت ع طول، نضيفة تماماً.</li>
+                <li><b>configured:</b> بعد ما حطّيت tools + updates.</li>
+                <li><b>pre-attack:</b> قبل أي تجربة كبيرة. لو خرّبت الـ registry، ترجع للنقطة دي مش للـ baseline.</li>
+              </ol>
+              الـ snapshots بتاكل disk، بس disk أرخص من إنك تعيد التثبيت من الأول.
+            </Callout>
             <Step n={5} title="VM 3 — Ubuntu Server (هدف Linux)">
               <p>صورة Ubuntu 22.04 Server. ثبّت Apache + MySQL + PHP لتدريب SQLi و LFI.</p>
               <Code lang="bash">{`sudo apt update
@@ -75,13 +105,30 @@ sudo systemctl enable --now apache2 mysql`}</Code>
             </Step>
           </Section>
 
+          <Section title="الأخطاء اللي بيقع فيها كل المبتدئين">
+            <Callout kind="danger" title="الغلطة رقم 1: شغّلت Kali على Bridged">
+              فيه ناس بتفتح VirtualBox وتختار Bridged "علشان الإنترنت يشتغل". الـ VM دلوقتي على شبكة بيتك زي أي جهاز تاني. لما تشغّل <span className="eng">nmap</span> على <span className="eng">192.168.1.0/24</span>، أنت بتمسح بيتك فعلاً. لو في wifi الشغل؟ الـ SOC شافك. لو في كافيه؟ ممكن تتحاسب على نشاط ضد شبكة بتاع حد تاني.
+              <br /><br />
+              <b>الحل:</b> Host-only Adapter دايماً. لو محتاج إنترنت في الـ VM (مرحلياً للتنزيل)، ضيف adapter تاني NAT مؤقت، وبعد التنزيل اقفله.
+            </Callout>
+            <Callout kind="warn" title="الغلطة رقم 2: نسخ ملفات شخصية للـ VM">
+              "هخليها VM للشغل العادي + الـ pentest". لا. ماينفعش. الـ VM بتاع المعمل بيتعرّض لـ malware اختياري. أي ملف شخصي جواه = ملف ممكن يتسرق أو يتشفّر. خلّيها نضيفة، ابعد عنها بحياتك الشخصية.
+            </Callout>
+            <Callout kind="warn" title="الغلطة رقم 3: ما تعملش snapshot قبل التجربة">
+              "هجرّب بسرعة وأرجّع". بعد ساعتين، الـ Windows بايظ، الـ services مكسورة، ومش فاكر إنت غيّرت إيه. هتعيد تثبيت من الأول. ساعة ضايعة.
+              <br /><br />
+              <b>القاعدة:</b> قبل أي amplifier، أي exploit، أي إعداد جديد — snapshot. اسمه واضح. التاريخ في الاسم. كده.
+            </Callout>
+          </Section>
+
           <Section title="عادات لازم تمشي عليها في المعمل">
             <ol>
-              <li><b>Snapshot قبل أي تجربة.</b> اسم واضح: <span className="eng">clean-win10-baseline</span>. مش هتندم.</li>
-              <li><b>وثّق اللي عملته</b> في ملف نصي جوّه كل VM. النسيان عدو التعلم.</li>
-              <li><b>ما تخليش الـ VM على Bridged adapter</b> إلا لو فاهم بتعمل إيه — ده بيحطها على شبكة بيتك مباشرة.</li>
-              <li><b>اعزل البيانات</b>: ما تنسخش ملفاتك الشخصية جوّه أي VM.</li>
-              <li><b>قفل الـ VMs</b> لما ما تكونش بتستخدمها — بتاكل RAM على الفاضي.</li>
+              <li><b>Snapshot قبل أي تجربة.</b> اسم واضح وفيه التاريخ: <span className="eng">win10-2024-05-pre-mimikatz</span>. مش هتندم. وعد.</li>
+              <li><b>وثّق اللي عملته</b> في ملف نصي جوّه كل VM. <span className="eng">~/notes.md</span> أو <span className="eng">C:\notes.txt</span>. النسيان عدو التعلم — هترجع بعد شهرين تسأل نفسك "أنا عملت ده إزاي؟"</li>
+              <li><b>ما تخليش الـ VM على Bridged adapter</b> أبداً. لو محتاج إنترنت لحظياً، شغّل NAT، نزّل، اقفل، رجّع Host-only.</li>
+              <li><b>اعزل البيانات.</b> ما تنسخش ملفاتك الشخصية جوّه أي VM. لو محتاج تنقل ملف، Shared Folder مؤقت، وبعدين شيله.</li>
+              <li><b>قفل الـ VMs</b> لما ما تكونش بتستخدمها. كل VM شغّالة = 4GB RAM + CPU بياكل بطارية على الفاضي.</li>
+              <li><b>راجع الـ network adapter قبل ما تشغّل أي VM</b> — خلي عندك tab مفتوح فيه تذكّر "Host-only فقط".</li>
             </ol>
           </Section>
 
@@ -95,11 +142,22 @@ sudo systemctl enable --now apache2 mysql`}</Code>
           </Section>
 
           <Section title="الخطوة التالية">
-            <p>بعد إكمال هذا الدرس، انتقل إلى:</p>
+            <p>بعد ما تخلّص الدرس ده، روح:</p>
             <ul>
-              <li><b>linux-fundamentals</b> — لتفهم Kali و Ubuntu.</li>
-              <li><b>windows-fundamentals</b> — لتفهم Windows من زاوية الأمن.</li>
-              <li><b>networking-basics</b> — قبل أي recon.</li>
+              <li><b>linux-fundamentals</b> — علشان تفهم Kali و Ubuntu أصلاً.</li>
+              <li><b>windows-fundamentals</b> — Windows من زاوية الأمن، مش زاوية الـ end user.</li>
+              <li><b>networking-basics</b> — قبل أي recon. مفيش غنى عنه.</li>
+            </ul>
+          </Section>
+
+          <Section title="الخلاصة الناشفة">
+            <p>اكتبها على الحيطة اللي في وش السرير، عايزك تصطبح عليها كل يوم:</p>
+            <ul>
+              <li>المعمل = شبكة Host-only + 3 VMs على الأقل + snapshots لكل واحدة.</li>
+              <li>Bridged مش option. خلاص.</li>
+              <li>اوعى تجرّب من غير snapshot. اسمه فيه تاريخ وسبب.</li>
+              <li>اوعى تخلط حياتك الشخصية بالمعمل.</li>
+              <li>أي تقنية في الكورس ده، مكانها جوّه المعمل. بره المعمل = جريمة. بقوانين البشر، مش بس أخلاقياً.</li>
             </ul>
           </Section>
         </>}

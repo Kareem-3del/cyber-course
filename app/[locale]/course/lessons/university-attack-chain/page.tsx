@@ -7,8 +7,26 @@ export default function Page() {
       <L
         ar={<>
           <Section title="السيناريو — جامعة state-uni.edu">
-            <p>الدرس ده بيلم كل اللي اتعلمته قبل كده في &quot;فيلم&quot; واحد متكامل. الهدف: <span className="eng">state-uni.edu</span> (وهمية، RFC 2606). إحنا فريق أحمر معانا تفويض مكتوب من إدارة الجامعة نقيّم: نظام التسجيل، شبكة الكاميرات، الطابعات الإدارية، وقارئات البطاقات. المدة: 6 أسابيع. النطاق: كل حاجة جوه <span className="eng">203.0.113.0/24</span> و<span className="eng">198.51.100.0/24</span> (RFC 5737).</p>
-            <Analogy>هو ليه الجامعات تحديداً؟ بسيطة: شبكات مفتوحة بطبيعتها (الثقافة الأكاديمية)، آلاف الأجهزة غير مُدارة (لابتوبات الطلبة، IoT في كل ركن)، أبحاث ممولة فيدرالياً وأحياناً دفاعية، وفريق IT شغال على ميزانية محدودة. كل APT محترمة لعبت في الساحة دي — Cozy Bear (روسيا) وTA413 (الصين) وCharming Kitten (إيران) ليهم حملات جامعية موثقة.</Analogy>
+            <p>طب ليه الجامعات بالظبط؟ ليه مش بنوك؟ ليه مش جيش؟</p>
+            <p>بنوك عندهم security teams وعندهم تنظيم وعندهم compliance.</p>
+            <p>الجيش عنده شبكات مقسّمة وعنده classification.</p>
+            <p>الجامعة؟</p>
+            <p>شبكات &quot;مفتوحة بطبيعتها&quot; (الثقافة الأكاديمية اللي مش بتقبل قيود).</p>
+            <p>آلاف لابتوبات طلبة + عشرات الآلاف IoT (كاميرات، طابعات، badge readers).</p>
+            <p>أبحاث ممولة من DARPA و NIH (الجواهر الحقيقية).</p>
+            <p>فريق IT أربعة أنفار بميزانية شركة صغيرة.</p>
+            <p>الجامعة ده &quot;أرخى نقطة في المنظومة&quot; ومعاها في نفس الوقت &quot;أعلى قيمة استخباراتية&quot;. ولكل APT محترمة عندها حملة جامعية موثّقة: Cozy Bear (روسيا)، TA413 (الصين)، Charming Kitten (إيران).</p>
+            <p>الدرس ده هيلمّ كل اللي اتعلمته في &quot;فيلم&quot; واحد كامل. الهدف: <span className="eng">state-uni.edu</span> (وهمية، RFC 2606). إحنا فريق أحمر معانا تفويض مكتوب نقيّم: نظام التسجيل، شبكة الكاميرات، الطابعات الإدارية، قارئات البطاقات. المدة 6 أسابيع. النطاق: <span className="eng">203.0.113.0/24</span> و <span className="eng">198.51.100.0/24</span> (RFC 5737).</p>
+            <Analogy>الجامعة زي مجمّع سكني كبير محدش بيقفل بابه. إنت داخل من الباب الرئيسي زي أي حد، وكل ما تفتح أوضة، تلاقي مفتاح للأوضة اللي جنبها على الترابيزة. حتى لما توصل لخزينة الرئيس، الخزينة ماتقفلش — هي بس &quot;مغلقة بسلسلة&quot;.<br/>وإنت ماسك المقص.</Analogy>
+            <Callout kind="warn" title="غلطات الـ junior في pentest الجامعة">
+              <ul>
+                <li>بيبدأ Active scanning من اليوم الأول. أول port scan كبير = الـ NetFlow بيشوفه. اتحرقت قبل ما تبدأ.</li>
+                <li>بينسى الـ IoT. الكاميرا بتاعت &quot;الأمن&quot; هي اللي بتشوف Domain Controller.</li>
+                <li>بيستخدم Cobalt Strike default. أي EDR محترم بيمسكه.</li>
+                <li>بيعمل DCSync ساعة 11 الصبح والكل شغّال. قعد تعمله الفجر يوم جمعة.</li>
+                <li>بيخرج 50GB من البيانات في ساعة. أي SIEM شاطر بيرفع إنذار. لو إنت في الجامعة، 5GB كل يوم على OneDrive بتاع الجامعة نفسها = شرعي 100%.</li>
+              </ul>
+            </Callout>
             <Callout kind="danger" title="حدود قانونية — ركّز هنا قبل ما تكمل">
               كل خطوة في الدرس ده قانونية بس على الهدف الوهمي أو على جامعة وقّعت عقد pentest. تجرب أي تكنيك من دول على شبكة جامعتك الفعلية من غير تفويض = جناية CFAA + احتمال طرد + حظر مدى الحياة من أي شغل فيدرالي. بلاش عك.
             </Callout>
@@ -71,7 +89,7 @@ export default function Page() {
               { p: "# (يدوي عبر Sales Navigator أو theHarvester)" },
               { p: "theHarvester -d state-uni.edu -b linkedin,bing,duckduckgo" },
             ]} />
-            <Callout kind="good" title="الدفاع — تقليل سطح الـ OSINT">
+            <Callout kind="good" title="الحماية — تقليل سطح الـ OSINT">
               <ul>
                 <li>إزالة شعار الجامعة من Shodan (bug bounty لقطات منه).</li>
                 <li>سياسة LinkedIn للموظفين: لا تُنشر سلطات تقنية محددة.</li>
@@ -107,7 +125,7 @@ bbot -t state-uni.edu -f passive,subdomain-enum,web-basic`}</Code>
             <Step n={3} title="VPN بـ password spraying">
               <p>السكة دي بتشتغل تقريباً دايماً: لستة أسماء من LinkedIn + باسورد موسمي زي (<span className="eng">Spring2026!</span>). من 3 لـ 7% من الموظفين بيحطوا حاجة شبهها. <b>SprayingToolkit</b> ضد OWA أو VPN gateway وخلاص.</p>
             </Step>
-            <Callout kind="good" title="الدفاع">
+            <Callout kind="good" title="الحماية">
               <ul>
                 <li>MFA إجباري + FIDO2 keys لـ admins (يقاوم phishing).</li>
                 <li>Conditional Access: refuse logins from non-corporate IPs without device compliance.</li>
@@ -190,7 +208,7 @@ nmap -p 631 --script ipp-info 198.51.100.0/24
             <h3>قارئات البطاقات والتحكم بالأبواب</h3>
             <p>أنظمة Lenel, Genetec, HID Global. غالباً MSSQL في الخلفية + شبكة منفصلة، بس دايماً بيوصلوها بـ corporate علشان &quot;سهولة الإدارة&quot;. والعك يبدأ من هنا.</p>
             <ul>
-              <li><b>HID iCLASS / Prox</b> قابلة للنسخ بـ <span className="eng">Proxmark3</span> ($300) في 5 ثوان. اختبار في غرفة المصاعد، تستنسخ بطاقة موظف، تدخل أي مكان.</li>
+              <li><b>HID iCLASS / Prox</b> قابلة للنسخ بـ <span className="eng">Proxmark3</span> ($300) في 5 ثوان. اختبار في غرفة الأسانسير (المصعد)، تستنسخ بطاقة موظف، تدخل أي مكان.</li>
               <li>قواعد بيانات Lenel فيها كثيراً <span className="eng">sa</span> بكلمة سر افتراضية.</li>
               <li>API الـ Genetec أحياناً مفتوح على الشبكة الداخلية بدون مصادقة كافية → فتح أي باب عن بُعد.</li>
             </ul>
@@ -202,7 +220,7 @@ nmap -p 631 --script ipp-info 198.51.100.0/24
               <li>أنظمة BMS (مكيفات، إضاءة): BACnet بدون authentication. ليست مفيدة هجومياً مباشرة، لكنها &quot;شبكة موازية&quot; تتجاوز firewall أحياناً.</li>
             </ul>
 
-            <Callout kind="good" title="الدفاع — على IoT">
+            <Callout kind="good" title="الحماية — على IoT">
               <ul>
                 <li><b>VLAN segmentation صارمة:</b> كاميرات وطابعات وBMS كل واحد في VLAN منفصل، لا تتكلم مع corporate إلا عبر firewall بقواعد محددة.</li>
                 <li><b>تغيير افتراضات</b> قبل التركيب — كلمة سر، شهادة، SNMP community.</li>
@@ -223,7 +241,7 @@ GetUserSPNs.py state-uni.edu/student.user:Pass123 -dc-ip 203.0.113.10 -request
 hashcat -m 13100 spn-hashes.txt rockyou.txt -r best64.rule
 
 # 3) كلمة سر &quot;Library2019!&quot; لحساب &quot;sql_svc&quot; → MSSQL admin → xp_cmdshell → SYSTEM`}</Code>
-            <Callout kind="good" title="الدفاع">
+            <Callout kind="good" title="الحماية">
               <ul>
                 <li>كلمات سر طويلة (25+ حرف) لكل حساب SPN.</li>
                 <li>Group Managed Service Accounts (gMSA) — Windows يدير الكلمة آلياً.</li>
@@ -251,7 +269,7 @@ secretsdump.py state-uni.edu/admin@dc01.state-uni.edu -just-dc
 # النتيجة: hashes كل حساب، بما فيها حساب krbtgt (the keys to the kingdom).
 # Golden Ticket = استمرار حتى لو غيّر admin كلمته:
 ticketer.py -nthash <krbtgt-hash> -domain-sid <SID> -domain state-uni.edu admin`}</Code>
-            <Callout kind="good" title="الدفاع — الذي يعمل فعلاً">
+            <Callout kind="good" title="الحماية — الذي يعمل فعلاً">
               <ul>
                 <li><b>Tier 0/1/2 isolation:</b> Domain Admin لا يسجّل دخول إلا على DC.</li>
                 <li><b>تدوير hash krbtgt مرتين</b> سنوياً (يبطل golden tickets قديمة).</li>
@@ -314,6 +332,16 @@ Impact:       T1486 (Encrypt) — لا في تدريب، فقط documentation`}<
               <li><b>IoT botnet Mirai (2016)</b> — كاميرات Hikvision في حرم جامعي شاركت في DDoS.</li>
               <li><b>Operation Newscaster (Charming Kitten)</b> — phishing لباحثين أكاديميين أمريكيين موثّق منذ 2014.</li>
             </ul>
+          </Section>
+
+          <Section title="الخلاصة الناشفة">
+            <p>الـ pentest على جامعة مش &quot;شغل تقني&quot;. هو امتحان للـ OPSEC بتاعك أنت قبل ما يكون امتحان للـ infra بتاعتها هي.</p>
+            <p>كل خطوة بتعملها بسرعة = خطوة بتزود فيها فرصة إنك تتحرق.</p>
+            <p>كل خطوة بتعملها بمنطق &quot;ليه دلوقتي؟ ومين هيشوف؟ وإيه الـ noise؟&quot; = خطوة بتقرّبك من النهاية بأمان.</p>
+            <p>الجامعة هتنكشف. السؤال هي إنت اللي هتسلّم تقريرها بنفسك بعد 6 أسابيع، ولا الـ FBI هيسلّمه لك في تهمة CFAA؟</p>
+            <p>اكتبها على الحيطة اللي في وش السرير:</p>
+            <p>الفرق بين الاتنين هو &quot;التفويض المكتوب&quot;. مفيش حاجة تانية. مفيش &quot;بس عشان أتعلّم&quot;.</p>
+            <p>ده بزنس يا نجم.. بزنس.</p>
           </Section>
         </>}
 

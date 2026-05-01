@@ -46,7 +46,7 @@ export default function LessonsCatalog() {
   const groups = [
     { key: "intro" as Track, title: { ar: "الأساسيات والمبادئ", en: "Foundations & Principles" } },
     { key: "red"   as Track, title: { ar: "الفرق الحمراء — العمليات الهجومية", en: "Red Team — Offensive Operations" } },
-    { key: "blue"  as Track, title: { ar: "الفرق الزرقاء — الدفاع والتحقيق", en: "Blue Team — Defense & Forensics" } },
+    { key: "blue"  as Track, title: { ar: "الفرق الزرقاء — الحماية والتحقيق", en: "Blue Team — Defense & Forensics" } },
     { key: "ops"   as Track, title: { ar: "العمليات والاستخبارات", en: "Operations & Intel" } },
   ];
 

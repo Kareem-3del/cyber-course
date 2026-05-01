@@ -6,105 +6,145 @@ export default function Page() {
     <LessonShell slug="ransomware-supply-chain">
       <L
         ar={<>
-          <Section title="لماذا ندرس Ransomware و Supply Chain؟">
-            <Analogy>الطبيب لا يستطيع علاج المرض إن لم يعرف كيف يعمل. هذا الدرس يفكّك بنية أخطر هجمتين على الجهات الحكومية و الشركات الكبرى. <b>الهدف وعي دفاعي بحت</b>.</Analogy>
-            <Callout kind="danger" title="حدود واضحة">لا يحوي هذا الدرس كود ransomware جاهز، ولا أساليب لإيذاء بنية حقيقية. نوضّح <i>الكيفية</i> على مستوى المعمارية ليُبنى الدفاع المضاد.</Callout>
+          <Section title="ليه ندرس Ransomware و Supply Chain سوا؟">
+            <p>طب الموضوعين دول علاقتهم ببعض إيه؟</p>
+            <p>المهاجم بيشوفهم سكة واحدة.</p>
+            <p>هو مش هيدخل شركتك مباشرة لو الجدار عالي. هو هيخترق المورّد بتاعك، ويوصّلك ransomware <b>عبر update موقّع</b>. أنت اللي تنزّله بإيدك. والـ EDR بتاعك هيوافق لأن التوقيع الرقمي صح.</p>
+            <p>ده اللي حصل في Kaseya. ده اللي حصل في 3CX. ده اللي حصل في SolarWinds (لوحدها بشكل مختلف).</p>
+            <p>الـ ransomware النهاردة مش phishing لموظف عبيط. هو هندسة سلاسل توريد كاملة، وفلوس، وعصابات منظمة.</p>
+            <Analogy>الدكتور مش هيعالج مرض من غير ما يفهم بيشتغل إزاي. الدرس ده بيفكّك بنية أخطر فئتين هجمات على الجهات الحكومية والشركات الكبيرة. <b>الهدف وعي دفاعي بحت</b>.</Analogy>
+            <Callout kind="danger" title="حدود واضحة">مفيش هنا كود ransomware جاهز، ولا طرق تأذية لبنية حقيقية. إحنا بنوصف <i>الفكرة</i> على مستوى الـ architecture عشان نبني دفاع مضاد.</Callout>
+            <Callout kind="warn" title="غلطات الـ junior في الحماية">
+              <ul>
+                <li>عنده backup، بس على نفس الشبكة. أول حاجة الـ ransomware بيعملها = يمسح الـ backup.</li>
+                <li>عنده &quot;3-2-1 backup&quot; بس مش بيختبر الاسترجاع. يوم الكارثة يكتشف إن الـ backup فاضي.</li>
+                <li>بيدفع الفدية وبيظن إن خلصت. 40% من اللي بيدفعوا بيتضربوا تاني خلال سنة.</li>
+                <li>مش بيختبر IR plan. أول كارثة بيكتشف إن مفيش حد عارف يكلم مين.</li>
+                <li>سايب RDP مكشوف للإنترنت. RDP + password ضعيف = 90% من ransomware initial access.</li>
+              </ul>
+            </Callout>
+          </Section>
+
+          <Section title="قصة من الواقع — Colonial Pipeline 2021">
+            <p>7 مايو 2021. Colonial Pipeline (45% من بنزين الساحل الشرقي الأمريكي) اتشفّرت. السكة:</p>
+            <ul>
+              <li>VPN account قديم. مفيش MFA.</li>
+              <li>Password اتسرّب في breach قديم وفضل شغّال.</li>
+              <li>DarkSide (روسية) دخلت. شفّرت الأنظمة الإدارية.</li>
+              <li>Colonial اضطرت تقفل خط الأنابيب نفسه (مش لأن الـ malware وصله، لأن نظام الفوترة وقع).</li>
+            </ul>
+            <p>5 ولايات أعلنت حالة طوارئ. طوابير في محطات البنزين. الرئيس بايدن خرج بتصريح قومي.</p>
+            <p>الفدية: 4.4 مليون دولار. اتدفعت. الـ FBI رجّع منها 2.3 مليون لاحقاً.</p>
+
+            <p>- بس استنى.. كل ده من حساب VPN واحد؟؟</p>
+
+            <p>بالظبط يا مستجد. مش zero-day. مش APT خرافي. password ضعيف + عدم MFA.</p>
+            <p>أرخى نقطة في المنظومة بتقفل البلد كلها.</p>
           </Section>
           <Section title="تشريح هجوم Ransomware حديث">
             <Step n={1} title="الدخول الأولي — Initial Access">
-              غالباً عبر:
+              غالباً عن طريق:
               <ul>
                 <li>Phishing بمرفق ISO/LNK/HTML smuggling.</li>
-                <li>VPN/RDP مكشوف بكلمات سُرّبت (Initial Access Brokers).</li>
+                <li>VPN/RDP مكشوف بباسوردات مسرّبة (Initial Access Brokers بيبيعوها).</li>
                 <li>ثغرة في edge device (Fortinet, Citrix, Ivanti, F5).</li>
                 <li>سلسلة توريد عبر MSP أو RMM.</li>
               </ul>
             </Step>
-            <Step n={2} title="التثبيت — Foothold">loader صغير (QakBot, IcedID, Bumblebee, Latrodectus) يجلب Cobalt Strike / Sliver beacon.</Step>
-            <Step n={3} title="الاستطلاع الداخلي">AdFind, BloodHound, NetScan. يبحثون عن: DC, backups, hypervisors (ESXi), file shares.</Step>
-            <Step n={4} title="رفع الصلاحيات إلى Domain Admin">عادةً خلال 24 ساعة من الدخول الأولي.</Step>
-            <Step n={5} title="حذف النسخ الاحتياطية أولاً">
-              هذه <i>الخطوة الأخطر</i>. يستهدفون: Veeam, Commvault, Rubrik, ESXi snapshots, S3 versioned buckets, shadow copies.
+            <Step n={2} title="التثبيت — Foothold">loader صغير (QakBot, IcedID, Bumblebee, Latrodectus) بيجيبلهم Cobalt Strike / Sliver beacon.</Step>
+            <Step n={3} title="الاستطلاع الداخلي">AdFind, BloodHound, NetScan. بيدوّروا على: DC, backups, hypervisors (ESXi), file shares.</Step>
+            <Step n={4} title="رفع الصلاحيات لـ Domain Admin">عادة خلال 24 ساعة من الدخول الأولي.</Step>
+            <Step n={5} title="مسح الـ backups الأول">
+              <i>أخطر خطوة في الموضوع كله</i>. بيستهدفوا: Veeam, Commvault, Rubrik, ESXi snapshots, S3 versioned buckets, shadow copies.
               <Code lang="examples (defensive awareness)">{`vssadmin delete shadows /all /quiet
 wbadmin delete catalog -quiet
 bcdedit /set {default} recoveryenabled No
 esxcli vm process kill -t force -w <wid>`}</Code>
             </Step>
-            <Step n={6} title="الابتزاز المزدوج/الثلاثي">قبل التشفير: تهريب البيانات. ثم التشفير. ثم تهديد بنشر البيانات. أحياناً DDoS كضغط رابع.</Step>
-            <Step n={7} title="التشفير الجماعي">خوارزميات هجينة: ChaCha20/AES + RSA/Curve25519. الهجمات الحديثة تشفّر جزءاً من كل ملف (intermittent encryption).</Step>
+            <Step n={6} title="ابتزاز مزدوج/تلاتي">قبل التشفير: بيهرّبوا البيانات. وبعدين بيشفّروا. وبعدين بيهدّدوا بالنشر. أحياناً DDoS كضغط رابع.</Step>
+            <Step n={7} title="تشفير جماعي">خوارزميات هجينة: ChaCha20/AES + RSA/Curve25519. الهجمات الحديثة بتشفّر جزء من كل ملف (intermittent encryption) عشان السرعة.</Step>
           </Section>
           <Section title="عائلات Ransomware الكبرى">
             <TwoCol>
-              <Card title="LockBit (3.0/Black/Green)" color="red">الأكثر نشاطاً. RaaS، StealBit للتهريب، intermittent encryption.</Card>
-              <Card title="ALPHV / BlackCat" color="red">مكتوب بـ Rust، يستهدف ESXi/Linux أيضاً.</Card>
-              <Card title="Royal / BlackSuit" color="red">خلفاء Conti، يستهدف القطاع الصحي و الحكومي.</Card>
-              <Card title="Akira / Play / Rhysida" color="red">موجات حديثة تركز على VPN و SonicWall/Cisco.</Card>
+              <Card title="LockBit (3.0/Black/Green)" color="red">الأكتر نشاطاً. RaaS، StealBit للتهريب، intermittent encryption.</Card>
+              <Card title="ALPHV / BlackCat" color="red">مكتوب بـ Rust، بيستهدف ESXi/Linux كمان.</Card>
+              <Card title="Royal / BlackSuit" color="red">ورثة Conti، بيستهدفوا الصحة والحكومات.</Card>
+              <Card title="Akira / Play / Rhysida" color="red">موجات حديثة بتركّز على VPN و SonicWall/Cisco.</Card>
             </TwoCol>
           </Section>
           <Section title="هجمات سلسلة التوريد — Supply Chain">
-            <p>بدلاً من اختراق الهدف، يخترق المهاجم <b>من يثق به الهدف</b>:</p>
+            <p>بدل ما المهاجم يخترق هدفه على طول، بيخترق <b>اللي الهدف بيثق فيه</b>:</p>
             <h3>1) اختراق المورّد البرمجي</h3>
             <ul>
-              <li><b>SolarWinds (2020)</b> — تحديث موقّع شرعياً يحوي SUNBURST.</li>
-              <li><b>3CX (2023)</b> — تطبيق سطح مكتب موقّع يحوي SmoothOperator.</li>
-              <li><b>XZ Utils (2024)</b> — backdoor زُرع تدريجياً عبر مساهم مزوّر في الـ open source.</li>
+              <li><b>SolarWinds (2020)</b> — update موقّع رسمياً وفيه SUNBURST.</li>
+              <li><b>3CX (2023)</b> — تطبيق desktop موقّع وفيه SmoothOperator.</li>
+              <li><b>XZ Utils (2024)</b> — backdoor اتزرع بالتدريج عبر مساهم مزوّر في open source.</li>
             </ul>
-            <h3>2) اختراق مزود الخدمة المُدارة (MSP)</h3>
-            <p>Kaseya (2021) — ثغرة VSA أوصلت REvil إلى آلاف العملاء النهائيين.</p>
+            <h3>2) اختراق MSP</h3>
+            <p>Kaseya (2021) — ثغرة في VSA وصّلت REvil لآلاف العملاء.</p>
             <h3>3) Dependency Attacks</h3>
             <ul>
               <li><b>Typosquatting</b> — حزمة باسم قريب (colorrs بدل colors).</li>
-              <li><b>Dependency Confusion</b> — رفع حزمة عامة بنفس اسم حزمة داخلية.</li>
-              <li><b>Account takeover</b> لمشرف حزمة ثم نشر إصدار خبيث.</li>
+              <li><b>Dependency Confusion</b> — تنشر حزمة عامة بنفس اسم حزمة داخلية.</li>
+              <li><b>Account takeover</b> لمشرف حزمة، وبعدين نشر إصدار خبيث.</li>
             </ul>
             <h3>4) Build System Compromise</h3>
             <ul>
               <li>اختراق CI/CD (Jenkins, GitHub Actions, GitLab Runners).</li>
               <li>سرقة code signing keys.</li>
-              <li>زرع باب خلفي في build artifact فقط (لا في الكود المصدر).</li>
+              <li>زرع باب خلفي في الـ build artifact بس (مش في الكود المصدر).</li>
             </ul>
           </Section>
           <Section title="Wipers — الأخطر من Ransomware">
-            <p>الـ wiper يبدو ransomware لكنه يدمّر البيانات بلا رجعة. أمثلة: NotPetya, HermeticWiper, AcidRain, CaddyWiper. هدفها سياسي لا مالي.</p>
+            <p>الـ wiper شكله ransomware، بس بيدمّر البيانات بلا رجعة (مفيش مفتاح فك تشفير من الأساس). أمثلة: NotPetya, HermeticWiper, AcidRain, CaddyWiper. الدافع سياسي، مش مالي.</p>
           </Section>
-          <Section title="الدفاع — خطة شاملة ضد Ransomware">
+          <Section title="الحماية — خطة شاملة ضد Ransomware">
             <ol>
-              <li><b>3-2-1-1-0 Backup</b>: 3 نسخ، 2 وسائط، 1 خارج الموقع، 1 offline/air-gapped/immutable، 0 أخطاء في الاختبار.</li>
+              <li><b>3-2-1-1-0 Backup</b>: 3 نسخ، 2 وسايط، 1 برّه الموقع، 1 offline/air-gapped/immutable، 0 أخطاء في الاختبار.</li>
               <li><b>Immutable backups</b>: S3 Object Lock, Veeam Hardened Repository, Wasabi immutability.</li>
-              <li><b>تجارب استرجاع</b> دورية موثقة.</li>
-              <li><b>تقسيم الشبكة</b> — DC / backups / hypervisors في VLANs منفصلة.</li>
-              <li><b>MFA على كل شيء</b>، خاصة VPN, RDP, hypervisors, backup admin.</li>
-              <li><b>تعطيل SMBv1، LLMNR، NTLMv1</b>.</li>
-              <li><b>تصلب ESXi</b> (تعطيل SSH، execInstalledOnly=TRUE، lockdown mode).</li>
+              <li><b>تجارب استرجاع</b> دورية وموثّقة. مفيش "افترضنا الـ backup شغّال".</li>
+              <li><b>تقسيم شبكة</b> — DC / backups / hypervisors في VLANs منفصلة.</li>
+              <li><b>MFA على كل حاجة</b>، خصوصاً VPN, RDP, hypervisors, backup admin consoles.</li>
+              <li><b>اقفل SMBv1 و LLMNR و NTLMv1</b>.</li>
+              <li><b>تصليح ESXi</b> (إقفال SSH، execInstalledOnly=TRUE، lockdown mode).</li>
               <li><b>كشف مبكر</b>: قواعد Sigma على vssadmin delete, wbadmin delete, bcdedit, esxcli vm process kill.</li>
-              <li><b>Canary files</b> في كل share: ملفات وهمية ترصد أول محاولة تشفير.</li>
-              <li><b>خطة استجابة معتمدة</b> + اتصال خارج النطاق (Signal).</li>
+              <li><b>Canary files</b> في كل share: ملفات وهمية بتطلق إنذار أول ما حد يحاول يشفّرها.</li>
+              <li><b>خطة استجابة معتمدة</b> + قناة اتصال برّا الشبكة (Signal).</li>
             </ol>
           </Section>
-          <Section title="الدفاع — ضد Supply Chain">
+          <Section title="الحماية — ضد Supply Chain">
             <ul>
-              <li><b>SBOM</b> لكل أصل برمجي.</li>
+              <li><b>SBOM</b> لكل asset برمجي.</li>
               <li><b>SLSA</b> كهدف نضج.</li>
-              <li><b>Sigstore / cosign</b> لتوقيع artifacts.</li>
-              <li><b>Pin dependencies</b> بالـ hash، لا بالاسم فقط.</li>
+              <li><b>Sigstore / cosign</b> لتوقيع الـ artifacts.</li>
+              <li><b>Pin dependencies</b> بالـ hash، مش بالاسم بس.</li>
               <li><b>عزل CI/CD</b> — ephemeral runners، OIDC بدل long-lived secrets.</li>
-              <li><b>Vendor risk management</b> — استبيان أمني سنوي.</li>
-              <li>مراقبة behavioral baselines للمنتجات المثبّتة، حتى الموقّعة.</li>
+              <li><b>Vendor risk management</b> — استبيان أمني سنوي وحق audit.</li>
+              <li>راقب behavioral baselines للبرامج المثبّتة، حتى الموقّعة.</li>
               <li>Network egress allow-list صارم.</li>
             </ul>
-            <Callout kind="info" title="الدرس من SolarWinds">توقيع رقمي شرعي ≠ ملف آمن. كل برنامج، حتى الموقّع، يجب أن يخضع لمراقبة سلوكية.</Callout>
+            <Callout kind="info" title="اكتبها على الحيطة">توقيع رقمي شرعي ≠ ملف آمن. أي برنامج، حتى لو موقّع، لازم يبقى تحت مراقبة سلوكية.</Callout>
           </Section>
           <Section title="عند الإصابة — هل تدفع الفدية؟">
             <Callout kind="danger" title="الموقف الرسمي">
-              FBI / CISA / Europol / NCSC ينصحون <b>بعدم الدفع</b>:
+              FBI / CISA / Europol / NCSC بينصحوا <b>بعدم الدفع</b>:
               <ul>
-                <li>لا ضمان لاسترجاع البيانات (40% فقط من الدافعين يستردون كل شيء).</li>
-                <li>تموّل عمليات إجرامية لاحقة.</li>
-                <li>قد تكون مخالفة لعقوبات (OFAC).</li>
-                <li>40% من الضحايا يُهاجمون مرة ثانية خلال سنة.</li>
+                <li>مفيش ضمان إنك هترجّع البيانات (40% بس من اللي بيدفعوا بيرجّعوا كل حاجة).</li>
+                <li>أنت بتموّل عمليات إجرامية تانية.</li>
+                <li>ممكن تخالف عقوبات (OFAC) لو الفاعل روسي/كوري شمالي/إيراني.</li>
+                <li>40% من الضحايا بيتضربوا تاني خلال سنة.</li>
               </ul>
             </Callout>
-            <p>القرار يجب أن يُتخذ مع: legal, executive, insurance, law enforcement, DFIR retainer.</p>
+            <p>القرار لازم يتاخد مع: legal، executive، insurance، law enforcement، DFIR retainer. مش لوحدك في غرفة.</p>
+          </Section>
+
+          <Section title="الخلاصة الناشفة">
+            <p>الـ ransomware مش مشكلة malware. هي مشكلة <b>backups</b> + <b>identity</b> + <b>segmentation</b>.</p>
+            <p>لو ما عندكش immutable backups، أنت دافع الفدية قبل ما الكارثة تحصل.</p>
+            <p>لو MFA مش على كل VPN/RDP، أنت بس بتستنى الدور.</p>
+            <p>لو الـ backups على نفس domain اللي عليه الـ DC، الـ backup مش backup — هو ملف بحجم كبير.</p>
+            <p>اوعى تقول "عندنا backup" من غير ما تختبر الاسترجاع. ده مش backup، ده ملف بتفترض إنه شغّال.</p>
+            <p>ده مش technical لجنة IT. ده business continuity. والـ board لازم يفهم. لو ما فهمش، أنت اللي هتشرحلهم بعد الكارثة. وهو وقت غالي.</p>
           </Section>
         </>}
         en={<>

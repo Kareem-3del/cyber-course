@@ -1,68 +1,87 @@
-# صيد التهديدات: ليه لازم تخرج تدور ورا المهاجم بدل ما تستنى الـ Alert؟
+# Threat Hunting: ليه تستنّى الـ alert يضرب لما الـ adversary نايم جنبك من 6 شهور؟
 
-هو إحنا هنفضل مستنيين الـ Dashboard تبقا حمراء عشان نتحرك؟ طب ما هو لو المهاجم "شاطر" بجد، مش هيسيب Alert يضرب أصلاً! هي دي المعضلة. لو أنت معتمد كلياً على قواعد الكشف (Detection Rules) الجاهزة، فأنت سايب الباب موارب لأي حد بيستخدم تقنيات جديدة أو متخفي. 
+طب لو الـ APT الجوّاك دلوقتي ما عملش alert واحد، هتعرف منين إنه موجود؟
+هتفضل قاعد قدّام الـ dashboard مستنّي اللون الأحمر؟
+ولا هتقوم تدوّر بنفسك؟
 
-هنا بييجي دور الـ **Threat Hunting**. إحنا مش بنستنى التنبيه؛ إحنا بنفترض إن المهاجم "موجود فعلاً" دلوقتي جوه الشبكة، وبندخل ندور وراه بالمنطق والبيانات (Telemetry). 
+الـ dwell time المتوسط في 2024 كان 10 أيام للضربات اللي اتلاقطت بـ alerts، و 50+ يوم للي اتلاقطت بـ hunting. والباقي اللي ما اتلاقاش؟ ما حدش يعرف. ربنا أعلم.
 
-> [!info] يعني إيه صيد؟
-> الصيد مش بحث عشوائي، الصيد بيبدأ بـ **فرضية**. 
-> يعني بتقول لنفسك: "لو أنا مكان المهاجم، ودخلت الشبكة، أكيد هحتاج أثبت رجلي بـ Scheduled Task.. طب تعالوا نشوف مين اللي عمل Tasks جديدة النهاردة؟"
+ده الفرق بين detection و hunting:
 
-## 1. صيد الأدوات الموثوقة (LOLBAS)
+- **Detection:** انت كاتب rule. الـ rule بتشتغل لما حاجة معروفة تحصل. ممتاز للـ knowns.
+- **Hunting:** انت مفترض إن في حد جوّه. وبتدوّر عليه. حتى لو محدش ضرب alert.
 
-**الفرضية:** المهاجم مش عبيط عشان يرفع Malware مكشوف، هو هيستخدم أدوات ويندوز نفسها (زي `mshta` أو `rundll32`) عشان ينفذ كوده الخبيث.
+الـ hunter مش بيدوّر عشوائي. بيبدأ بـ **فرضية**: "لو أنا الـ attacker، ودخلت الشبكة دي، أكيد محتاج persistence. طب فين أسهل مكان؟ Scheduled Tasks. تعالوا نشوف مين عمل tasks جديدة آخر 7 أيام."
 
-**السؤال هنا:** ليه موظف في الحسابات يحتاج يشغل `mshta.exe` وتكون بتكلم IP خارجي؟ مفيش سبب منطقي.
+> [!info] الـ hunting cycle
+> فرضية -> data -> query -> findings -> لو لقيت حاجة، اعمل alert منها. لو ما لقيتش، فرضية تانية. مفيش "قعدة" بدون فرضية.
+
+## 1. صيد الـ LOLBAS — الـ adversary بيستخدم أدواتك
+
+**الفرضية:** الـ attacker مش غبي يرفع `evil.exe`. هيستخدم binaries موقّعة من Microsoft أصلاً — `mshta`, `rundll32`, `regsvr32`, `mshta` — عشان يعدّي من الـ AV.
+
+السؤال البديهي: ليه موظف في المالية يشغّل `mshta.exe` وبتتكلم مع IP في الفلبين؟
 
 ```kql
-// البحث عن عمليات مشبوهة لأدوات النظام
+// ليه؟ عشان نلاقي LOLBAS بيتكلموا net، اللي ده مش طبيعي للـ binaries دي
 DeviceProcessEvents
 | where FileName in~ ("mshta.exe","rundll32.exe","regsvr32.exe")
 | where ProcessCommandLine has_any ("http://","https://","javascript:")
 | where InitiatingProcessFileName !in~ ("explorer.exe")
 ```
 
-## 2. الثبات الخفي (Persistence) عبر WMI
+## 2. Persistence من غير ما حد يحس — WMI + schtasks
 
-**الفرضية:** المهاجم عايز يفضل موجود حتى لو الجهاز رستر. بدل ما يستخدم الطرق التقليدية اللي الـ EDR بيراقبها، هيستخدم الـ WMI عشان يكريت Task خفي.
+**الفرضية:** الـ adversary عايز يفضل بعد الـ reboot. بدل ما يستخدم Run keys اللي EDR بيشمّها من بعيد، هيعمل Scheduled Task من خلال WMI عشان يخفي الـ parent.
 
-**المنطق:** لو لقيت `wmic.exe` هي اللي بتنادي على `schtasks.exe` عشان تعمل Task جديدة، يبقا فيه حاجة غلط وبنسبة كبيرة دي محاولة تخفي.
+لو لقيت `wmic.exe` parent لـ `schtasks.exe /create`، اقعد قدّام الشاشة ساعة. ده مش admin بيعمل maintenance.
 
 ```kql
+// ليه؟ عشان الـ legit admins بيعملوا tasks من PowerShell أو الـ GUI
+// مش من wmic. الـ pattern ده تقريباً 100% adversary tradecraft
 DeviceProcessEvents
 | where FileName =~ "schtasks.exe" and ProcessCommandLine has "/create"
 | where InitiatingProcessFileName =~ "wmic.exe"
 ```
 
-## 3. شم الذاكرة وسرقة الباسوردات (LSASS Access)
+## 3. LSASS access — أم الـ techniques
 
-**الفرضية:** أي حد عايز يتحرك جانبي (Lateral Movement) لازم يسرق Credentials. والمكان المفضل هو ذاكرة عملية الـ LSASS. 
+**الفرضية:** أي حد عايز lateral movement محتاج credentials. الـ credentials في LSASS process. أي حد بيلمس LSASS من غير ما يكون Defender أو الـ EDR — مشبوه لحد إثبات العكس.
 
-**التحدي:** المهاجم هيحاول يستخدم أدوات نظام زي `rundll32.exe` مع مكتبة `comsvcs.dll` عشان يعمل Dump للذاكرة دي من غير ما يفتح برنامج مشبوه.
+mimikatz ده الـ classic. لكن الـ smart adversary بيستخدم `rundll32 comsvcs.dll MiniDump` — موقّع من Microsoft، LOLBAS، بيعمل dump للـ LSASS من غير ما يحمّل DLL غريب.
 
 ```kql
-// مين بيحاول يعمل Dump لعملية LSASS؟
+// ليه؟ comsvcs.dll + MiniDump = signature معروف لسرقة creds
 DeviceProcessEvents
 | where FileName =~ "rundll32.exe" and ProcessCommandLine has_all ("comsvcs.dll","MiniDump")
 ```
 
-## 4. السحاب.. الفخ الجديد (OAuth Phishing)
+> [!warning] غلطات الـ junior
+> - بيعمل query ويلاقي 50 result، يقفلها ويقول "false positives". لا. كل واحد فيهم لازم تتأكد منه. هي دي الشغلانة.
+> - ما بيـ pivot-ش. لقى process مشبوه؟ شوف الـ network connections بتاعته. شوف الـ files اللي touched. شوف الـ user اللي ran. الـ hunt بيتفرّع، مش بيخلص في query واحدة.
+> - بيعتمد على قاعدة الـ MDR. لا. الـ MDR شغّال على alerts. الـ hunt شغلك انت.
 
-**الفرضية:** ليه المهاجم يتعب نفسه ويخترق جهاز، لما ممكن يقنع موظف يوافق على "صلاحيات" لتطبيق خبيث في Azure؟ 
+## 4. OAuth phishing — السكة الجديدة في الـ cloud
 
-**السيناريو:** تطبيق مجهول فجأة أخد صلاحية `Mail.ReadWrite` بناءً على موافقة مستخدم واحد. دي غالباً عملية تصيد ناجحة والمهاجم دلوقتي بيقرا إيميلات الموظف "رسمياً".
+**الفرضية:** الـ adversary اللي شاطر مش بيتعب نفسه يخترق device. بيعمل multi-tenant app في Azure، بيبعت link للموظف، الموظف بيوافق على الصلاحيات، خلاص — الـ app عنده Mail.ReadWrite لحد ما حد يلاحظ.
+
+في 2022 كذا حملة من Storm-0558 و Midnight Blizzard اشتغلت بالـ pattern ده.
 
 ```kql
+// ليه؟ الـ consent grants من غير admin review = أكبر hole في M365
 AuditLogs
 | where OperationName == "Consent to application"
-| where Scopes has_any ("Mail.ReadWrite","Files.ReadWrite.All")
+| where Scopes has_any ("Mail.ReadWrite","Files.ReadWrite.All","User.ReadWrite.All")
+| where ConsentType == "User"
 ```
 
-## 5. نفق الـ DNS.. الهروب الصامت (DNS Tunneling)
+الحل الإداري قبل التقني: اقفل user consent. خلّيها admin-approved بس. 5 دقايق في Entra portal.
 
-**الفرضية:** المهاجم عايز يسحب بيانات بس خايف من الـ Firewall. هيعمل إيه؟ هيخبي البيانات جوه استعلامات الـ DNS.
+## 5. DNS tunneling — الهروب الصامت
 
-**العلامة:** لو لقيت جهاز واحد بيبعت آلاف الاستعلامات لدومينات فرعية (Subdomains) غريبة لنفس الدومين الأساسي في وقت قصير جداً، فده مش تصفح إنترنت طبيعي، ده "نفق" بيانات.
+**الفرضية:** الـ firewall قافل كل حاجة. بس DNS مفتوح (لازم يكون مفتوح). الـ adversary هيخبّي الـ exfil في DNS queries.
+
+العلامة: device واحد بيبعت آلاف الـ unique subdomains لنفس الـ parent domain في ساعة. ده مش browsing. ده tunnel.
 
 ```spl
 index=dns
@@ -70,16 +89,28 @@ index=dns
 | where unique_subs > 200
 ```
 
----
+أدوات معروفة: dnscat2, iodine, Cobalt Strike DNS beacon. الـ entropy بتاع الـ subdomain عالي جداً. هتلاحظها لو بتبصّ.
 
-## إحنا بنعمل إيه بالظبط؟ ولا ناويين على إيه؟
+## انت بتعمل ايه فعلاً؟
 
-الهدف من الكلام ده كله مش إننا نملى الـ Dashboard باستعلامات وخلاص. الهدف إنك تبني "عضلات" دفاعية. 
-- **التقصي (Hunting)** هو تمرين لعقلك ولبياناتك.
-- لما تلاقي حاجة بالـ Hunt، حولها فوراً لـ **Alert** دائم. 
+الهدف مش تملا الـ dashboard بـ queries.
+الهدف تبني عضلة.
 
-**السؤال اللي لازم تسأله لنفسك كل أسبوع:** 
-إيه هي الفرضية الجديدة اللي هدور عليها الأسبوع ده؟ لو مفيش فرضية، يبقا إحنا مش بنصيد، إحنا بس "قاعدين جنب الرادار" ومستنيين معجزة تحصل. 
+- الـ hunt = تمرين لدماغك ولـ data بتاعتك.
+- لو لقيت حاجة، حوّلها فوراً لـ **detection rule دائمة**. ما تكتشفش نفس الحاجة مرتين.
+- لو ما لقيتش حاجة، documented الـ hypothesis والـ query — الـ negative result بردو نتيجة.
 
-**نصيحة أخيرة:** 
-الصيد بيحتاج بيانات (Telemetry) نظيفة. لو مش بتسجل تحركات العمليات (Process Logs) ونشاط الشبكة، فكل الاستعلامات اللي فوق دي ملهاش قيمة لأنك "أعمى" تقنياً.
+كل أسبوع اسأل نفسك: ايه الفرضية الجديدة اللي هاطاردها الأسبوع ده؟
+لو مفيش فرضية، انت مش بتصطاد. انت بتـ wait.
+الـ adversary مش بيستنى.
+
+## الخلاصة الناشفة
+
+Hunting محتاج 3 حاجات بس:
+1. **Telemetry نضيفة:** EDR + Sysmon + DNS logs + identity logs. لو ما عندكش data، الـ queries كلام فاضي.
+2. **Hypothesis-driven mindset:** ابدأ بـ TTP من ATT&CK، اسأل "إزاي ده هيبان عندي؟"، اعمل الـ query.
+3. **Iteration:** كل hunt بيكشف data gap أو detection gap. سدّه. اللي وراه بيكون أصعب.
+
+الـ alerting بيلاقطلك المعروف. الـ hunting بيلاقطلك اللي ما حدش لسه عمله rule.
+ومحدش هيعمل rule لـ technique لسه ما اتشافتش.
+يبقى لازم انت اللي تشوفها الأول.

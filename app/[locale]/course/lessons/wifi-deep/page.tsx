@@ -7,12 +7,33 @@ export default function Page() {
       <L
         ar={
           <>
-            <Section title="مقدمة — لماذا الـ Wi-Fi خاص؟">
+            <Section title="ليه الـ Wi-Fi خاص؟">
+              <p>إنت في الشركة. الـ corp Wi-Fi شغّال. كل حاجة "محمية بـ password قوي".</p>
+              <p>طب الـ attacker قاعد في عربية في الشارع، عنده هوائي بـ 30 دولار.</p>
+              <p>هو بيشوف نفس الـ packets اللي بتشوفها. نفس الـ frames. نفس كل حاجة.</p>
+              <p>الفرق الوحيد: التشفير.</p>
               <Analogy>
-                الكابل النحاسي زي ماسورة بتنقل مياه: محدش يقدر يوصلها إلا لما يفتح الحيطة. الـ Wi-Fi زي شبورة بتطلع من الشباك — كل اللي في الشارع، في العربية، في الشقة المجاورة، بيشمها. التشفير مش &quot;حماية إضافية&quot;، هو الحاجز الوحيد بين بياناتك وأي حد ماشي بهوائي بـ 30 دولار.
+                الكابل النحاسي زي ماسورة بتنقل مياه — محدش يقدر يوصلها إلا لما يفتح الحيطة.
+                الـ Wi-Fi زي شبورة بتطلع من الشباك — كل اللي في الشارع، في العربية، في الشقة المجاورة، بيشمها.
+                التشفير مش "حماية إضافية"، هو الحاجز الوحيد بين بياناتك وأي حد ماشي بهوائي.
+                لو الحاجز ضعيف، يعني مفيش حاجز.
+
+                - بس إحنا حاطين password قوي يا حضرتك؟؟
+
+                ها ها ها يا مستجد. الـ password القوي بيتكسر offline على RTX 4090 في يوم. اللي بيفرّق مش "قوته" بمقاييس IT، اللي بيفرّق هو طوله العشوائي وWPA3. اوعى تخلط.
               </Analogy>
+              <Callout kind="info" title="حكاية: Evil Twin في مطار شيكاغو">
+                في 2019، fed analysts من جهة كبيرة كانوا في travel. واحد فيهم اتصل بـ "OHARE-FREE-WIFI" — اللي مكنش الشبكة الرسمية للمطار.
+                Rogue AP بـ captive portal.
+                المهاجم خد credentials لـ corporate VPN.
+                ومن هناك، اخترق internal network في 4 ساعات.
+                الـ attacker كان قاعد في كافيه قدام gate. هوائي + Raspberry Pi.
+                التكلفة: 200 دولار. الضرر: ملايين.
+              </Callout>
               <Callout kind="danger" title="قانوني — استخدام مصرّح بيه بس">
-                كل تكنيك تحت ده شرعي في الـ lab بتاعك أو جوه نطاق pentest موقّع. تهاجم شبكة الجار أو الكافيه أو شركة من غير ورق = جريمة تحت قوانين الجرائم المعلوماتية، حتى لو ما سرقتش حاجة. نقطة على السطر.
+                كل تكنيك تحت ده شرعي في الـ lab بتاعك أو جوه نطاق pentest موقّع.
+                تهاجم شبكة الجار أو الكافيه أو شركة من غير ورق = جريمة تحت قوانين الجرائم المعلوماتية، حتى لو ما سرقتش حاجة.
+                نقطة على السطر.
               </Callout>
             </Section>
 
@@ -174,7 +195,7 @@ python dragondrain.py wlan0mon AA:BB:CC:DD:EE:FF`}</Code>
               </ol>
             </Section>
 
-            <Section title="الدفاع — كيف تجعل شبكتك ضمن «ما لا يُكسر»">
+            <Section title="الحماية — كيف تجعل شبكتك ضمن «ما لا يُكسر»">
               <Callout kind="good" title="تهيئة دفاعية مرجعية">
                 <ol className="list-decimal pe-6 space-y-2">
                   <li><b>WPA3-only</b> (لا transition mode) أو WPA3-Enterprise + EAP-TLS لشبكات الموظفين.</li>
@@ -207,6 +228,27 @@ python dragondrain.py wlan0mon AA:BB:CC:DD:EE:FF`}</Code>
                 <li>NIST SP 800-153 — Wireless LAN Security Guidelines.</li>
                 <li>Aircrack-ng / hashcat / hcxtools docs.</li>
               </ul>
+            </Section>
+
+            <Section title="غلطات الـ junior في الـ Wi-Fi">
+              <Callout kind="danger" title="اللي بيكلّفك الشبكة كلها">
+                <ul>
+                  <li><b>WPA2-PSK مع password "Welcome2024"</b> — handshake واحد + RTX 4090 = الـ password في 4 ساعات. والشبكة كلها بقت مفتوحة.</li>
+                  <li><b>WPA2-Enterprise بدون certificate validation على الـ client</b> — Evil Twin بياخد NetNTLM hashes في 30 ثانية. اللاب التوب الـ corporate بيـ auto-connect لـ AP بنفس الاسم.</li>
+                  <li><b>Guest network على نفس VLAN</b> — الـ visitor عنده access للـ printer، اللي عنده access للـ AD، اللي عنده credentials لـ DC. الـ chain كله من زائر شاي.</li>
+                  <li><b>WPS مفعّل</b> — Reaver / Pixie Dust بياخدهالك في دقايق. اقفله من الـ AP، مش بس "اخفي SSID".</li>
+                  <li><b>"اخفاء SSID = أمان"</b> — لأ. الـ SSID بيتنشر مع كل client بيـ probe. الـ attacker بيشوفه في 5 ثواني بـ airodump.</li>
+                  <li><b>ما بيراقبش rogue APs</b> — wireless IDS مش luxury. الـ attacker بيركّب AP في meeting room، الموظفين بيتصلوا بيه، خلاص.</li>
+                </ul>
+              </Callout>
+            </Section>
+
+            <Section title="الخلاصة الناشفة">
+              <p>الـ Wi-Fi شبورة في الشارع. أي حد عنده 30 دولار وهوائي بيقدر يسمع.</p>
+              <p>الفرق بين شبكة آمنة وشبكة مكشوفة = WPA3-Enterprise + EAP-TLS + certificate pinning + wireless monitoring.</p>
+              <p>الباقي إسعافات أولية.</p>
+              <p>وفي البيئات الحكومية الحساسة: الـ Wi-Fi مش option من الأصل. السيرفرات والـ admin workstations على كابل، بس وخلاص.</p>
+              <p>اكتبها على إيدك: لو الـ admin workstation على Wi-Fi، يبقى مفيش Wi-Fi، يبقى مفيش admin.</p>
             </Section>
           </>
         }

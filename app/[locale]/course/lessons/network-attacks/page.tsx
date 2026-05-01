@@ -7,9 +7,27 @@ export default function Page() {
       <L
         ar={<>
           <Section title="بروتوكولات الإنترنت بُنيت على الثقة">
-            <Analogy>الإنترنت اتبنى سنة 1969 على فرضية: «كل اللي على الشبكة دي موثوقين». BGP، DNS، ARP، NTP — كلهم اتصمموا قبل ما المهاجمين يكونوا موجودين أصلاً. النهارده إحنا بنركّب طبقات ثقة (TLS, BGPsec, DNSSEC, RPKI) فوق الأساس الهش ده. الدرس ده بيكشفلك الطبقة اللي تحت.</Analogy>
+            <p>إنت بتستخدم الإنترنت كل يوم. شفت BGP؟ DNS؟ ARP؟</p>
+            <p>طبعاً لأ. شغّالة في الخلفية. والـ TLS فوقها بيخلّيك مطمن.</p>
+
+            <p>- طب ما هو TLS بيقفل الموضوع كله، صح يا حضرتك؟</p>
+
+            <p>كنت مستنيك تسأل يا مستجد. متوقّع. لو الـ BGP اللي تحت اتخطف، الـ TLS بيتعمله MITM. الـ DNS بيوجّهك للسيرفر الغلط. والـ certificate حتى ممكن يطلع صح، لأن الـ attacker بياخد domain validation عن طريق الـ traffic المخطوف.</p>
+            <Analogy>
+              الإنترنت اتبنى سنة 1969 على فرضية: «كل اللي على الشبكة دي موثوقين».
+              BGP، DNS، ARP، NTP — كلهم اتصمموا قبل ما المهاجمين يكونوا موجودين أصلاً.
+              النهارده إحنا بنركّب طبقات ثقة (TLS, BGPsec, DNSSEC, RPKI) فوق الأساس الهش ده.
+              الدرس ده بيكشفلك الطبقة اللي تحت.
+            </Analogy>
+            <Callout kind="warn" title="حادثة 2018: BGP hijack بـ 150 ألف دولار">
+              في إبريل 2018، attacker (يُعتقد روسي) خطف BGP route لـ Amazon Route 53.
+              المستخدمين اللي راحوا لـ MyEtherWallet.com اتوجّهوا لسيرفر تاني.
+              الـ certificate طلع self-signed — وأغلب الناس دوسوا "Continue" زي ما هما بيعملوا كل يوم.
+              اللي بيحصل فعلياً: 150 ألف دولار Ethereum سُرقوا في ساعتين.
+              المسروقات مالحقتش 1% من اللي ممكن يحصل لو الهجوم اتعمل على بنك.
+            </Callout>
             <Callout kind="danger" title="مخاطر عالية">
-              الهجمات دي بتأثر على بنية تحتية مشتركة. أي اختبار برّه معمل معزول ممكن يضر أطراف تالتة بشكل جدّي،
+              الهجمات دي بتأثّر على بنية تحتية مشتركة. أي اختبار برّه معمل معزول ممكن يضر أطراف تالتة بشكل جدّي،
               ويتحسب جريمة قانونياً. تركيزنا هنا: <b>إزاي تكتشفها وتتحصّن ضدها كجهة حكومية</b>.
             </Callout>
           </Section>
@@ -30,7 +48,7 @@ export default function Page() {
               <li><b>2018 Amazon Route 53</b> — استهدف MyEtherWallet، سرقوا $150K.</li>
               <li><b>2022 KlaySwap</b> — BGP hijack جاب $1.9M.</li>
             </ul>
-            <Callout kind="good" title="الدفاع">
+            <Callout kind="good" title="الحماية">
               <ol>
                 <li><b>RPKI (Resource Public Key Infrastructure)</b> — توقيع تشفيري للملكية. الـ ASNs بترفض الإعلانات غير الموقّعة.</li>
                 <li><b>BGPsec</b> — توقيع المسار كله مش الملكية بس.</li>
@@ -59,7 +77,7 @@ iodine, dnscat2, DNSStager
 4. JS يطلب evil.com مرة أخرى → الآن يرجع 192.168.1.1
 5. JS الآن يصل router الضحية، router admin panel، أي شيء داخلي
    كل ذلك بنفس الـ origin، فلا CORS يمنعه`}</Code>
-            <Callout kind="good" title="الدفاع">
+            <Callout kind="good" title="الحماية">
               <ul>
                 <li><b>Host header validation</b> على كل خدمة داخلية، حتى لو افتكرت إنها مش متشافة.</li>
                 <li>اطلب authentication دايماً. «هي شبكة داخلية» مش مبرّر.</li>
@@ -92,7 +110,7 @@ bettercap -iface eth0`}</Code>
               <li>حقن JavaScript في الـ HTTP responses.</li>
               <li>DNS spoofing داخل الـ session نفسها.</li>
             </ul>
-            <Callout kind="good" title="الدفاع">
+            <Callout kind="good" title="الحماية">
               <ul>
                 <li><b>DAI (Dynamic ARP Inspection)</b> على الـ switches.</li>
                 <li>DHCP snooping + IP source guard.</li>
@@ -109,14 +127,14 @@ bettercap -iface eth0`}</Code>
               <li><b>Rogue DHCP</b> — ترد على الطلبات أسرع من السيرفر الأصلي → DNS بتاعك، gateway بتاعك.</li>
               <li><b>DHCPv6</b> + <b>mitm6</b> — هجوم شائع جداً على Active Directory (شفناه في درس Advanced AD).</li>
             </ul>
-            <p>الدفاع: <b>DHCP Snooping</b> على الـ switches، وحدّد trusted ports بس.</p>
+            <p>الحماية: <b>DHCP Snooping</b> على الـ switches، وحدّد trusted ports بس.</p>
           </Section>
 
           <Section title="NTP — الزمن سلاح">
             <ul>
               <li><b>NTP Amplification</b>: طلب <code>monlist</code> بيرجّع رد ~200x — استُخدم في DDoS بـ 400 Gbps.</li>
               <li><b>NTP Time Manipulation</b>: تحرّك ساعة الضحية = تكسر شهادات TLS وKerberos وTOTP.</li>
-              <li>الدفاع: <b>NTS (Network Time Security)</b>، و<b>chrony</b> بدل <code>ntpd</code> القديم.</li>
+              <li>الحماية: <b>NTS (Network Time Security)</b>، و<b>chrony</b> بدل <code>ntpd</code> القديم.</li>
             </ul>
           </Section>
 
@@ -136,7 +154,7 @@ bettercap -iface eth0`}</Code>
                 طلب صغير → رد ضخم → بـ IP مزوّر للضحية. NTP, DNS, Memcached, CLDAP, SNMP.
               </Card>
             </TwoCol>
-            <h3>الدفاع الحقيقي</h3>
+            <h3>الحماية الحقيقي</h3>
             <ol>
               <li>مزود <b>scrubbing</b>: Cloudflare, Akamai Prolexic, AWS Shield Advanced, Imperva.</li>
               <li><b>Anycast</b> يوزّع الحمل جغرافياً.</li>
@@ -163,7 +181,7 @@ bettercap -iface eth0`}</Code>
               <li><b>ICMP redirect</b> — إعادة توجيه ترافيك (نادر النهارده، بس لسه شغّال على شبكات قديمة).</li>
               <li><b>SLAAC attack</b> — تعلن عن نفسك كـ IPv6 router افتراضي على شبكة ما عندهاش IPv6 — كل الترافيك بيعدّي عليك.</li>
               <li><b>RA Guard bypass</b>.</li>
-              <li>الدفاع: <b>RA Guard, DHCPv6 guard, ND inspection</b> على الـ switches.</li>
+              <li>الحماية: <b>RA Guard, DHCPv6 guard, ND inspection</b> على الـ switches.</li>
             </ul>
           </Section>
 
@@ -176,6 +194,28 @@ bettercap -iface eth0`}</Code>
               <li>BGP route monitoring + DNS DDoS monitoring.</li>
               <li>تدريبات هجوم/دفاع كل ربع سنة، فيها سيناريوهات شبكية.</li>
             </ol>
+          </Section>
+
+          <Section title="غلطات الـ junior في الشبكة">
+            <Callout kind="danger" title="اللي بيحصل">
+              <ul>
+                <li><b>"الـ TLS بيحمي كل حاجة"</b> — TLS بيحمي الـ payload. مش بيحمي الـ routing. ولا الـ DNS resolution. ولا الـ certificate validation لو الـ MITM ماكر.</li>
+                <li><b>ما بيراقبش BGP</b> — أول مرة هتعرف إن الـ traffic بتاعك متخطف، هي لما الزباين يبلّغوا. وقتها فات الميعاد.</li>
+                <li><b>DNS resolver واحد</b> — لما يقع، الشركة كلها بتقع. خلّي 2 على الأقل، من vendors مختلفين.</li>
+                <li><b>NTP من غير authentication</b> — Kerberos بيعتمد على الوقت. attacker بيغيّر وقتك بـ 5 دقايق، بيكسر authentication كله.</li>
+                <li><b>VLAN segmentation بدل true segmentation</b> — VLAN hopping اتعمل من 1999. لو بنكك معتمد على VLAN عشان يفصل DMZ عن corp، إنت في خطر.</li>
+                <li><b>Internal traffic بدون encryption</b> — "احنا جوّه الـ firewall، آمنين". أول insider أو compromise = الـ traffic كله plain text.</li>
+              </ul>
+            </Callout>
+          </Section>
+
+          <Section title="الخلاصة الناشفة">
+            <p>الشبكة اللي بتشغّل العالم اتصممت لما الإنترنت كان 4 universities بيثقوا في بعض.</p>
+            <p>كل layer أمان فوقها (TLS, DNSSEC, RPKI, BGPsec) عبارة عن patch.</p>
+            <p>لو ما بتراقبش الطبقات دي، الـ attacker اللي عنده موارد دولة ممكن يخطف ترافيكك من غير ما تحس.</p>
+            <p>اكتبها على الحيطة اللي قصاد مكتبك:</p>
+            <p>المراقبة مش luxury. هي الفرق بين "اتعرّضنا" و"اتعرّضنا ومحدش عرف".</p>
+            <p>اوعى تفتكر إن "الـ TLS بيحمي كل حاجة". اوعى.</p>
           </Section>
         </>}
         en={<>

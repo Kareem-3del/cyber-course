@@ -6,15 +6,22 @@ export default function Page() {
     <LessonShell slug="siem-detection-engineering">
       <L
         ar={<>
-          <Section title="إيه الفرق بين Detection Engineer و SOC Analyst؟">
+          <Section title="Detection Engineer vs SOC Analyst — مين بيشتغل ايه؟">
             <Analogy>
-              الـ Analyst هو الحارس اللي بيرد على الجرس. الـ Detection Engineer هو اللي بيصمم نظام الإنذار من الأول:
-              بيقرر الجرس يطن إمتى، يفضل ساكت إمتى، و أنهي حتة محتاجة كاميرا زيادة. السؤال الأهم عنده مش "المهاجم
-              هنا؟" — السؤال "لو دخل النهارده، هشوفه؟"
+              الـ Analyst هو الحارس اللي بيرد على الجرس.
+              الـ Detection Engineer هو اللي بيصمّم نظام الإنذار نفسه: الجرس بيطن إمتى، بيفضل ساكت إمتى، أنهي حتة محتاجة كاميرا زيادة.
+              <br/><br/>
+              - طب يا حضرتك، أنا analyst كويس، يعني أنا detection engineer برضو؟؟
+              <br/><br/>
+              لأ يا مستجد. كنت متوقّع كالعادة في السؤال ده.
+              السؤال عند الـ engineer مش "المهاجم جوّه؟". السؤال "لو دخل النهارده، هشوفه؟".
+              الفرق دقيق بس بيفرّق بين blue team محترم وبين dashboard شغّال.
             </Analogy>
             <p>
-              الـ Detection Engineering ببساطة = تكتب قواعد كشف، تختبرها، تقيس تغطيتها على ATT&CK، و تضبطها عشان تقلل
-              الـ false positives من غير ما تخسر الـ true positives. ده الفرق بين blue team محترم و SOC شغال بردة الفعل.
+              طب لو الـ Analyst بس عندك، انت مش بتراقب — انت بتـ react.
+              الـ adversary لو عرف انت بتراقب ايه (وده سهل يعرفه)، هيدخل من اللي مش بتراقبه.
+              الـ Detection Engineering بتقفل السكة دي: تكتب rules، تختبرها بـ Atomic Red Team، تقيس coverage على ATT&amp;CK، وتـ tune عشان تقلّل الـ FP من غير ما تفقد الـ TP.
+              ده الفرق بين blue team محترم وبين SOC شغّال على alerts الـ vendor الافتراضية.
             </p>
           </Section>
 
@@ -132,13 +139,35 @@ index=sysmon EventCode=10 TargetImage="*lsass.exe" GrantedAccess IN (0x1010, 0x1
 
           <Callout kind="good" title="مبادئ مهندس الكشف — ناشفة">
             <ul>
-              <li><strong>True Positive Rate أهم من الـ Coverage</strong>: قاعدة واحدة شغالة أحسن من 100 قاعدة بـ 95% FP.</li>
-              <li><strong>اكشف بالسلوك مش بالـ IoC</strong>: الـ hash بيموت في يوم؛ سلوك الـ LSASS access بيفضل عايش.</li>
-              <li><strong>اختبر كل قاعدة</strong>: Atomic Red Team أو CALDERA — كل يوم.</li>
-              <li><strong>Versioning</strong>: قواعدك في git، code review، تاريخ تعديل. زي الكود بالظبط.</li>
-              <li><strong>كل alert ليه runbook</strong>: المحلل بيعمل إيه في أول 5 دقايق؟ لو مش عارف، الـ alert ضاع.</li>
+              <li><strong>True Positive Rate أهم من Coverage</strong>: قاعدة واحدة شغّالة أحسن من 100 قاعدة بـ 95% FP. الـ analyst اللي بيقفل alerts من تعب = ما عندكش detection.</li>
+              <li><strong>اكشف بالسلوك مش بالـ IoC</strong>: الـ hash بيموت في يوم. السلوك بيفضل عايش لأن الـ adversary مش هيغيّر TTP بسهولة.</li>
+              <li><strong>اختبر كل قاعدة</strong>: Atomic Red Team أو CALDERA. مش مرة. كل يوم. لو القاعدة وقفت، انت ما عندكش detection للـ technique دي.</li>
+              <li><strong>Versioning في git</strong>: قواعدك code. PR review، history، diffs. Detection-as-code.</li>
+              <li><strong>كل alert عنده runbook</strong>: الـ analyst بيعمل ايه في أول 5 دقايق؟ لو ما يعرفش، الـ alert راح. SOAR هنا بياخد الـ playbook ويـ enrich automatically.</li>
             </ul>
           </Callout>
+
+          <Callout kind="warn" title="غلطات الـ junior detection engineer">
+            <ul>
+              <li>بيكتب rule على string match بسيط من blog post. أول obfuscation بسيطة بتكسرها.</li>
+              <li>بيـ deploy للـ production بدون testing. الـ rule بتولّد 10000 FP في يوم. الـ SOC بيـ disable-ها. القاعدة ماتت.</li>
+              <li>ما بيـ document-ش الـ false positives المعروفة. الـ analyst التاني بيـ investigate نفس الـ FP عشر مرات.</li>
+              <li>بيركّز على coverage. "أنا غطّيت 95% من ATT&amp;CK". 95% من القواعد عنده بـ noise. الـ 5% الباقية بس بتشتغل.</li>
+            </ul>
+          </Callout>
+
+          <Section title="الخلاصة الناشفة">
+            <p>
+              Detection engineering مش "كتابة rules". ده engineering discipline كامل. data sources -&gt; hypothesis -&gt; query -&gt; test -&gt; tune -&gt; runbook -&gt; metrics.
+            </p>
+            <p>
+              لو ما عندكش CI/CD للـ detections، انت ما عندكش detection engineering. عندك "list of queries". الفرق كبير.
+            </p>
+            <p>
+              ولو الـ analyst بيـ disable rules بدل ما يـ tune-هم، انت ما عندكش SOC. عندك dashboard.
+            </p>
+            <p>اكتبها على الحيطة اللي قصاد شاشتك: <b>قاعدة من غير runbook = قاعدة ميتة. وقاعدة بـ 95% FP = قاعدة بتعلّم الـ analyst يقفل عينه.</b></p>
+          </Section>
 
           <Section title="مصادر للتعمق">
             <ul>

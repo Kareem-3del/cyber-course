@@ -8,14 +8,31 @@ export default function Page() {
         ar={<>
           <Section title="ليه الذاكرة أصعب وأهم من الـ Disk؟">
             <Analogy>
-              تخيّل إنك بتحقق في جريمة في فندق. الـ Disk هو دفتر تسجيل النزلاء — بيقولك مين حجز ومين خرج، لكن
-              مش هيقولك مين كان في الردهة لحظة الجريمة. الذاكرة (RAM) هي الردهة نفسها لحظة الحادثة: مين كان
-              بيتكلم، أنهي عمليات شغّالة، أنهي اتصالات شبكة مفتوحة. ده اللي المالوير ما يقدرش يخبّيه عن الذاكرة.
+              انت محقق في جريمة في فندق. تبدأ منين؟
+              تفتح دفتر تسجيل النزلاء؟
+              ده الـ Disk — بيقولك مين حجز ومين خرج. بس مش هيقولك مين كان في الردهة لحظة الجريمة.
+              الذاكرة (RAM) هي الردهة نفسها لحظة الحادثة: مين كان بيتكلم، أنهي عمليات شغّالة، أنهي اتصالات شبكة مفتوحة.
+              ده اللي المالوير ما يقدرش يخبّيه عن الذاكرة.
+
+              - طب يا حضرتك ما الـ EDR بياخد كل ده؟؟
+
+              يا نجم الجيل.. الـ EDR بيشوف ظاهر الكلام بس. الـ rootkit الجاد بيلعب مع الـ kernel نفسه فبيعمي عين الـ EDR. اللي بيكشفه؟ snapshot للذاكرة بيتقرأ offline. بس.
             </Analogy>
             <p>
-              في الـ DFIR الحديث، أكتر المالوير المتطور هو fileless — ما بيكتبش على الـ Disk خالص، عايش كله في
-              الذاكرة. الدرس ده عن Volatility 3، الإطار المعياري لتحليل dump الذاكرة على Windows / Linux / macOS.
+              في 2025، أكتر من 70% من الـ malware المتطوّر بقى fileless — ما بيكتبش على الـ Disk خالص، عايش كله في الذاكرة. Cobalt Strike beacons، Sliver implants، PowerShell Empire، Meterpreter — كلهم في RAM بس.
+              لو انت بتبصّ على الـ Disk بس، انت بتتفرّج على نص الفيلم.
             </p>
+            <p>
+              الدرس ده عن Volatility 3، الإطار المعياري لتحليل dump الذاكرة على Windows / Linux / macOS. مش لأنه &quot;الأحدث&quot; — لأنه شغل Aaron Walters و13 سنة من البحث. مفيش بديل.
+            </p>
+            <Callout kind="danger" title="غلطات الـ junior في memory forensics">
+              <ul>
+                <li>بيعمل reboot قبل dump — كل حاجة راحت. مفيش undo.</li>
+                <li>بيدوّر على process مشبوه بـ <code>pslist</code> بس وينسى <code>psscan</code> — الـ DKOM rootkits بتتخفى في الـ list ومش بتختفي من الـ scan.</li>
+                <li>بيلاقي injection بـ <code>malfind</code> ويفرح، وينسى يعمل <code>dumpfiles</code> للـ payload — كده ضيّع العيّنة الوحيدة.</li>
+                <li>بيشغّل Volatility على عيّنة من غير ما يحسب SHA256 الأول — chain of custody اتكسرت.</li>
+              </ul>
+            </Callout>
           </Section>
 
           <Section title="التقاط الذاكرة (Acquisition)">
@@ -118,11 +135,21 @@ vol -f mem.raw windows.modscan     # عبر pool tag scan — يكشف modules �
           </Section>
 
           <Callout kind="danger" title="الذاكرة بتطير — مفيش مرة تانية">
-            بمجرد ما الجهاز يعمل restart، كل حاجة ضاعت. قاعدة IR صارمة: dump الذاكرة قبل أي تفاعل مع الجهاز،
-            حتى قبل ما المحقق يعمل login. كل خطوة بتغيّر الذاكرة، فاللحظة الأولى هي الأذكى.
+            بمجرد ما الجهاز يعمل restart، كل حاجة ضاعت.
+            مفيش undo.
+            مفيش &quot;خليني أحاول تاني&quot;.
+            قاعدة IR صارمة: dump الذاكرة قبل أي تفاعل مع الجهاز، حتى قبل ما المحقق يعمل login. كل خطوة بتغيّر الذاكرة، فاللحظة الأولى هي الأذكى.
+            لو فات عليك الـ window ده، انت كتبت &quot;سيب الـ adversary يفلت&quot; في تقرير الحادثة.
+          </Callout>
+          <Callout kind="info" title="الخلاصة الناشفة">
+            الذاكرة هي المكان الوحيد اللي المهاجم ما يقدرش يكدب فيه.
+            لو سيطر على الـ Disk، يقدر يمسح.
+            لو سيطر على الـ logs، يقدر يعدّل.
+            الـ RAM لحظة الـ snapshot هي الحقيقة الناشفة.
+            اكتبها على الحيطة اللي قصاد مكتب الـ IR: خد الـ snapshot قبل أي حاجة. التحليل بعدين. مفيش "هخش login بس وأشوف" — لو خشيت، الذاكرة اتلوّثت وأنت ونصيبك.
           </Callout>
 
-          <Callout kind="good" title="الدفاع — لتسهيل التحليل لاحقاً">
+          <Callout kind="good" title="الحماية — لتسهيل التحليل لاحقاً">
             <ul>
               <li>فعّل Sysmon Event 1, 7, 10 (process creation, image load, lsass access)</li>
               <li>EDR ينبغي أن يدعم triage automatic memory capture</li>

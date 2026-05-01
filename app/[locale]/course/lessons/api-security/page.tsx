@@ -6,8 +6,26 @@ export default function Page() {
     <LessonShell slug="api-security">
       <L
         ar={<>
-          <Section title="ليه أمن الـ API هو سطح الهجوم رقم واحد دلوقتي؟">
-            <Analogy>الموقع القديم زي بنك فيه شباك واحد للزباين. الـ API الحديث زي بنك فيه ألف باب خلفي: للموبايل، للموظفين، للشركاء، لشركات تانية. تنسى تقفل باب واحد = الكارثة. أكتر من 70% من ترافيك الويب دلوقتي بقا APIs.</Analogy>
+          <Section title="ليه أمن الـ API بقى الجبهة رقم واحد دلوقتي؟">
+            <p>إنت بتأمّن "الموقع". تمام.</p>
+            <p>طب الموبايل app؟ والـ partner integrations؟ والـ admin dashboard؟ والـ v1 القديم اللي محدش فاكره من 2019؟</p>
+            <p>كل واحد من دول API منفصل. جبهة منفصلة. ثغرات منفصلة.</p>
+            <p>- طب يا حضرتك، أنا حاطط WAF قدام كل حاجة.. مش كفاية؟</p>
+            <p>يا نجم الجيل. الـ WAF بيشوف الـ traffic، مش بيشوف <b>منطق الـ business</b>. الـ BOLA بيمر منه طبيعي — السيرفر هو اللي لازم يشوف إن الـ user ده مش صاحب الـ object ده.</p>
+            <Analogy>
+              الموقع القديم = بنك فيه شباك واحد للزباين.
+              الـ API الحديث = بنك فيه ألف باب خلفي: للموبايل، للموظفين، للشركاء، لشركات تانية.
+              تنسى تقفل باب واحد = الكارثة.
+              أكتر من 70% من ترافيك الويب دلوقتي بقى APIs، يعني الـ "موقع" اللي بتأمّنه دلوقتي هو 30% بس من الصورة.
+            </Analogy>
+            <Callout kind="warn" title="قصة Optus 2022 — 9.8 مليون عميل في endpoint واحد">
+              مشغّل اتصالات أسترالي. endpoint اسمه /api/customer/{`{id}`} مفتوح من غير authentication.
+              فيه id رقمي تسلسلي.
+              الـ attacker كتب loop بسيط: <code>{`for i in range(1, 10_000_000)`}</code>.
+              اللي حصل فعلياً: 9.8 مليون رقم passport, license, address.
+              مش 0day. مش APT. BOLA + sequential IDs + endpoint منسي.
+              ده الـ API1 و API9 مع بعض في حادثة واحدة.
+            </Callout>
           </Section>
 
           <Section title="OWASP API Security Top 10 (2023)">
@@ -34,13 +52,13 @@ Authorization: Bearer eyJ...
 GET /api/v1/users/1043/orders
 Authorization: Bearer eyJ...   ← نفس التوكن
 # لو نجح: BOLA — السيرفر لم يفحص الملكية`}</Code>
-            <Callout kind="good" title="الدفاع">
+            <Callout kind="good" title="الحماية">
               في كل endpoint لازم يكون: <code>WHERE owner_id = current_user.id</code>.
               متعتمدش على الـ ID في الـ URL لوحده. استخدم UUIDs عشان تقلل التخمين.
             </Callout>
           </Section>
 
-          <Section title="GraphQL — له سطح هجوم خاص بيه">
+          <Section title="GraphQL — جبهة لوحدها">
             <ul>
               <li><b>Introspection</b> — بيكشف الـ schema كاملة (اقفله في الإنتاج).</li>
               <li><b>Query depth attacks</b> — استعلامات عميقة بتاكل الـ CPU.</li>
@@ -62,7 +80,7 @@ Authorization: Bearer eyJ...   ← نفس التوكن
 
           <Section title="OAuth 2.0 / OIDC — الغلطات اللي بتتكرر">
             <ul>
-              <li><b>Implicit flow</b> — مهجور خلاص، متستخدمهوش.</li>
+              <li><b>Implicit flow</b> — مات خلاص، متستخدموش.</li>
               <li><b>Missing PKCE</b> في الموبايل والـ SPAs.</li>
               <li><b>redirect_uri</b> مش محدد بدقة → سرقة الـ code.</li>
               <li><b>State parameter</b> ناقص → CSRF.</li>
@@ -114,7 +132,7 @@ Schemathesis (property-based)
 Stoplight + Spectral (lint OpenAPI)`}</Code>
           </Section>
 
-          <Section title="مبادئ تصميم آمن — الناشف">
+          <Section title="مبادئ تصميم آمن">
             <ol>
               <li><b>Never trust the client</b> — افحص كل حاجة على السيرفر، مفيش استثناء.</li>
               <li>صلاحيات على مستوى <b>كل field</b>، مش بس الـ object.</li>
@@ -124,6 +142,27 @@ Stoplight + Spectral (lint OpenAPI)`}</Code>
               <li>سجّل كل authn/authz failures في الـ SIEM. ده اللي هيكشف لك الهجوم.</li>
               <li><b>Pagination</b> بحدود قصوى عشان متسمحش بـ dump كامل.</li>
             </ol>
+          </Section>
+
+          <Section title="غلطات الـ junior في الـ API">
+            <Callout kind="danger" title="الأخطاء اللي بتعمل breach">
+              <ul>
+                <li><b>"الموبايل client بيشيك الصلاحيات"</b> — الـ client مش معاك. أي حاجة بتعتمد على الـ client = ثغرة.</li>
+                <li><b>JWT في localStorage</b> — أي XSS يسرّبهم. استخدم HttpOnly cookies + SameSite=Strict.</li>
+                <li><b>سيبوا /v1 شغال</b> — الـ /v2 معمول صح، الـ /v1 لسه فيه BOLA من 2019. الـ attacker مش غبي، بيستخدم القديم.</li>
+                <li><b>CORS مفتوح</b> — <code>Access-Control-Allow-Origin: *</code> مع credentials = هدية للمهاجم.</li>
+                <li><b>مفيش rate limit على /login</b> — Password spraying في 4 ساعات على 50 ألف حساب. والـ logs مش بتاخد بالها.</li>
+                <li><b>Mass assignment</b> — يبعت <code>{`{"is_admin": true}`}</code> في PUT /profile. والـ ORM بيقبلها زي ما هي.</li>
+              </ul>
+            </Callout>
+          </Section>
+
+          <Section title="الخلاصة الناشفة">
+            <p>الـ API مش "موقع بدون UI". الـ API هو الـ backend بكل صلاحياته مكشوف على الإنترنت.</p>
+            <p>كل endpoint = قرار authorization منفصل. مفيش "نسيت أحط check" — لو نسيت، يبقى دي ثغرة.</p>
+            <p>وقبل ما تأمّن الـ APIs، اعرفهم. الـ Shadow API اللي مش في الـ inventory هو اللي بياخد الشركة.</p>
+            <p>اكتبها على Confluence فوق:</p>
+            <p><b>API محدش فاكره = breach محدش هيسمع بيه إلا في الجرنال.</b></p>
           </Section>
         </>}
         en={<>

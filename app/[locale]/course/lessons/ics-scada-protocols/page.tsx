@@ -7,17 +7,41 @@ export default function Page() {
       <L
         ar={<>
           <Section title="عالم تاني خالص — ليه ICS مش زي IT؟">
+            <p>طب لو بنفس منطق IT، ليه ما نأمّنش الـ ICS كده وخلاص؟</p>
+            <p>طب نحط فيه EDR. نحط patches. نعمل MFA على كل سيرفر.</p>
+            <p>لو السيرفر اتـ patch reboot لمدة 30 ثانية، إيه اللي هيحصل؟</p>
+            <p>محطة الكهرباء هتفصل. الغلاية هتنفجر. القطر هيتصدم. كده كده.</p>
+            <p>لأن في عالم OT، الـ <b>availability</b> أهم من السرية، والـ <b>safety</b> أهم من الاتنين. ثانية تأخير في إشارة alarm = موت بشر.</p>
             <Analogy>
-              IT شغّال بمنطق "الأمان الأول والسرعة بعدين". OT (Operational Technology) عكس ده تماماً: محطة كهربا
-              ممكن تستحمل ثواني تأخير، لكن ثانية واحدة الإنذار يتعطّل فيها = انفجار. هندسة OT اتبنت على إن "إمتى"
-              أهم من "إيه"، وكتير من بروتوكولاتها مفيهاش authentication أصلاً، لأن الكلام بين PLC والـ sensor
-              كان مفروض إنه في شبكة معزولة.
+              IT شغّال بمنطق &quot;الأمان الأول والسرعة بعدين&quot;. OT عكس ده تماماً: محطة كهربا تستحمل ثواني تأخير،
+              بس ثانية واحدة الإنذار يتعطّل فيها = انفجار. هندسة OT اتبنت على إن &quot;إمتى&quot; أهم من &quot;إيه&quot;،
+              وكتير من بروتوكولاتها (Modbus من 1979) مفيهاش authentication أصلاً، لأن الكلام بين PLC والـ sensor
+              كان مفروض إنه في شبكة معزولة. <b>كان</b>.
             </Analogy>
             <p>
-              الواقع النهارده؟ الشبكات دي بقت متوصّلة. Stuxnet، Industroyer، Pipedream، CHIRP — كل حملة كبيرة على
+              النهارده؟ الشبكات دي بقت متوصّلة. Stuxnet، Industroyer، Pipedream، CHIRP — كل حملة كبيرة على
               البنية التحتية الحرجة استغلت بروتوكولات اتعملت من غير حماية. الدرس ده هيغطي Modbus، DNP3، IEC-104 —
               اللي بتشتغل في الكهربا والمياه والمواصلات.
             </p>
+            <Callout kind="warn" title="غلطات الـ junior في ICS">
+              <ul>
+                <li>بيشغّل nmap -sS على شبكة OT شغّالة. الـ PLC بيقع. الخط بيقفل. الخسارة بالملايين.</li>
+                <li>بيوصّل الـ engineering workstation بالإنترنت &quot;عشان تحديث الـ TIA Portal&quot;.</li>
+                <li>بيستخدم default password على Schneider/Siemens/Rockwell.</li>
+                <li>بيظن إن &quot;air gap&quot; موجود لأنه &quot;ماحدش وصّل cable&quot;. الـ USB في حياة المهندس بيكسره كل أسبوع.</li>
+                <li>بيشغّل Modbus client من غير ما يفهم إن أي write command ممكن يقلب valve في محطة مياه.</li>
+              </ul>
+            </Callout>
+          </Section>
+
+          <Section title="قصة من الواقع — Stuxnet و Triton">
+            <p>2010. Stuxnet. أول malware معروف هدفه الفعلي تدمير معدات فيزيائية. الهدف: مفاعلات نووية إيرانية في Natanz.</p>
+            <p>الـ malware دخل عبر USB لـ engineering workstation. عرف نفسه إنه على الشبكة الصح بس لما لاقى Siemens S7-300 PLCs بيتحكموا في centrifuges من نوع IR-1. شغّل الـ centrifuges بسرعات غلط، بس عرض في الـ HMI قراءات طبيعية. المهندسين كانوا يبصوا للشاشة، يلاقوا كل حاجة عادية، والمعدات بتتدمّر فعلياً.</p>
+            <p>تقريباً 1000 centrifuge اتدمّروا قبل ما حد ياخد باله.</p>
+            <p>2017. Triton (TRISIS). مجموعة مدعومة من روسيا (Xenotime) دخلوا محطة بتروكيماويات في السعودية. الهدف ماكانش يقفل المحطة. الهدف كان <b>تعطيل الـ Safety Instrumented System (SIS)</b> بتاع Schneider Triconex. ليه؟</p>
+            <p>عشان لو الـ SIS اتعطّل، ساعتها لو حصل حادثة (تسرّب غاز، حرارة عالية)، الإنذار مش هيشتغل. المحطة هتنفجر بدل ما تقفل.</p>
+            <p>اتمسكوا بالصدفة لأن السكربت بتاعهم فيه bug. لو ماكانش الـ bug ده، كانوا قتلوا ناس.</p>
+            <p>ده الفرق بين IT attack و OT attack. في IT بتسرق بيانات. في OT بتقتل ناس.</p>
           </Section>
 
           <Section title="معمارية ICS — Purdue Model">
@@ -130,14 +154,14 @@ nmap -p 502,20000,2404,44818,47808 10.10.10.0/24 --script default
             </Step>
           </Section>
 
-          <Callout kind="danger" title="تحذير صارم — اقراها مرتين">
+          <Callout kind="danger" title="اوعى تنسى السطر ده">
             الـ active scan على شبكة OT شغّالة ممكن يسبب انفجار، يوقف خط إنتاج، أو يخسّر مليارات. أي شغل ICS حقيقي
             بيبتدي بـ <strong>passive monitoring</strong> بس (port mirror، Zeek، Claroty). أي فحص فعّال محتاج
             maintenance window ومهندس OT واقف معاك. فيدرالياً، اختبار ICS من غير تصريح ممكن يقع تحت
             <span className="eng"> PIPDA </span>أو CIRCIA reporting. ما تلمسش غير لما يبقى عندك ورق.
           </Callout>
 
-          <Callout kind="good" title="الدفاع — الفروقات المهمة">
+          <Callout kind="good" title="الحماية — الفروقات المهمة">
             <ul>
               <li><strong>Network segmentation</strong>: data diodes (one-way) بين IT و OT، ليس firewalls فقط</li>
               <li><strong>Passive monitoring</strong>: Claroty، Nozomi، Dragos — لا يولد packets جديدة</li>
@@ -156,6 +180,15 @@ nmap -p 502,20000,2404,44818,47808 10.10.10.0/24 --script default
               <li>MITRE ATT&CK for ICS — مصفوفة منفصلة عن enterprise</li>
               <li>Andrew Ginter — books on OT security architecture</li>
             </ul>
+          </Section>
+
+          <Section title="الخلاصة الناشفة">
+            <p>الـ ICS مش IT بأسماء جديدة.</p>
+            <p>هو هندسة تانية، فلسفة تانية، ومخاطرها مادية مش مالية.</p>
+            <p>أي pentester بيدوس على شبكة OT كأنها شركة عادية = خطر على أرواح. فعلياً.</p>
+            <p>اكتبها على الحيطة اللي قدامك: الـ <b>passive monitoring</b> أولاً (Claroty، Nozomi، Dragos). الـ <b>active scan</b> أبداً من غير maintenance window ومهندس OT جنبك.</p>
+            <p>والأهم: متخلّيش مهندس OT يفكّر إن &quot;الـ network مش بتاعتي&quot;. هي شبكته. لو وقعت، اللي هيتحاسب هو، مش الـ IT team.</p>
+            <p>المعدات اللي بقالها 20 سنة شغّالة من غير update مش &quot;نظام صامد&quot; — دي قنبلة موقوتة. والمهاجمين الجدد فاهمين ده كويس.</p>
           </Section>
         </>}
 

@@ -6,35 +6,59 @@ export default function Page() {
     <LessonShell slug="osint-fundamentals">
       <L
         ar={<>
-          <Section title="ما هو OSINT ولماذا يهم محقق فيدرالي؟">
+          <Section title="هو OSINT ده إيه أصلاً؟">
+            <p>اللي إنت بتعمله ع Google ولا حاجة جدّية؟</p>
+            <p>اللي بتعمله Bellingcat لما بيكشفوا قاتل في سوريا من صورة ظل، ده نفس اللي إنت بتعمله لما بتدوّر على إيميل صاحبتك القديمة؟</p>
+            <p>الـ FBI analyst اللي قاعد يحلّل APT operator، شغله في Maltego ده "بحث على Google" برضه؟</p>
+            <p>بُص. الإجابة: لا، آه، وآه. الفرق مش في الأدوات — الفرق في العقلية.</p>
             <Analogy>
-              تخيل إنك بتدوّر على واحد في مدينة كبيرة. مينفعش تكسر باب ولا تطلب أوراق، بس تقدر تقرا لافتاته،
-              تتابع إعلاناته، وتسمع أي حاجة هو بنفسه قالها بصوت عالي في الشارع. ده الـ OSINT — جمع معلومات
-              من مصادر مفتوحة وبشكل قانوني، وبعدين تحوّل القطع المبعثرة لصورة تنفع تحقيق فعلي.
+              OSINT مش جاسوس بكاميرا في فيلم.
+              OSINT هو المخبر القديم اللي قاعد على القهوة. عينه على كل اللي بيعدي. بياخد باله من اللافتة، من الإعلان، من الكلمة اللي اتقالت بصوت عالي.
+              مش بيكسر باب. مش بيطلب أوراق. بس آخر اليوم، عارف كل اللي محتاج يعرفه.
+              الفرق بينه وبينك إنه بيشك في كل حاجة، وبيدوّن كل حاجة، وبيربط الحاجات ببعض.
             </Analogy>
-            <p>
-              OSINT (Open-Source Intelligence) = جمع منظّم لمعلومات متاحة للعامة: مواقع، شبكات اجتماعية،
-              سجلات شركات، DNS، صور أقمار صناعية، تسريبات بيانات منشورة. أي Red Team بيعمل recon أو محلل tehdid
-              بيشتغل في incident — بيبدأ من هنا.
-            </p>
+            <p>OSINT (Open-Source Intelligence) = جمع منظّم لمعلومات متاحة للعامة: مواقع، شبكات اجتماعية، سجلات شركات، DNS، صور أقمار صناعية، تسريبات بيانات منشورة.</p>
+            <p>أي Red Team بيعمل recon، أي threat intel analyst شغّال على incident، أي محقق فيدرالي بيتابع actor — بيبدأ من هنا. مفيش غنى عنه.</p>
           </Section>
 
-          <Section title="دورة حياة OSINT — أربع مراحل">
-            <Step n={1} title="التخطيط (Planning)">
-              ابدأ بسؤال محدّد. "اعرف كل حاجة عن الشركة" سؤال عك. "إيه الـ public IPs لـ target.gov ومين بيدير الـ DNS؟" سؤال شاطر.
+          <Section title="السيناريو: APT operator سرّب إيميل، اعمل إيه؟">
+            <p>تعالى نمشي على حالة. وصلك إيميل تسريب: <code>shadow_op_42@protonmail.com</code>. التسريب بيقول إن صاحب الإيميل ده عنصر في مجموعة بتستهدف بنية تحتية حكومية. مفيش حاجة تانية. ابدأ منين؟</p>
+            <p>ما تيجيش تفتح Google وتكتب الإيميل وتضغط Enter. ده شغل عيال صغيرة. اشتغل بعقلية المخبر.</p>
+          </Section>
+
+          <Section title="دورة حياة OSINT — خمس مراحل">
+            <p>الأكاديميين عاملين ليها أسامي رنانة. أنا هقولهالك بالبلدي.</p>
+            <Step n={1} title="Direction — إنت بتدوّر على إيه؟">
+              ابدأ بسؤال محدّد. "اعرف كل حاجة عن الـ operator" سؤال عك.
+              "إيه الـ aliases التانية اللي بيستخدمها shadow_op_42؟ في أي forums؟ من امتى؟" — ده سؤال شاطر.
+              لو السؤال مش محدّد، الإجابة هتبقى ضوضا.
             </Step>
-            <Step n={2} title="الجمع (Collection)">
-              اجمع الـ raw data: subdomains، WHOIS، TLS certs، حسابات اجتماعية، EXIF، GitHub.
+            <Step n={2} title="Collection — اجمع الـ raw">
+              Sherlock بيدوّر الـ username عبر 400+ موقع. Hunter.io بيشوف الإيميل اتنشر فين. Dehashed بيقولك التسريبات اللي فيها الإيميل ده. Wayback بيوريك حسابات قديمة اتشالت.
+              اجمع كل حاجة. ما تفلتر هنا — هتفلتر بعدين.
             </Step>
-            <Step n={3} title="المعالجة والتحقق (Processing)">
-              نضّف الـ data وتأكد من المصدر. صورة LinkedIn مش دليل. فلترة الضوضا أهم من إنك تكتر منها.
+            <Step n={3} title="Processing — نضّف الزبالة">
+              صورة LinkedIn مش دليل. اسم متشابه مش نفس الشخص. اتأكد من المصدر، من التاريخ، من السياق.
+              فلترة الضوضا أهم من إنك تكتر منها. الـ junior بيجمع 5000 حاجة، الـ senior بيرمي 4900 ويبقى فاضل عنده 100 موثوقة.
             </Step>
-            <Step n={4} title="التحليل والإسناد (Analysis)">
-              اربط القطع. واحد بيستخدم نفس الـ username في 4 مواقع، شغّال في شركة X، وفي صورة EXIF موقعها مدينة Y. كده أنت بتـ build a picture.
+            <Step n={4} title="Analysis — اربط القطع">
+              shadow_op_42 بيستخدم نفس الـ username على XSS forum من 2019. هناك بيتكلم روسي. بس في commit واحد على GitHub قديم بيستخدم نفس الإيميل، فيه typo بيقول "habibi" — مش راجل من موسكو يا حبيبي.
+              كده إنت بتبني صورة.
+            </Step>
+            <Step n={5} title="Dissemination — وصّلها لمين بيحتاجها">
+              التقرير اللي ما حدش قراه = ما اتكتبش. اعرف عميلك. الـ SOC analyst عايز IOCs. الـ executive عايز bullet points. الـ prosecutor عايز chain of custody.
             </Step>
           </Section>
 
-          <Section title="فئات المصادر الأساسية">
+          <Section title="تصنيف المصادر — INTs الخمسة">
+            <p>الناس بتسمع الكلمات دي وتجري. بُص، الموضوع بسيط:</p>
+            <ul>
+              <li><b>HUMINT</b> (Human Intelligence) — معلومات من بشر. مقابلات، forums، قنوات Telegram. مثال: تحليل بوستات Conti اللي اتسرّبت من العضو المتخاصم في 2022 — كله HUMINT من leaked chats.</li>
+              <li><b>SIGINT</b> (Signals Intelligence) — اعتراض اتصالات. في الـ open source: passive DNS، BGP feeds، شهادات TLS من crt.sh.</li>
+              <li><b>IMINT</b> (Imagery Intelligence) — صور أقمار صناعية. مثال: Bellingcat استخدمت Sentinel-2 و Maxar عشان يثبتوا تحرّكات روسية في 2022 قبل ما الحرب تبدأ.</li>
+              <li><b>SOCMINT</b> (Social Media Intelligence) — Twitter, LinkedIn, Telegram, Discord. الـ APT operators بيعملوا OPSEC ممتاز في الـ malware، وبيكتبوا اسمهم الحقيقي على Twitter. حقيقة.</li>
+              <li><b>GEOINT</b> (Geospatial Intelligence) — موقع جغرافي. EXIF في الصور، سحاب في الخلفية، ظل عمارة، لافتة شارع. الـ Bellingcat geolocation challenges أحسن مدرسة.</li>
+            </ul>
             <TwoCol>
               <Card title="بصمة البنية التحتية" color="blue">
                 <ul>
@@ -55,6 +79,19 @@ export default function Page() {
                 </ul>
               </Card>
             </TwoCol>
+          </Section>
+
+          <Section title="الأدوات — متى تستخدم كل واحدة">
+            <p>الواقع vs المفروض: المفروض إنك تعرف كل أداة. الواقع، إنت محتاج تعرف امتى تستخدم كل واحدة. الفرق كبير.</p>
+            <ul>
+              <li><b>Maltego</b> — لما الـ entities كتير وعايز ترسم الـ graph. ممتاز للـ attribution. مش ممتاز للسرعة.</li>
+              <li><b>Spiderfoot</b> — automation كامل. بتدّيله target، بيرجعلك تقرير. كويس للـ scoping السريع، ضعيف في الـ depth.</li>
+              <li><b>Sherlock</b> — username عبر 400 موقع. أداتك الأولى لما يبقى عندك alias.</li>
+              <li><b>Hunter.io</b> — لما عايز إيميلات موظفي شركة. بدون ما تحرق نفسك.</li>
+              <li><b>dehashed</b> / <b>HIBP</b> — التسريبات. بس انتبه — في دول استخدامها مش قانوني من غير warrant.</li>
+              <li><b>Shodan</b> — أي حاجة فيها IP. الـ banner بيقولك حاجات الـ vendor نفسه نسي يخفيها.</li>
+              <li><b>theHarvester</b> — جمع سريع لإيميلات و subdomains من passive sources. كويس كنقطة بداية.</li>
+            </ul>
           </Section>
 
           <Section title="أدوات يومية">
@@ -80,10 +117,8 @@ curl -s "https://web.archive.org/cdx/search/cdx?url=target.gov/*&output=text&fl=
           </Section>
 
           <Section title="OSINT للإسناد — من فعل ماذا؟">
-            <p>
-              لما بتشرّح حملة هجومية، الـ OSINT هو اللي بيحوّل "هاكر مجهول" لـ "مجموعة في منطقة زمنية معيّنة،
-              مستخدمة نفس الـ infrastructure من حملة سابقة، واسمها ظهر في commit على GitHub". وده أصعب شغل.
-            </p>
+            <p>لما بتشرّح حملة هجومية، الـ OSINT هو اللي بيحوّل "هاكر مجهول" لـ "مجموعة في منطقة زمنية معيّنة، مستخدمة نفس الـ infrastructure من حملة سابقة، واسمها ظهر في commit على GitHub".</p>
+            <p>وده أصعب شغل في الـ field كله.</p>
             <Card title="مؤشرات إسناد قوية" color="green">
               <ul>
                 <li>إعادة استخدام الـ infrastructure (نفس IP، نفس registrar، نفس SSL fingerprint)</li>
@@ -94,13 +129,29 @@ curl -s "https://web.archive.org/cdx/search/cdx?url=target.gov/*&output=text&fl=
             </Card>
           </Section>
 
-          <Callout kind="danger" title="حدود قانونية">
-            الـ OSINT في حد ذاته قانوني، بس حاجات زي تعدية access controls، أو عمل sock puppets عشان تخش جروبات خاصة،
-            أو استخدام breach corpora — مش قانونية في كل دولة. اشتغل دايماً تحت authorization مكتوب، وراجع
-            <span className="eng"> 18 U.S.C. § 1030</span> وتعليمات الوكالة قبل أي اختبار.
+          <Callout kind="warn" title="الإسناد بيحرق ناس كتير — اوعى تكون منهم">
+            <p>قصة حقيقية. في 2017 حصل هجوم على Olympic Destroyer (PyeongChang Olympics). كل المؤشرات في أول يوم كانت بتقول روسيا. lazarus كمان دخلت في القايمة. كل التحليلات الأولية ربطت الموضوع بـ Fancy Bear.</p>
+            <p>طلع المهاجمين كانوا حاطين false flags عن قصد. عاملين الكود كأنه شغل لازاروس الكوري. الـ timestamps متظبّطة على Pyongyang. الـ comments بكوري.</p>
+            <p>كل اللي اتسرّع وقال "روسيا" أو "كوريا الشمالية" في أول يوم، اتحرق.</p>
+            <p>الـ junior بيشوف IP روسي، يقول "روسيا". الـ senior بيقول "ممكن، بس ليه IP روسي مكشوف؟ ده شغل junior ولا false flag؟"</p>
+            <p>غلطة الـ attribution ممكن تجيب حرب. بُص. ما تستعجلش.</p>
           </Callout>
 
-          <Callout kind="good" title="الدفاع — قلّل بصمتك في OSINT">
+          <Section title="القانون — للـ federal analyst تحديداً">
+            <p>إنت داخل على الـ federal SOC. قبل ما تكتب أمر واحد، اعرف:</p>
+            <ul>
+              <li><b>الـ OSINT في حد ذاته قانوني</b> — قراية مواقع عامة، WHOIS، Shodan، crt.sh، LinkedIn — كل ده مفيش فيه مشكلة.</li>
+              <li><b>تعدية access controls</b> = جريمة تحت <span className="eng">18 U.S.C. § 1030</span> (CFAA). حتى لو الـ login form ضعيف. حتى لو الباسورد "admin/admin". إنت لو دخلت من غير authorization، إنت مخالف.</li>
+              <li><b>Breach corpora</b> (HIBP, DeHashed, COMB) — استخدامها للأبحاث الـ defensive عادي. بس الـ federal analyst محتاج warrant أو exigent circumstances قبل ما يستخدم credentials منها لـ pivot على حساب فعلي.</li>
+              <li><b>Sock puppets في جروبات مقفولة</b> — لو الجروب فيه expectation of privacy، إنت محتاج warrant. الـ Fourth Amendment مش بيختفي لأنك على Telegram.</li>
+              <li><b>الـ FISA Section 702</b> بيحكم كل اللي بيتجمع على non-US persons. والـ Section 215 بيحكم metadata. اعرف الفرق قبل ما تجمع حاجة.</li>
+            </ul>
+            <Callout kind="danger" title="القاعدة الذهبية">
+              لو في شك، اتكلم مع الـ legal counsel بتاع الوكالة قبل ما تجمع. مش بعد. الـ evidence اللي اتجمعت غلط بترميها المحكمة، والقضية بتطير. الـ prosecutor مش هيرحمك.
+            </Callout>
+          </Section>
+
+          <Callout kind="good" title="الحماية — قلّل بصمتك في OSINT">
             <ul>
               <li>راقب اللي بيطلع عن مؤسستك على crt.sh و Shodan أسبوعياً (digital footprint monitoring)</li>
               <li>شيل metadata من الصور و PDF قبل النشر</li>
@@ -108,6 +159,13 @@ curl -s "https://web.archive.org/cdx/search/cdx?url=target.gov/*&output=text&fl=
               <li>درّب الموظفين على اللي ما يتحطش على LinkedIn (الـ stack الداخلي مثلاً)</li>
             </ul>
           </Callout>
+
+          <Section title="الخلاصة الناشفة">
+            <p>OSINT مش كلمة مفتاح في Google.</p>
+            <p>هي عقلية شك منظّمة.</p>
+            <p>اللي بيشتغل بيها صح، بيشوف اللي مش شايفه التانيين. اللي بيستعجل، بيغلط في الـ attribution، وبيوقّع نفسه في مشاكل قانونية، وبيحرق القضية.</p>
+            <p>اوعى تستعجل على الإسناد. اشتغل بهدوء. شك في كل حاجة. وثّق كل خطوة.</p>
+          </Section>
 
           <Section title="مصادر">
             <ul>

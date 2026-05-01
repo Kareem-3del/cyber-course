@@ -225,6 +225,3 @@ function ToolModal({ tool, onClose }: { tool: Tool; onClose: () => void }) {
     </div>
   );
 }
- </div>
-  );
-}

@@ -6,10 +6,25 @@ export default function Page() {
     <LessonShell slug="container-escapes">
       <L
         ar={<>
-          <Section title="من الحاوية إلى السيرفر — كسر العزل">
-            <Analogy>الحاوية زي مركب في ميناء: كل مركب ليه حدوده، لكن كلهم بيشتركوا في نفس الميناء (الـ host kernel). لو القرصان لقى خرم في قاع المركب بتاعه، يخرج منه ويبقى في ميناء كامل فيه عشرات المراكب التانية. ده بالظبط اللي بيحصل في Container Escape.</Analogy>
-            <Callout kind="danger" title="تحذير قانوني">
-              الكلام ده للوعي الدفاعي ولاختبارات الاختراق المرخّصة. تطبيقه على بيئات إنتاج لجهات تانية = جريمة فيدرالية. لا تلعب بالنار.
+          <Section title="من الحاوية إلى الـ host — لما السجن يبقى كرتون">
+            <Analogy>
+              <p>طب الحاوية ده اسمها &quot;عزل&quot; ولا اسمها &quot;ستارة&quot;؟</p>
+              <p>هي VM؟ لأ. هي chroot قديم؟ لأ.</p>
+              <p>هي عملية عادية على الـ host kernel، متلفّة في كذا طبقة namespace و capability و seccomp.</p>
+              <p>طبقة طبقة. زي البصلة.</p>
+              <p>لو طبقة وقعت = طبقة دفاع راحت. لو كلهم وقعوا = أنت root على الـ host. خلاص. كل اللي بيدور على الـ box ده بقا تحت إيدك.</p>
+              <p>إحنا في الدرس ده هنفكّك الفكرة دي خطوة خطوة. مش عشان تروح تخترق cluster مش بتاعك — عشان تفهم ليه الـ misconfig بتاعك إنت ممكن يبيعك في يوم واحد.</p>
+            </Analogy>
+            <Callout kind="danger" title="بُص قبل ما تكمل">
+              الكلام ده للـ pentest المرخّص و للـ blue team اللي بتبني defenses. تجرب أي حاجة من دي على cluster مش بتاعك = جناية فيدرالية + سجن. مفيش &quot;ماحدش هياخد باله&quot;. ده بزنس يا نجم، مش لعب.
+            </Callout>
+            <Callout kind="warn" title="اوعى تعمل الغلطات دي">
+              <ul>
+                <li>بيشغّل <code>--privileged</code> عشان &quot;التطبيق ماشتغلش&quot; — وما يعرفش إنه لسه فاتح كل الـ host لأي حد جوه الحاوية.</li>
+                <li>بيركّب <code>/var/run/docker.sock</code> جوه container عشان CI &quot;محتاج Docker&quot; — ده نفسه = root على الـ host.</li>
+                <li>بيستخدم image من Docker Hub اسمه قريب من الرسمي (<code>ubunto</code> بدل <code>ubuntu</code>) من غير تحقق.</li>
+                <li>بيسيب الـ ServiceAccount auto-mount شغّال على كل pod حتى اللي مش محتاج API.</li>
+              </ul>
             </Callout>
           </Section>
 
@@ -74,7 +89,7 @@ docker -H unix:///var/run/docker.sock run -v /:/host --privileged alpine \\
           </Section>
 
           <Section title="Kubernetes — هروب من Pod">
-            <h3>سطح الهجوم</h3>
+            <h3>الجبهات المفتوحة</h3>
             <ul>
               <li><b>ServiceAccount token</b> داخل <code>/var/run/secrets/kubernetes.io/serviceaccount/</code>.</li>
               <li><b>kubelet API</b> غير محمي على :10250.</li>
@@ -114,7 +129,7 @@ spec:
     command: ["nsenter", "--target", "1", "--mount", "--uts", "--ipc", "--net", "--pid", "--", "bash"]
     volumeMounts: [{ name: host, mountPath: /host }]
   volumes: [{ name: host, hostPath: { path: / } }]`}</Code>
-            <Callout kind="good" title="الدفاع — k8s">
+            <Callout kind="good" title="الحماية — k8s">
               <ol>
                 <li><b>Pod Security Standards</b>: <code>restricted</code> profile افتراضياً.</li>
                 <li><b>OPA Gatekeeper / Kyverno</b> لمنع pods خطرة.</li>
@@ -138,13 +153,22 @@ spec:
               <li><b>Pwn2Own escapes</b> سنوياً على VMware Workstation / VirtualBox.</li>
               <li><b>L1TF, Foreshadow, MDS</b> — side-channel attacks ضد عزل الـ CPU.</li>
             </ul>
-            <h3>الدفاع</h3>
+            <h3>الحماية</h3>
             <ul>
               <li>Patch الـ hypervisor أسرع من patch الـ guests (نطاق التأثير أكبر).</li>
               <li>عطّل الميزات غير الضرورية (USB passthrough, shared folders).</li>
               <li>استخدم <b>microVMs</b> (Firecracker, Kata Containers) للـ workloads المتعددة المستأجرين.</li>
               <li>افصل tenants على hosts فيزيائية مختلفة عند الحساسية القصوى.</li>
             </ul>
+          </Section>
+
+          <Section title="قصة من الواقع — Capital One و Tesla">
+            <p>- طب اللي بيخترق الـ container بيشتغل على zero-day جامد صح يا حضرتك؟؟</p>
+            <p>لأ يا نجم الجيل.</p>
+            <p>هو بيشتغل على كسلك أنت.</p>
+            <p>Tesla 2018: حد لقى Kubernetes dashboard مكشوف من غير password. دخل، لقى AWS credentials في pod. شغّل crypto miner على بنيتهم التحتية. مفيش زيرو-داي ولا حاجة. مفيش غير dashboard مفتوح ومفتاح سايب.</p>
+            <p>Capital One 2019: SSRF على EC2 metadata، طلع IAM role، طلع 100 مليون record. الـ &quot;cloud&quot; مش سحر. هو نفس الـ misconfig القديم بأسماء جديدة.</p>
+            <p>الـ Volt Typhoon (الصين) دخلوا بنية تحتية أمريكية عبر ثغرات في edge devices ومن غير ما يجيبوا أي malware جديد — بس living-off-the-land. كاميرات وروترز قديمة. مفيش &quot;متحصّن&quot;، فيه &quot;متراجع&quot; بس.</p>
           </Section>
 
           <Section title="مبادئ تصميم آمن للحاويات">
@@ -160,6 +184,14 @@ spec:
               <li>وقّع الـ images بـ <b>cosign</b> و افرض signature verification في k8s.</li>
               <li>قلّل سطح الـ host: <b>Bottlerocket, Talos, Flatcar</b>.</li>
             </ol>
+          </Section>
+
+          <Section title="الخلاصة الناشفة">
+            <p>الـ container مش جدار. هو حدّ منطقي قابل للكسر.</p>
+            <p>كل ما زوّدت طبقة عزل، كل ما زوّدت تكلفة الهروب على المهاجم.</p>
+            <p>كل ما تكاسلت في طبقة، كل ما خصمت من تكلفته.</p>
+            <p>السؤال مش &quot;هل ممكن أتخترق؟&quot; — السؤال &quot;لو حصل، الكارثة هتقف عند flag في cluster ولا هتوصل الـ host kernel؟&quot;.</p>
+            <p>لو إجابتك &quot;مش عارف&quot;، يبقا أنت مش بتدافع. أنت بتتفرّج.</p>
           </Section>
         </>}
         en={<>

@@ -6,12 +6,18 @@ export default function Page() {
     <LessonShell slug="mobile-iot">
       <L
         ar={<>
-          <Section title="جبهات هجوم خارج السيرفر">
-            <Analogy>السيرفر هو القلعة، أيوة. بس أنت بقى عندك في الشركة: موبايلات الموظفين، الكاميرات، الطابعات، التكييف الذكي، حتى خطوط الإنتاج. كل واحدة من دي خرم محتمل يدخلوا منه. حادثة Target الشهيرة بدأت من ثلاجة ذكية تبع شركة صيانة — وبعدها وقعت كل الـ POS.</Analogy>
+          <Section title="جبهات الهجوم برّه السيرفر — السكة اللي محدش بيغطّيها">
+            <Analogy>السيرفر هو القلعة، آه. بس انت في شركتك عندك ايه تاني؟ موبايلات الموظفين، كاميرات IP، طابعات شبكية، تكييف ذكي، خطوط إنتاج، أجهزة طبية، حتى موصلات الـ HDMI أحياناً بتتكلم على الشبكة. كل واحدة فيهم خرم. والمصيبة إن الـ Blue Team عادةً مش بيراقبهم.
+
+- بس استنى.. ثلاجة هتخترق شركة؟؟
+
+كنت مستنيك تسأل يا مستجد. اقعد بقى. الـ Target breach الشهيرة في 2013 — 110 مليون credit card اتسرقوا — بدأت من ثلاجة. آه ثلاجة. تابعة لشركة HVAC vendor. الثلاجة كانت على نفس VLAN بتاع الـ POS. خلاص. الموضوع خلص.</Analogy>
+            <p>طب ليه لسه بنحط IoT على نفس الـ VLAN بتاع البيانات الحساسة في 2026؟ معرفش الصراحة 😅 في حاجة أنا مش فاهمها.</p>
+            <p>اوعى تـ trust ثلاجة بياناتك. اوعى.</p>
           </Section>
 
           <Section title="أمن Android">
-            <h3>سطح الهجوم</h3>
+            <h3>اللي مكشوف للخارج</h3>
             <ul>
               <li><b>Manifest misconfig</b> — exported activities/services سايبها مفتوحة من غير حماية.</li>
               <li><b>Insecure storage</b> — SharedPreferences من غير تشفير، يبقى أي حد جذره الجهاز شايف كل حاجة.</li>
@@ -47,7 +53,7 @@ drozer                       # Android attack framework`}</Code>
             </Callout>
           </Section>
 
-          <Section title="MDM و الدفاع على الموبايل">
+          <Section title="MDM و الحماية على الموبايل">
             <ul>
               <li><b>MDM/UEM</b>: Intune, Jamf, Workspace ONE — بتفرض سياسات + remote wipe لما الجهاز يضيع.</li>
               <li><b>App attestation</b>: Play Integrity API و App Attest — تتأكد إن التطبيق ده فعلاً اللي طلعته.</li>
@@ -102,7 +108,7 @@ firmadyne / firmae                  # full emulation`}</Code>
               <li><b>Triton/Trisis (2017)</b> — استهدفوا نظام السلامة Triconex بالذات، اللي معناه إنهم كانوا عايزين انفجار فعلاً.</li>
               <li><b>Colonial Pipeline (2021)</b> — الهجوم على IT بس، وقفوا الـ OT بنفسهم خوفاً.</li>
             </ul>
-            <h3>الدفاع — Purdue Model</h3>
+            <h3>الحماية — Purdue Model</h3>
             <ol>
               <li>فصل صارم بين IT و OT (Level 3.5 = DMZ صناعي). مفيش مرور مباشر.</li>
               <li>Data diodes — التدفق في اتجاه واحد بس، فيزيائياً.</li>
@@ -121,6 +127,25 @@ firmadyne / firmae                  # full emulation`}</Code>
               <li><b>plcscan, mbtget, isf</b> (Industrial Security Framework).</li>
               <li><b>HackRF / Flipper Zero</b> لاختبار البروتوكولات اللاسلكية (433/868/915 MHz).</li>
             </ul>
+          </Section>
+
+          <Callout kind="warn" title="غلطات الـ junior">
+            <ul>
+              <li>بيقول "الـ IoT مش هدف". اسأل Target. اسأل Mirai botnet اللي قطع نص الإنترنت في 2016 من DVR cameras.</li>
+              <li>بيشغّل nmap -sS على شبكة OT. الـ PLCs القديمة بتعمل crash من scan عادي. ممكن تطفّي خط إنتاج بـ scan.</li>
+              <li>بيـ pen-test على ICS من غير سيف العمر. لو حصلت ضحايا بشرية، انت في السجن. وقّف لو ما تعرفش.</li>
+            </ul>
+          </Callout>
+
+          <Section title="الخلاصة الناشفة">
+            <p>
+              الجبهة مش السيرفر بس. الـ adversary بيدخل من اللي مش متوقع: ثلاجة، كاميرا، طابعة، أجهزة طبية. والـ Blue Team عادةً مش شايفه.
+            </p>
+            <p>اكتبها على ظهر إيدك:</p>
+            <p>
+              قسّم الشبكة. الـ IoT في VLAN لوحده. الـ OT في شبكة فيزيائياً منفصلة. الـ phones في work profile. الـ printers ما تكلّمش حاجة غير الـ print server.
+            </p>
+            <p>غير كده، انت بتـ trust ثلاجة بياناتك. وأنت ونصيبك.</p>
           </Section>
         </>}
         en={<>

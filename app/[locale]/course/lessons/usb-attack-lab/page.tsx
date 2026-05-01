@@ -6,14 +6,19 @@ export default function Page() {
     <LessonShell slug="usb-attack-lab">
       <L
         ar={<>
-          <Section title="نطاق هذا الدرس">
-            <p>الدرس اللي فات (<span className="eng">usb-network-implants</span>) شرح <i>الإيه</i> و<i>الليه</i>. الدرس ده هيرد على سؤال <i>إزاي نبنيها بإيدينا</i> في lab مرخّص — وإزاي نكتشفها كـ defenders. كل الأكواد اللي هتشوفها هنا <b>تعليمية بحتة</b>: بتفتح Notepad، بتكتب علامة في ملف، بتطبع رسالة. <u>مفيش C2، مفيش سرقة بيانات</u>. إحنا بنتعلم نفكّ، مش نسرق.</p>
-            <Analogy>الفرق بين إنك تدرس القفل وإنك تكسر قفل بيت حد. إحنا هنا في الورشة، بنفك القفل، نرسم ميكانيكيته، وبعد كده نصمم قفل أصعب. المهارة دي مش بتتنقل لباب الجار.</Analogy>
-            <Callout kind="danger" title="حدود قانونية صارمة">
+          <Section title="نطاق الدرس — الورشة، مش الجريمة">
+            <p>الدرس اللي فات (<span className="eng">usb-network-implants</span>) شرح <i>ايه ده ولـ ايه</i>. الدرس ده هيرد على سؤال <i>إزاي نبنيها بإيدينا</i> في lab معتمد، وإزاي نكتشفها كـ defenders. كل الأكواد اللي هنشوفها <b>تعليمية بحتة</b>: بتفتح Notepad، بتكتب marker في ملف، بتطبع رسالة. <u>مفيش C2، مفيش data exfil</u>. بنتعلم نفكّ القفل، مش نسرق.</p>
+            <Analogy>الفرق بين إنك تدرس القفل، وإنك تكسر قفل بيت جارك.
+            إحنا في الورشة. بنفكّ القفل. بنرسم الميكانيكية. وبنصمّم قفل أصعب.
+            المهارة دي مش بتتنقّل لباب الجار.
+            ولو نقلتها — انت مش لوكسميث.
+            انت حرامي.
+            خلاص.</Analogy>
+            <Callout kind="danger" title="حدود قانونية ناشفة">
               <ul>
-                <li>كل سكربت هنا <b>قانوني بس</b> على: جهازك، VM في الـ lab بتاعك، عقد red team موقّع، أو تقييم بتفويض حكومي.</li>
-                <li>تشغيل أي حاجة من دول على كمبيوتر زميل/أهل/شركة من غير ورق = جناية تحت CFAA §1030(a)(5)(A).</li>
-                <li>حتى &quot;هزار&quot; على جهاز حد تاني ممكن يفتحلك ملف فيدرالي. متعكش.</li>
+                <li>كل سكربت هنا قانوني <b>بس</b> على: جهازك، VM في الـ lab بتاعك، red team بـ contract موقّع، أو تقييم حكومي بتفويض.</li>
+                <li>تشغيل أي حاجة من دول على جهاز زميل/أهل/شركة بدون ورق = جناية تحت CFAA §1030(a)(5)(A).</li>
+                <li>حتى "هزار" على جهاز حد تاني ممكن يفتحلك file فيدرالي. ما تعكّش.</li>
               </ul>
             </Callout>
           </Section>
@@ -61,8 +66,11 @@ DELAY 300
 STRING powershell -w hidden -nop -c "if (Test-Path C:\\LAB_OK.txt) { Add-Content C:\\LAB_OK.txt ('USB-PoC ran at ' + (Get-Date)) } else { exit }"
 ENTER`}</Code>
             <p>سطر واحد PowerShell بيتأكد إن العلامة موجودة. لو الـ USB دخل على جهاز مفهوش <span className="eng">C:\\LAB_OK.txt</span>، مش هيحصل ولا حاجة. ده نمط &quot;safety net&quot; لازم في أي معمل تدريب محترم.</p>
-            <Callout kind="info" title="ليه الـ canary مش رفاهية">
-              في تدريب 2019، فريق جامعي ضيّع USB &quot;متعطّل&quot; في كافيه. حد لقاه ووصّله بلابتوبه. لو كان عليه canary، مكنش هيحصل ولا حاجة؛ من غيره، الفريق دفع غرامة وكاد يخسر شهادته. الـ canary هو الفرق بين شغل محترم وكارثة.
+            <Callout kind="info" title="اوعى تستهين بالـ canary — قصة حقيقية">
+              في 2019، فريق جامعي ضيّع USB "معطّل" في كافيه. حد لقاه. وصّله بـ laptop شخصي.
+              لو كان عليه canary، مكنش حصل أي حاجة. ومحدش هيحس.
+              من غيره — الفريق دفع غرامة، وكاد يخسر certifications. واتسجّل عليهم incident.
+              الـ canary مش "best practice" يا مستجد. ده الفرق بين operator محترم، وبين شغل عبيط. اوي.
             </Callout>
           </Section>
 
@@ -74,7 +82,7 @@ GUI r
 DELAY 300
 STRING powershell -w hidden -nop -c "if (-not (Test-Path C:\\LAB_OK.txt)) { exit }; $info = @{ os = $PSVersionTable.OS; user = $env:USERNAME; lang = (Get-Culture).Name; time = (Get-Date) }; $info | Out-File C:\\LAB_OK.txt -Append"
 ENTER`}</Code>
-            <p><b>القيمة الدفاعية:</b> لازم تفهم إن المهاجم محتاج من <i>5 لـ 15 ثانية</i> علشان يجمع المعلومة الأولية دي. EDR بيصطاد &quot;PowerShell hidden اشتغل بعد ثواني من USB plug&quot; بيكسر السلسلة كلها قبل ما تبدأ أصلاً.</p>
+            <p><b>القيمة الحمائية:</b> لازم تفهم إن المهاجم محتاج من <i>5 لـ 15 ثانية</i> علشان يجمع المعلومة الأولية دي. EDR بيصطاد &quot;PowerShell hidden اشتغل بعد ثواني من USB plug&quot; بيكسر السلسلة كلها قبل ما تبدأ أصلاً.</p>
           </Section>
 
           <Section title="مثال 4 — Raspberry Pi Pico كـ BadUSB بـ $4">
@@ -138,8 +146,8 @@ supervisor.set_usb_identification(
     vid=0x046D,
     pid=0xC31C,
 )`}</Code>
-            <Callout kind="good" title="الدفاع — لماذا VID/PID وحده لا يكفي">
-              whitelist بـ VID/PID لوحدها = أمن مزيف، تياترو. الدفاع الجاد محتاج: <b>(VID + PID + Serial Number)</b>. الـ Serial ده فريد لكل جهاز مادي. <span className="eng">USBGuard</span> على Linux و<span className="eng">Device Installation Restrictions</span> على Windows بيدعموا الكلام ده. كل كيبورد في الشركة مسجّل بـ serial، وأي حاجة جديدة = مرفوضة على باب المصنع.
+            <Callout kind="good" title="الحماية — VID/PID لوحده مش حماية، ده تمثيل حماية">
+              whitelist بـ VID/PID لوحدها = أمن مزيف، تياترو. الحماية الجاد محتاج: <b>(VID + PID + Serial Number)</b>. الـ Serial ده فريد لكل جهاز مادي. <span className="eng">USBGuard</span> على Linux و<span className="eng">Device Installation Restrictions</span> على Windows بيدعموا الكلام ده. كل كيبورد في الشركة مسجّل بـ serial، وأي حاجة جديدة = مرفوضة على باب المصنع.
             </Callout>
           </Section>
 
@@ -151,7 +159,7 @@ open=demo.exe
 icon=demo.ico
 label=Lab USB
 action=Open lab demo`}</Code>
-            <Callout kind="good" title="الدفاع">
+            <Callout kind="good" title="الحماية">
               <ol>
                 <li>تأكد عبر GPO أن <span className="eng">NoDriveTypeAutoRun = 0xFF</span>.</li>
                 <li>على ICS: ابن &quot;USB sanitization kiosk&quot; (Olea, OPSWAT) قبل أي توصيل بشبكة OT.</li>
@@ -175,7 +183,7 @@ action=Open lab demo`}</Code>
             <p>الرؤية دي بتكشف حقيقة بسيطة: الـ Pico/Ducky بيطلع <b>عشرات الـ keystrokes في الثانية الواحدة</b>. مفيش بني آدم بيكتب بالإيقاع ده. التوقيع التحليلي بسيط جداً والـ EDR بيمسكه من غير مجهود.</p>
           </Section>
 
-          <Section title="بناء الدفاع طبقة طبقة">
+          <Section title="بناء الحماية طبقة طبقة">
             <Callout kind="good" title="طبقة 1 — السياسة (Policy)">
               <ul>
                 <li>سياسة USB مكتوبة وموقّعة. حظر افتراضي، استثناءات بطلب.</li>
@@ -231,6 +239,32 @@ sudo systemctl enable --now usbguard
               <li>POC إخطار للمدير الأمني للهدف لو شيء انفلت من السيطرة.</li>
               <li>تقرير ما بعد العملية: ماذا التُقط، كم نقر المستخدمون، ما الكشف الذي عمل، ما الذي فشل.</li>
             </ul>
+          </Section>
+
+          <Callout kind="warn" title="غلطات الـ junior في USB labs">
+            <ul>
+              <li>بيـ test الـ Pico على جهازه الشخصي بدون VM. الـ keystrokes ممكن تشغّل حاجة في background ما حسبهاش.</li>
+              <li>بينسى يحط delay كافي بين GUI r والـ STRING. النتيجة: الـ command بيتلخبط مع UI animation.</li>
+              <li>بيستخدم default VID/PID للـ Pico. الـ device control عند العميل بيلاقطه فوراً.</li>
+              <li>بيـ drop USBs قبل ما يتأكد من الـ ROE. لو الـ USB راح للجهاز الغلط، انت في مشكلة قانونية.</li>
+            </ul>
+          </Callout>
+
+          <Section title="الخلاصة الناشفة">
+            <p>
+              الـ USB attacks تقنية بسيطة: HID class trust + speed + delay. الـ defense ضدها مش معقد، بس محتاج discipline:
+            </p>
+            <ol>
+              <li>USBGuard / Device Installation Restrictions بـ VID + PID + Serial.</li>
+              <li>EDR rule على keystroke rate &gt; 300/sec أو HID جديد بعده PowerShell في 10 ثواني.</li>
+              <li>egress baseline — لو محطة فتحت اتصال خارجي بعد USB insert، تحقيق فوري.</li>
+              <li>physical lockdown في environments حساسة. PadJacks، epoxy، أو ببساطة موظف أمن.</li>
+            </ol>
+            <p>
+              مفيش حاجة من دول مكلّفة. كلها policy + config. اللي بيفصل الـ blue team الجاد عن غيره مش الـ tools — هو إنه عمل الـ config.
+            </p>
+            <p>اكتبها على كشكولك:</p>
+            <p>الـ USB attack محلول من 2014. لو لسه بيتكسرلك — أنت مش بتتهاجم، أنت بتسيب الباب مفتوح. خلاص.</p>
           </Section>
 
           <Section title="مراجع تطبيقية">

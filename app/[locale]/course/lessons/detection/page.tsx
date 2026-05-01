@@ -6,35 +6,43 @@ export default function Page() {
     <LessonShell slug="detection">
       <L
         ar={<>
-          <Section title="بنراقب إيه وليه؟">
-            <Analogy>الكاميرات في المحل مفيدة بس لو في حد بيتفرّج عليها. الـ logs نفس الكلام: ما تنفعش لو راحت تتكدّس على قرص ومحدش بيقراها. لازم توصل لنظام مركزي يحلّلها وينبّه لما حاجة تحصل.</Analogy>
+          <Section title="بنراقب ليه أصلاً؟ ومين بيتفرّج؟">
+            <Analogy>الكاميرات في المحل مفيدة لو في حد قاعد قدّامها. لو مفيش حد، يبقى دي مش كاميرات، دي ديكور. الـ logs نفس الكلام بالظبط — تتكدّس على قرص لحد ما القرص يمتلي، ومحدش يبصّ. لازم توصل لـ SIEM، وفي حد بيقرا، وفي rules بتشتغل، وفي playbooks بتتنفذ. غير كده، انت بتدفع فلوس على licenses عشان تحس إنك آمن.</Analogy>
+
+            <p>- بس يا حضرتك إحنا عندنا SIEM وعندنا EDR وعندنا كل حاجة!</p>
+
+            <p>تمام يا نجم. طب لو الـ adversary دخل ومحدش حسّ، يبقى انت بتراقب فعلاً؟ ولا انت بتتفرّج على dashboard لأنه شكله حلو؟</p>
           </Section>
           <Section title="هندسة الكشف — Detection Engineering">
-            <p>هرم Bianco للأدلة (Pyramid of Pain) — كل ما طلعنا فوق، كل ما وجعنا المهاجم أكتر:</p>
+            <p>هرم Bianco (Pyramid of Pain) — كل ما طلعنا فوق، كل ما وجعنا الـ adversary أكتر:</p>
             <ol>
-              <li>Hash values — المهاجم بيغيّرها في ثواني.</li>
-              <li>IP addresses — بيبدّلها بسهولة.</li>
-              <li>Domain names — أصعب شوية.</li>
-              <li>Network/Host artifacts.</li>
-              <li>Tools.</li>
-              <li><b>TTPs</b> — ده أصعب حاجة على المهاجم يغيّرها. هنا بنركّز كل مجهودنا.</li>
+              <li>Hash values — بيتغيّروا بضغطة زرار. مفيش وجع.</li>
+              <li>IP addresses — VPS جديد بـ 5 دولار. سهل.</li>
+              <li>Domain names — محتاج registrar وسمعة. بيوجع شوية.</li>
+              <li>Network/Host artifacts — بيوجع.</li>
+              <li>Tools — لو منعت Cobalt Strike beacon signature، الـ adversary لازم يكتب tool جديد.</li>
+              <li><b>TTPs</b> — أصعب حاجة يغيّرها. السلوك نفسه. هنا الكشف بيوجع. هنا بنركّز.</li>
             </ol>
+            <p>الـ junior بيكتب IoCs. الـ senior بيكتب behavioral rules.</p>
           </Section>
-          <Section title="مصادر السجلات الأساسية">
+          <Section title="مصادر الـ logs اللي مفيش غنى عنها">
             <TwoCol>
-              <Card title="على Linux">auditd، /var/log/auth.log، syslog، journald، eBPF (Falco / Tracee).</Card>
-              <Card title="على Windows">Security Event Log، Sysmon (الأهم)، PowerShell ScriptBlock Logging، AMSI.</Card>
-              <Card title="الشبكة">Zeek / Suricata / Snort، NetFlow، DNS query logs، TLS/JA3 fingerprints.</Card>
-              <Card title="السحابة">CloudTrail (AWS), Activity Log (Azure), Audit Logs (GCP)، VPC Flow Logs، GuardDuty.</Card>
+              <Card title="على Linux">auditd, /var/log/auth.log, syslog, journald, eBPF (Falco / Tracee).</Card>
+              <Card title="على Windows">Security Event Log, Sysmon (الأهم على الإطلاق), PowerShell ScriptBlock Logging, AMSI.</Card>
+              <Card title="الشبكة">Zeek / Suricata / Snort, NetFlow, DNS query logs, TLS/JA3 fingerprints.</Card>
+              <Card title="السحابة">CloudTrail (AWS), Activity Log (Azure), Audit Logs (GCP), VPC Flow Logs, GuardDuty.</Card>
             </TwoCol>
+            <Callout kind="warn" title="غلطات الـ junior">
+              بيشغّل Sysmon بـ default config. الـ default config بتسيب 70% من الأحداث المهمة. استخدم config بتاع SwiftOnSecurity أو Olaf Hartong — مكتوب من ناس بتشتغل في الـ field فعلاً.
+            </Callout>
           </Section>
           <Section title="SIEM — مركز التحليل">
-            <p>الـ SIEM يجمع كل السجلات في مكان واحد، يطبّق قواعد، و يرفع تنبيهات.</p>
+            <p>الـ SIEM بيجمع كل الـ logs، بيطبّق rules، وبيرفع alerts. ده الكلام النظري. الواقع إن 60% من الـ SIEM deployments عندنا في المنطقة بتشتغل بـ default rules ومحدش بيـ tune-هم. اللي بيحصل فعلياً: alert fatigue، الـ analyst بيقفل كل حاجة بـ "false positive"، والـ adversary بيعدّي.</p>
             <ul>
-              <li><b>المجاني/مفتوح</b>: Wazuh, ELK + Elastic Security, OpenSearch, Graylog, Security Onion.</li>
-              <li><b>التجاري</b>: Splunk, Microsoft Sentinel, Chronicle, QRadar, Sumo Logic.</li>
+              <li><b>مجاني/open source</b>: Wazuh, ELK + Elastic Security, OpenSearch, Graylog, Security Onion.</li>
+              <li><b>تجاري</b>: Splunk, Microsoft Sentinel, Chronicle, QRadar, Sumo Logic.</li>
             </ul>
-            <h3>قواعد كشف بصيغة Sigma (موحّدة)</h3>
+            <h3>قواعد كشف بـ Sigma (الـ format الموحّد)</h3>
             <Code lang="Sigma — Linux SSH brute force">{`title: SSH Multiple Failed Logins
 logsource: { product: linux, service: auth }
 detection:
@@ -57,8 +65,8 @@ level: critical`}</Code>
           <Section title="EDR / XDR على نقاط النهاية">
             <ul>
               <li>CrowdStrike Falcon, SentinelOne, Microsoft Defender for Endpoint, Wazuh agent + Sysmon.</li>
-              <li>يكشف: process injection, mimikatz, suspicious child processes (winword → powershell).</li>
-              <li>قاعدة الذهب: <b>كل تنبيه يجب أن يحوّل إلى playbook آلي عبر SOAR</b>.</li>
+              <li>بيكشف: process injection, mimikatz, suspicious child processes (winword -&gt; powershell).</li>
+              <li>القاعدة الذهبية: <b>كل alert لازم يكون عنده SOAR playbook بيشتغل عليه automatically</b>. لو الـ analyst هو اللي بيـ triage يدوي كل حاجة، انت بتشتري وقت الـ adversary.</li>
             </ul>
           </Section>
           <Section title="IDS / NDR على الشبكة">
@@ -70,26 +78,43 @@ level: critical`}</Code>
     NOTICE([$note=DNS::Long_Encoded_Query, $msg=fmt("possible DNS exfil: %s", query)]);
 }`}</Code>
           </Section>
-          <Section title="Honeypots و Honeytokens — أفخاخ تكشف المهاجم">
-            <Analogy>ضع محفظة فارغة ظاهرة في الواجهة. أي لص يلمسها ينكشف. هذه فلسفة الـ honeytokens: ملفات/مفاتيح مزيفة، إن استُخدمت أعطت تنبيهاً فورياً.</Analogy>
+          <Section title="Honeypots و Honeytokens — فخاخ بتفضح اللي بيلمس">
+            <Analogy>حطّ محفظة فاضية ظاهرة على الكونتر. أي لص بيلمسها بيكشف نفسه. ده الـ honeytoken بالظبط: ملف، مفتاح، حساب — مفيش حد شرعي محتاج يلمسهم. لو حد لمسهم، يبقى ده انت يا حبيبي.</Analogy>
             <ul>
-              <li>Canarytokens.org — مجاني، يولّد DNS / HTTP / DOC / AWS tokens.</li>
-              <li>سيرفر SSH وهمي بـ cowrie — يسجّل كل أمر يجرّبه المهاجم.</li>
-              <li>حساب AD اسمه svc_admin — أي محاولة دخول = إنذار.</li>
-              <li>ملف passwords.xlsx مزيف على file share.</li>
+              <li>Canarytokens.org — مجاني، بيولّد DNS / HTTP / DOC / AWS tokens في دقيقة.</li>
+              <li>SSH server وهمي بـ cowrie — بيسجّل كل command الـ adversary بيجرّبه. بتعرف الـ TTPs بتاعته قبل ما يدخل عندك أصلاً.</li>
+              <li>حساب AD اسمه svc_backup أو domain_admin_old — أي logon attempt = alert فوري. الـ adversary بيدوّر على الأسماء دي بالظبط.</li>
+              <li>ملف passwords.xlsx مزيّف على file share — مع canary token جواه. اللي يفتحه، انت شوفته.</li>
             </ul>
+            <Callout kind="info" title="ليه الـ honeytokens رخيصة وقوية؟">
+              ما عندهاش false positives تقريباً. مفيش حد شرعي بيلمسها. كل alert منها = شغل حقيقي. مفيش tool تاني بيدّيك signal-to-noise بالحلاوة دي.
+            </Callout>
           </Section>
           <Section title="UEBA — تحليل سلوك المستخدم">
-            <p>الـ UEBA يبني خط أساس لكل مستخدم. لو دخل admin عادةً من القاهرة الساعة 9 صباحاً، و فجأة ظهر من فيتنام الساعة 3 فجراً يحمّل 50 ميغا من SharePoint = إنذار حتى لو كانت كلمة المرور صحيحة.</p>
+            <p>الـ UEBA بيبني baseline لكل user. الـ admin اللي بيدخل عادةً من القاهرة الساعة 9 الصبح، فجأة ظاهر من فيتنام الساعة 3 الفجر بيحمّل 50MB من SharePoint؟ alert. حتى لو الـ password صح. حتى لو MFA عدّى. السلوك ده مش هو.</p>
+            <p>ده الفرق بين identity-based detection و password-based detection. الـ password ممكن يتسرق. السلوك أصعب يتقلّد.</p>
           </Section>
-          <Section title="Threat Hunting — الصيد الاستباقي">
-            <p>لا تنتظر التنبيه. ابحث عن آثار قد تكون فاتت الكشف الآلي:</p>
+          <Section title="Threat Hunting — اطلع دوّر بدل ما تستنّى">
+            <p>ما تستنّاش الـ alert. افترض إن في حد جوّه دلوقتي، ودوّر:</p>
             <ul>
-              <li><b>فرضية</b>: «لو دخل مهاجم بـ phishing، سيستخدم PowerShell encoded commands».</li>
-              <li><b>استعلام</b> في الـ SIEM عن powershell.exe -enc * آخر 30 يوماً.</li>
-              <li>حلّل النتائج، وثّق الـ false positives، و حوّل النتائج لقواعد Sigma دائمة.</li>
+              <li><b>الفرضية</b>: "لو الـ adversary دخل بـ phishing، أكيد هيستخدم PowerShell encoded commands".</li>
+              <li><b>الـ query</b> في SIEM عن powershell.exe -enc * آخر 30 يوم.</li>
+              <li>حلّل النتايج، وثّق الـ false positives، حوّل اللي بيظهر مرتين لـ Sigma rule دائم.</li>
             </ul>
-            <Callout kind="good" title="إطار MITRE D3FEND">خريطة كل تقنية هجوم تقابلها تقنية دفاع. مفيد لتغطية الفجوات.</Callout>
+            <Callout kind="good" title="MITRE D3FEND">
+              كل technique هجومية مقابلها technique دفاعية. ابصّ على الـ matrix وشوف انت مغطّي ايه ومش مغطّي ايه. الفجوات اللي هتلاقيها هي اللي الـ adversary هيدخل منها.
+            </Callout>
+          </Section>
+          <Section title="الخلاصة الناشفة">
+            <p>الـ detection مش tools. الـ tools موجودة عند الكل. الفرق:</p>
+            <ol>
+              <li>data نضيفة (Sysmon config صح، EDR على كل device، DNS logs بتتجمع).</li>
+              <li>rules مكتوبة على TTPs مش على hashes.</li>
+              <li>tuning أسبوعي عشان تقلّل الـ noise.</li>
+              <li>SOAR بيـ enrich كل alert automatically — IP reputation, user context, host context.</li>
+              <li>hunting أسبوعي بفرضية جديدة.</li>
+            </ol>
+            <p>غير كده، انت ما بتراقبش. انت بتدفع licenses بس.</p>
           </Section>
         </>}
         en={<>

@@ -7,18 +7,33 @@ export default function Page() {
       <L
         ar={
           <>
-            <Section title="مقدمة — الويب ليس OWASP Top 10">
+            <Section title="مقدمة — الويب مش OWASP Top 10">
               <Analogy>
-                المبتدئ بيفكر في الويب كأنه لستة ثغرات (SQLi، XSS، CSRF). المحترف بيشوفه كـ <b>طبقات بتتفاعل بطرق متوقعش</b>:
+                انت بتفكر في الويب إزاي؟
+                لستة ثغرات (SQLi، XSS، CSRF) بتحفظها وبتجرّبها على كل endpoint؟
+                ده تفكير على ادهم. كده انت في 2014.
+                المحترف بيشوف الويب كـ <b>طبقات بتتفاعل بطرق متوقّعهاش حد</b>:
                 Browser ↔ CDN ↔ WAF ↔ Load Balancer ↔ Reverse Proxy ↔ App ↔ Cache ↔ Queue ↔ DB ↔ Microservices ↔ S3.
-                الـ 0day الحقيقي مش في طبقة واحدة — هو في <b>الخلاف بين طبقتين</b> على إزاي يفهموا نفس الـ byte. اللي مش بياخد باله من الفجوة دي مش هيلاقي حاجة محترمة.
+                الـ 0day الحقيقي مش في طبقة واحدة. هو في <b>الخلاف بين طبقتين</b> على إزاي يفهموا نفس الـ byte.
+                اللي مش بياخد باله من الفجوة دي، مش هيلاقي حاجة محترمة. هيقعد يضرب بايلودات على parameters زي اللي بيرمي صنّارة في حمّام السباحة.
               </Analogy>
               <Callout kind="danger" title="قانوني — نطاق pentest بس">
-                كل اللي هنا بيتطبق على أهداف معاها تفويض مكتوب صريح، أو bug bounty جوه scope معلن، أو في الـ lab بتاعك. خارج ده = جريمة. مفيش منطقة رمادية، خليك واضح مع نفسك.
+                كل اللي هنا بيتطبّق على أهداف معاها تفويض مكتوب صريح، أو bug bounty جوه scope معلن، أو في الـ lab بتاعك. خارج ده = جريمة. مفيش منطقة رمادية، خلّيك واضح مع نفسك.
               </Callout>
               <p className="opacity-80">
                 الدرس ده بيفترض إنك متمكن من OWASP Top 10 خلاص. هنا بنروح للسكة اللي orange.tw وsnyff وalbinowax وJames Kettle ساكنين فيها: request smuggling مركّب، prototype pollution → RCE، deserialization gadget chains، SSRF عن طريق cloud metadata، race conditions بـ single-packet، OAuth abuse، وWAF bypass عن طريق parser differential.
               </p>
+              <p className="opacity-80">
+                مثال واقعي: في 2021، Orange Tsai كسر ProxyShell على Exchange بسلسلة من 3 ثغرات — كل واحدة لوحدها &quot;مش مهمة&quot;، مع بعض = pre-auth RCE على ربع الإنترنت. ده شغل اللي بيفهم الطبقات، مش اللي بيحفظ payloads.
+              </p>
+              <Callout kind="danger" title="غلطات الـ junior في web red team">
+                <ul>
+                  <li>بيرمي Nuclei بكل الـ templates على الهدف من غير ما يفهم — الـ WAF بيشتعل، الـ blue team بيتنبّه، والعملية اتحرقت في 5 دقائق.</li>
+                  <li>بيلاقي SSRF صغيّرة ويبلّغها — كان ممكن يستغلّها للوصول للـ IMDS ويحوّلها cloud takeover. Severity من &quot;low&quot; لـ &quot;critical&quot; قرار صياغة.</li>
+                  <li>بيستخدم burpcollaborator.net في عمليات حساسة — اسم النطاق ده محظور في معظم بيئات الـ enterprise. استضِف interactsh عندك.</li>
+                  <li>بيلاقي 1 ثغرة ويوقف — variant analysis: نفس النمط هيكون في 5 endpoints تانية على الأقل.</li>
+                </ul>
+              </Callout>
             </Section>
 
             <Section title="منهجية Red Team للويب — قبل الاستغلال">
@@ -55,6 +70,10 @@ subzy run --targets subs.txt`}</Code>
               <Analogy>
                 تخيل إن الـ CDN بيقرا &quot;ده طلب واحد طوله 100 byte&quot;، والـ origin بيقرا &quot;دول طلبين&quot;. الـ bytes الزيادة عند الـ CDN بتبقى
                 <b> بداية طلب الضحية اللي جاي</b>. إنت بتكتب جزء من طلب شخص تاني — بتختطف جلسات، بتسرق cookies، بتعدّي WAF. مش هزار.
+
+                - طب يعني الـ CDNs الكبيرة مش بتظبط ده يا حضرتك؟؟
+
+                كنت مستنيك تسأل السؤال ده يا مستجد. بنسبة 99% بيظبطوا الحاجات اللي محدش لاقي فيها bug من 5 سنين. اللي مش بيظبطوه هو اللي albinowax بينشره كل سنة في DEF CON. والـ origin اللي ورا الـ CDN؟ ده عالم تاني خالص.
               </Analogy>
               <TwoCol>
                 <Card title="CL.TE الكلاسيكي" color="red">
@@ -242,7 +261,7 @@ jwt_tool -t https://target/api -rh "Authorization: Bearer JWT" -M at
 # ابحث عن Confused Deputy: JWT signed by IdP A مقبول في app B`}</Code>
             </Section>
 
-            <Section title="GraphQL — سطح هجوم منسي">
+            <Section title="GraphQL — جبهة محدش فاكرها">
               <Code lang="graphql">{`# 1) introspection غالباً مفتوح حتى في prod
 curl -X POST https://target/graphql -H 'Content-Type: application/json' \\
   -d '{"query":"{__schema{types{name fields{name}}}}"}'
@@ -339,19 +358,23 @@ curl 'https://target/render?name={{config.__class__.__init__.__globals__["os"].p
               </ul>
             </Section>
 
-            <Section title="الدفاع — مرجع سريع">
-              <Callout kind="good" title="من شيء واحد فقط لكل تقنية">
+            <Section title="الحماية — مرجع سريع">
+              <Callout kind="good" title="حاجة واحدة لكل تقنية">
                 <ul className="list-disc pe-6 space-y-1">
                   <li><b>Smuggling</b>: HTTP/2 end-to-end، disable downgrade على CDN، reject ambiguous CL/TE.</li>
                   <li><b>SSRF</b>: قائمة بيضاء صريحة للـ hosts، حظر IP private + link-local + IMDS، IMDSv2 إجباري.</li>
                   <li><b>Deserialization</b>: لا تـ deserialize untrusted. لو لازم — JSON فقط مع schema validation.</li>
                   <li><b>Prototype pollution</b>: <code>Object.freeze(Object.prototype)</code> + libraries حديثة.</li>
                   <li><b>Race</b>: idempotency keys، DB row locks، single-flight على العمليات الحرجة.</li>
-                  <li><b>Cache</b>: cache-key يشمل كل الـ input headers، لا تخزن responses بـ Vary غامض.</li>
+                  <li><b>Cache</b>: cache-key يشمل كل الـ input headers، لا تخزّن responses بـ Vary غامض.</li>
                   <li><b>OAuth</b>: PKCE إجباري، state إجباري، redirect_uri exact match.</li>
                   <li><b>GraphQL</b>: عطّل introspection في prod، depth/complexity limits، per-field auth.</li>
                   <li><b>WAF</b>: layered defense — WAF + input validation داخل التطبيق + output encoding.</li>
                 </ul>
+              </Callout>
+              <Callout kind="info" title="الخلاصة الناشفة">
+                المحترف في الويب مش اللي عنده payloads أكتر. اللي عنده فهم أعمق للـ stack. اللي بيقرا RFCs. اللي بيتفرّج على الفرق بين parsers ويفكّر &quot;إيه اللي ممكن يتعمل في الفجوة دي؟&quot;. ده اللي بيلاقي الـ 0days. الباقي بيستخدمها.
+                اكتبها على كشكولك: اللعبة في الفجوة بين طبقتين، مش في طبقة واحدة. اوعى تنسى.
               </Callout>
             </Section>
           </>

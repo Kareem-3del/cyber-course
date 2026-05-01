@@ -6,25 +6,47 @@ export default function Page() {
     <LessonShell slug="dns-covert-channels">
       <L
         ar={<>
-          <Section title="لماذا القنوات السرية تخيف الـ Blue Team">
-            <p>Firewall ينظر للبروتوكول و الوجهة. EDR ينظر للعمليات. لكن القناة السرية <b>تختبئ داخل بروتوكول مسموح</b> — DNS, HTTPS, ICMP — و تنقل بيانات مع كل packet عادي. النتيجة: تسريب gigabytes أمام الحارس دون أن يرى شيئاً.</p>
-            <Analogy>مثل تهريب رسالة في رحلة ركّاب عادية: لا أحد يفتش الجميع، فالحرف الأول من كل صف على ورقة الصعود يهجّى رسالة كاملة. الـ traffic شرعي 100% — لكن المعلومة سرية تماماً.</Analogy>
-            <Callout kind="danger" title="تحذير قانوني">
-              تشغيل DNS tunnel على شبكة لا تملك إذناً صريحاً عليها = جريمة. هذا الدرس للاختبار في lab خاص، أو ضمن نطاق Pentest مكتوب.
+          <Section title="ليه القنوات السرية بتخيف الـ Blue Team؟">
+            <p>سؤال بسيط: إيه البروتوكول اللي مفيش firewall في الدنيا يقدر يقفله؟</p>
+            <p>HTTPS؟ ممكن — مع TLS inspection.</p>
+            <p>SMTP؟ ممكن، عند الـ gateway.</p>
+            <p>DNS؟</p>
+            <p>لأ. لو قفلت DNS، الإنترنت بظابطه وقع عند الموظفين. مفيش resolution، مفيش office.com، مفيش teams، مفيش حاجة. والأخطر: مفيش أي مدير IT شجاع كفاية يقفله &quot;ليوم واحد&quot; عشان debug. ده بقا قانون كوني.</p>
+            <p>والـ APTs عارفة ده.</p>
+            <Analogy>زي تهريب رسالة في رحلة ركّاب عادية. ماحدش بيفتّش كل المسافرين. بس الحرف الأول من كل اسم في قائمة الركاب بيهجّى رسالة كاملة. الـ traffic شرعي 100%. الرسالة سرية 100%. والحارس واقف عمال يبص في وشهم وما يتفرّجش على القائمة.</Analogy>
+            <Callout kind="danger" title="بُص قبل ما تكمل">
+              تشغيل DNS tunnel على شبكة مش بتاعتك = جناية. الدرس ده للـ lab الخاص، أو في نطاق pentest مكتوب وموقّع. مفيش &quot;بس عشان أجرب&quot;.
+            </Callout>
+            <Callout kind="warn" title="غلطات الـ junior">
+              <ul>
+                <li>بيفكّر إن &quot;DNS مش مهم&quot; ومش بيلوّجه أصلاً، فلما الكارثة تيجي يكتشف إن مفيش عنده visibility.</li>
+                <li>بيشغّل iodine على tunnel وبيفكّر إنه &quot;متخفّي&quot; — والـ subdomain طوله 60 حرف عشوائي. أي SOC شاطر بيلاقيه في 5 دقايق.</li>
+                <li>بيعمل DGA scoring على scoring واحد بس (entropy)، فالمهاجم اللي بيستخدم dictionary words بيعدّي.</li>
+                <li>بيعتمد على blocklist للدومينات. الـ DGA بيغيّر كل يوم. الـ blocklist لسه من السنة اللي فاتت.</li>
+              </ul>
             </Callout>
           </Section>
 
-          <Section title="DNS — لماذا خادم سحري للمهاجم">
+          <Section title="قصة من الواقع — DNSpionage و OilRig">
+            <p>2018-2019. مجموعة OilRig (إيرانية مدعومة) شغّلت حملة DNSpionage ضد جهات حكومية في لبنان والإمارات. الـ malware اسمه DNSpionage بيتواصل مع C2 عبر DNS بس. كل أمر بييجي في TXT record. كل بيانات المسروقة بتطلع في subdomain.</p>
+            <p>قدّ إيه قعدوا جوه قبل ما حد ياخد باله؟</p>
+            <p>أشهر. كل firewall كان شايف DNS عادي. كل proxy كان شايف الـ HTTPS بتاع البريد بيشتغل. ماحدش كان بيبص في DNS query strings.</p>
+            <p>الـ Blue Team لما اكتشفوا، اتضح إن الـ traffic كان بـ MB كل يوم بيخرج من DNS. ولا واحد لاحظ. الـ visibility كانت مفيش.</p>
+            <p>OPM hack في 2015 (الصينيين سرقوا بيانات 22 مليون موظف فيدرالي) — جزء كبير من الـ exfil كان عبر DNS برضه. سنة كاملة قبل ما يحسّوا.</p>
+            <p>الـ DNS هو السكة المفضّلة للـ APT لأنها ببساطة بتشتغل.</p>
+          </Section>
+
+          <Section title="DNS — السيرفر السحري للمهاجم">
             <ul>
-              <li><b>مسموح دائماً.</b> أي جهاز يحتاجه. حظره يكسر الإنترنت.</li>
-              <li><b>Recursive من خلال DNS resolver داخلي.</b> حتى لو حُظر الخروج المباشر، الـ resolver يفعل ذلك بالنيابة عنك.</li>
-              <li><b>كثيف جداً.</b> ضوضاء حقيقية تخفي ضوضاء خبيثة.</li>
-              <li><b>سجلات نادراً ما تُحلّل بعمق.</b> أكثر فرق Blue Team تجمع NetFlow و proxy logs لكن لا تنظر داخل DNS queries.</li>
+              <li><b>مسموح دايماً.</b> أي جهاز محتاجه. تقفله = تكسر الإنترنت.</li>
+              <li><b>Recursive عبر resolver داخلي.</b> حتى لو قفلت الخروج المباشر، الـ resolver بيعمل الشغل بالنيابة عنك.</li>
+              <li><b>ضوضاء طبيعي عالي.</b> الضوضاء الحقيقية بتخبّي الضوضاء الخبيثة.</li>
+              <li><b>الـ logs نادراً ما حد بيغوص فيها.</b> أغلب الـ Blue Teams بتجمع NetFlow و proxy logs، بس DNS queries محدش بيبص جواها.</li>
             </ul>
           </Section>
 
           <Section title="ميكانيكا DNS Tunneling">
-            <p>المهاجم يملك authoritative DNS لـ <span className="eng">evil.com</span>. الجهاز المخترق يرسل بيانات في <b>اسم النطاق الفرعي</b>:</p>
+            <p>المهاجم عنده authoritative DNS لـ <span className="eng">evil.com</span>. الجهاز المخترق بيبعت الداتا في <b>الـ subdomain</b>:</p>
             <Code lang="text">{`# Exfil — البيانات → subdomain encoded
 ZGF0YS10by1leGZpbA.evil.com
 [base32-data].evil.com
@@ -146,7 +168,7 @@ cat dns.log.gz | zcat | zeek-cut id.orig_h query | \\
   awk '$2 > 50 {count[$1]++} END {for (i in count) if (count[i] > 100) print i, count[i]}'`}</Code>
           </Section>
 
-          <Section title="الدفاع — بناء مظلة">
+          <Section title="الحماية — بناء المظلة">
             <ol>
               <li><b>DNS مركزي.</b> لا تسمح للـ endpoints بـ DNS مباشر. كل شيء عبر resolver داخلي يسجّل بالكامل.</li>
               <li><b>DNS Firewall (RPZ)</b> — حظر nationally bad TLDs و categories معروفة سيئة.</li>
@@ -168,8 +190,12 @@ cat dns.log.gz | zcat | zeek-cut id.orig_h query | \\
               <li><b>تحليل</b>: Wireshark + Zeek + RITA على الـ pcap.</li>
               <li><b>قياس</b>: قارن DNS query rate قبل و أثناء الـ tunnel — هذا يعلّم Blue Team.</li>
             </ul>
-            <Callout kind="good" title="الخلاصة">
-              لا يوجد دفاع واحد ضد القنوات السرية. الفلسفة الصحيحة: <b>visibility كاملة على كل egress</b>، baseline لكل host، تنبيه على الانحرافات. عند هذا المستوى، DNS tunnel يصبح ضوضاء فوق ضوضاء — و الضوضاء فوق الضوضاء تظهر.
+            <Callout kind="good" title="الخلاصة الناشفة">
+              <p>مفيش دفاع واحد بيقفل القنوات السرية.</p>
+              <p>الفلسفة الصحيحة: <b>visibility كاملة على كل egress</b>، baseline لكل host، تنبيه على أي انحراف.</p>
+              <p>لو ما عندكش DNS logging مركزي، أنت أعمى. مش &quot;عندك ثغرة&quot; — أعمى.</p>
+              <p>لو DNS بيخرج من endpoints مباشرة لـ 8.8.8.8، أنت بتبيع الـ visibility بإيدك.</p>
+              <p>الـ DNS tunnel بيبقى ضوضاء فوق ضوضاء. والضوضاء فوق الضوضاء بتبان — بس بس لو في حد بيسمع.</p>
             </Callout>
           </Section>
         </>}

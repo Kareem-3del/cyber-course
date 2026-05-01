@@ -7,10 +7,27 @@ export default function Page() {
       <L
         ar={<>
           <Section title="OWASP Top 10 — خريطة ثغرات الويب">
-            <p>أكتر من 90% من اختراقات الويب بترجع للعائلات دي. هنفصّل كل واحدة فيهم: <b>بتُستغل إزاي، بتتمسك إزاي، بتتمنع إزاي</b>. متحفظش الـ payloads — افهم الفلسفة.</p>
+            <p>إنت بتختبر تطبيق ويب. تبدأ منين؟</p>
+            <p>تجرّب كل payload في PayloadsAllTheThings؟</p>
+            <p>هتقعد سنة. وهتلاقي حاجة بالصدفة، لو ربنا كرّم.</p>
+            <Analogy>
+              90% من اختراقات الويب بترجع لـ 10 عائلات بس. مش 1000.
+              لو حفظت العائلات دي بفلسفتها — بتشتغل ازاي، بتتلقط ازاي، بتتقفل ازاي — هتلاقي بقية الـ payloads بنفسك.
+              متحفظش payloads. افهم ليه الـ payload شغّال أصلاً.
+            </Analogy>
+            <Callout kind="info" title="القصة الكلاسيكية: TalkTalk 2015">
+              SQL injection بسيطة على page عمرها 10 سنين. سرقت بيانات 4 مليون عميل، وغرّمت الشركة 400 ألف جنيه إسترليني.
+              الـ payload؟ <code>{`' OR 1=1 --`}</code>. هو هو من 1998.
+              يعني فيه ثغرات عمرها 25 سنة لسه بتاكل شركات في 2024.
+              ليه؟ لأن "Prepared Statements" كلام بنقوله، مش بنعمله.
+            </Callout>
           </Section>
           <Section id="sqli" title="1. SQL Injection — حقن قواعد البيانات">
-            <Analogy>تخيل إنك بتقول للجرسون: &quot;هاتلي طبق اسمه <i>كباب</i>&quot;. يجيبه. بس لو قلتله: &quot;<i>كباب، وكمان افتح الخزنة</i>&quot;، والجرسون ده غبي بينفذ كل اللي بتقوله حرفياً، هتلاقي الكباب والفلوس على الترابيزة. ده بالظبط اللي الـ SQLi بيعمله.</Analogy>
+            <Analogy>تخيل إنك بتقول للجرسون: &quot;هاتلي طبق اسمه <i>كباب</i>&quot;. يجيبه. بس لو قلتله: &quot;<i>كباب، وكمان افتح الخزنة</i>&quot;، والجرسون ده غبي بينفذ كل اللي بتقوله حرفياً، هتلاقي الكباب والفلوس على الترابيزة.
+
+            - طب يعني الـ DB غبية كده يا حضرتك؟؟
+
+            ها ها ها يا مستجد.. الـ DB مش غبية، الـ developer هو اللي مش فاصل بين "بيانات" و"أوامر". الـ DB بتنفذ اللي يوصلها. وأنت بتبعتلها string فيها أمر — هتعمل ايه يعني؟</Analogy>
             <h3>الكود الضعيف</h3>
             <Code lang="PHP — vulnerable">{`$id = $_GET['id'];
 $q  = "SELECT * FROM users WHERE id = $id";
@@ -34,9 +51,9 @@ $q  = "SELECT * FROM users WHERE id = $id";
                 { p: "sqlmap -u 'https://target.gov/p?id=1' -D appdb -T users --dump" },
               ]} />
             </Step>
-            <Callout kind="good" title="الدفاع — اللي بيشتغل فعلاً">
+            <Callout kind="good" title="اللي بيشتغل فعلاً">
               <ol>
-                <li><b>Prepared Statements</b> دايماً — مفيش concatenation خالص. ولا مرة.</li>
+                <li><b>Prepared Statements</b> دايماً — مفيش concatenation خالص. ولا مرة. اوعى.</li>
                 <li>ORM محترم بـ parameterized queries.</li>
                 <li>صلاحيات قاعدة البيانات محدودة (least privilege) — حساب الويب مش لازم يكون root.</li>
                 <li>WAF + قواعد Sigma بتمسك بصمات sqlmap من بدري.</li>
@@ -66,7 +83,7 @@ javascript:alert(document.domain)
     }
   });
 })();`}</Code>
-            <Callout kind="good" title="الدفاع">Output encoding حسب الـ context (HTML غير JS غير URL) + CSP صارم (script-src 'self') + HttpOnly + Secure + SameSite على الكوكيز. CSP لوحده بيقفل 80% من اللعبة.</Callout>
+            <Callout kind="good" title="الحماية">Output encoding حسب الـ context (HTML غير JS غير URL) + CSP صارم (script-src 'self') + HttpOnly + Secure + SameSite على الكوكيز. CSP لوحده بيقفل 80% من اللعبة.</Callout>
           </Section>
           <Section id="ssrf" title="3. SSRF — Server-Side Request Forgery">
 <Analogy>إنت بتطلب من السيرفر إنه يفتحلك لينك بدالك. لو ما تأكدش من اللينك، تخليه يفتح عناوين <b>داخلية</b> إنت مش هتقدر توصلها بنفسك — زي localhost أو الـ cloud metadata. السيرفر بقى بوّاب لطلباتك.</Analogy>
@@ -78,7 +95,7 @@ POST /api/import-image  body: {"url":"http://example.com/x.png"}
 {"url":"http://169.254.169.254/latest/meta-data/iam/security-credentials/web-role"}
 
 # النتيجة: مفاتيح AWS مؤقتة كاملة!`}</Code>
-            <Callout kind="good" title="الدفاع">
+            <Callout kind="good" title="الحماية">
               <ul>
                 <li>فرض IMDSv2 دايماً (محتاج PUT token). IMDSv1 خرم مفتوح.</li>
                 <li>Egress allow-list من السيرفر — مش كل الدنيا مفتوحة على بعضها.</li>
@@ -106,12 +123,12 @@ hashcat -m 16500 jwt.txt rockyou.txt
             <p>تغيّر رقم واحد في الـ URL فتلاقي بيانات شخص تاني قدامك. أبسط ثغرة في الويب وأكترها انتشاراً.</p>
             <Code lang="HTTP">{`GET /api/invoices/1042  ← فاتورتك
 GET /api/invoices/1043  ← فاتورة شخص آخر! (لا يوجد فحص ملكية)`}</Code>
-            <Callout kind="good" title="الدفاع">في كل request اسأل سؤال واحد: &quot;هل المستخدم الحالي يملك الـ resource ده فعلاً؟&quot;. ولو الإجابة لأ، ارفض. واستخدم UUIDv4 بدل أرقام تسلسلية — مش الأمن لكن بيصعّب التخمين.</Callout>
+            <Callout kind="good" title="الحماية">في كل request اسأل سؤال واحد: &quot;هل المستخدم الحالي يملك الـ resource ده فعلاً؟&quot;. ولو الإجابة لأ، ارفض. واستخدم UUIDv4 بدل أرقام تسلسلية — مش الأمن لكن بيصعّب التخمين.</Callout>
           </Section>
           <Section id="upload" title="6. File Upload + RCE">
             <p>ترفع ملف .php أو .jsp متخفّي (shell.php.jpg) في مجلد بينفذ كود = اختراق كامل للسيرفر. قصة قديمة لسه شغالة.</p>
             <Code lang="PHP webshell minimal">{`<?php system($_GET['c']); ?>`}</Code>
-            <Callout kind="good" title="الدفاع">اتأكد من الـ Content-Type + التوقيع الفعلي للملف (magic bytes) + خزّن خارج مسار الويب + قدّم الملفات عن طريق CDN بس. مش extension validation لوحده — ده بياكلوه بسكوت.</Callout>
+            <Callout kind="good" title="الحماية">اتأكد من الـ Content-Type + التوقيع الفعلي للملف (magic bytes) + خزّن خارج مسار الويب + قدّم الملفات عن طريق CDN بس. مش extension validation لوحده — ده بياكلوه بسكوت.</Callout>
           </Section>
           <Section id="deser" title="7. Deserialization & Template Injection">
             <p>الفئة دي هي الأخطر على الإطلاق: تنفيذ كود مباشر لما الـ payload المصنوع يوصل لـ unserialize أو pickle.loads أو Java readObject، أو لمحرك قوالب بيقبل تعبيرات (Jinja2, Twig, Freemarker). لو مسكت واحدة منها = RCE فوري.</p>
@@ -124,6 +141,28 @@ GET /api/invoices/1043  ← فاتورة شخص آخر! (لا يوجد فحص م
               <li><b>Caido</b> — خفيف وحديث، شغل لطيف.</li>
               <li><b>sqlmap, wpscan, ffuf, gobuster, dalfox, kxss, gau, waybackurls</b>.</li>
             </ul>
+          </Section>
+
+          <Section title="غلطات الـ junior في اختبار الويب">
+            <Callout kind="danger" title="اللي بيحصل لما الـ junior يبدأ">
+              <ul>
+                <li><b>يبتدي بـ sqlmap على كل parameter</b> — يقطع الـ DB في 5 دقايق، الـ ops تتعبه يطلع برّه. الـ stealth أهم من السرعة.</li>
+                <li><b>يفرح بـ XSS reflected</b> — يكتبها Critical في التقرير. يا نجم، الـ XSS من غير context = noise. اللي مهم: stored XSS في admin panel، ولا session theft فعلية.</li>
+                <li><b>يجرّب payloads عمياني</b> — بدل ما يفهم الـ stack. لو الـ backend Node، ما تجرّبش PHP payloads. لو Python، ما تجرّبش .NET deserialization.</li>
+                <li><b>ينسى الـ business logic</b> — الـ IDOR والـ price tampering والـ race conditions. أكبر breaches اتعملت من business logic، مش من sqlmap.</li>
+                <li><b>ما يقراش الـ JS</b> — كل API endpoints، كل secrets، كل feature flags جوه bundle.js. لو ما قريتوش، إنت بتلعب على نص الخريطة.</li>
+              </ul>
+            </Callout>
+          </Section>
+
+          <Section title="الخلاصة الناشفة">
+            <p>الويب مش 1000 ثغرة — الويب 10 عائلات.</p>
+            <p>الـ Prepared Statements بتقفل SQLi.</p>
+            <p>الـ CSP الصارم بيقفل XSS.</p>
+            <p>الـ ownership check في كل request بيقفل IDOR.</p>
+            <p>كله معروف من 20 سنة. السؤال: ليه لسه بيحصل؟</p>
+            <p>لأن الـ engineers بيكتبوا code بسرعة، والـ security بيكتبوا تقارير بسرعة، ومحدش بيقعد يفهم الـ "ليه" من جذره.</p>
+            <p>اكتبها على ظهر إيدك: الـ payload مش هو اللعبة — الـ "ليه الـ payload شغّال" هو اللعبة.</p>
           </Section>
         </>}
         en={<>

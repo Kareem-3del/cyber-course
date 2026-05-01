@@ -7,10 +7,28 @@ export default function Page() {
       <L
         ar={<>
           <Section title="Angular مختلف من جذره">
-            <p>Angular بيفرض <b>contextual sanitization</b>: أي قيمة بتدخل الـ DOM، Angular بيحدد ليها السياق (HTML, URL, Style, Script, Resource URL) وبيعقمها على الأساس ده. الكلام ده أقوى من React بشكل افتراضي. بس Angular في نفس الوقت بيديك أبواب جانبية للتجاوز: <span className="eng">bypassSecurityTrust*</span>، <span className="eng">[innerHTML]</span>، <span className="eng">[srcdoc]</span>، JIT eval، والـ SSR في Angular Universal.</p>
-            <Analogy>قفل ذكي بيميز المفاتيح المسجلة عنده، وبيرفض أي مفتاح تاني. بس صاحب البيت بإيده يقدر يحط علامة "trust" على أي مفتاح. اليوم اللي يحط فيه العلامة على مفتاح غريب، الحماية انتهت.</Analogy>
+            <p>Angular مش زي React في الموضوع ده.</p>
+            <p>Angular بيفرض <b>contextual sanitization</b> by default — كل قيمة بتدخل الـ DOM، Angular بيعرف هي رايحة فين (HTML, URL, Style, Script, Resource URL) وبيعقمها على الأساس ده.</p>
+            <p>طب فين الخرّامة؟</p>
+            <p>في الأبواب الجانبية اللي Angular نفسه فاتحها: <span className="eng">bypassSecurityTrust*</span>.</p>
+            <Analogy>
+              قفل ذكي بيميّز المفاتيح المسجّلة عنده، وبيرفض أي مفتاح تاني.
+              بس صاحب البيت بإيده يقدر يحط علامة "trust" على أي مفتاح.
+              اليوم اللي يحط فيه العلامة على مفتاح غريب، الحماية انتهت.
+              <br/><br/>
+              - طب يا حضرتك، Angular أمن من React.. إيه اللي يخليني أقلق؟
+              <br/><br/>
+              يا مستجد. Angular فعلاً بيدّيك حماية افتراضية أحسن. بس بيدّيك في نفس الوقت باب جانبي اسمه واضح: <span className="eng">bypassSecurityTrustHtml</span>. والمبرمجين بيستخدموه عشان "الـ warning يسكت". اليوم اللي حد كتب السطر ده من غير ما يفهمه — ده اليوم اللي الحماية فيه راحت.
+            </Analogy>
+            <Callout kind="info" title="بُص بقى — bypassSecurityTrust في كل codebase تقريباً">
+              لو تـ grep على أي codebase Angular كبير، هتلاقي 20-50 استخدام لـ <span className="eng">bypassSecurityTrustHtml</span>.
+              80% منهم في غير محله.
+              "كنا محتاجين نـ render markdown" — تمام، بس بعد DOMPurify.
+              "كنا محتاجين iframe من YouTube" — يبقى استخدم <span className="eng">bypassSecurityTrustResourceUrl</span> على whitelist محددة.
+              المبرمج بيكتبها مرة، بتنجح، بينساها. وبعد سنة الـ XSS بيدخل من نفس السطر.
+            </Callout>
             <Callout kind="danger" title="تذكير قانوني">
-              الأمثلة دي لتعليم XSS والـ bypasses جوه تطبيقاتك إنت. متطبقهاش على تطبيق مش بتاعك.
+              الأمثلة دي لتعليم XSS والـ bypasses جوه تطبيقاتك إنت. ما تطبّقهاش على تطبيق مش بتاعك.
             </Callout>
           </Section>
 
@@ -297,6 +315,28 @@ export class AuthInterceptor implements HttpInterceptor {
             <Callout kind="info" title="أدوات">
               <span className="eng">@angular-eslint</span>, <span className="eng">eslint-plugin-security</span>, Snyk, Semgrep <span className="eng">p/angular</span>, Sonarqube مع Angular ruleset.
             </Callout>
+          </Section>
+
+          <Section title="غلطات الـ junior في Angular">
+            <Callout kind="danger" title="الأخطاء اللي بتفتح الباب">
+              <ul>
+                <li><b>bypassSecurityTrustHtml لكل markdown</b> — من غير DOMPurify. الـ XSS بيدخل بالباب اللي إنت فاتحه.</li>
+                <li><b>JIT في production</b> — أبطأ، أكبر، وفيه class من template injection ما بتطلعش في AOT. اشتغل AOT دايماً.</li>
+                <li><b>HttpClient من غير CSRF token</b> — Angular بيدّيك HttpClientXsrfModule مجاناً. استخدمه.</li>
+                <li><b>Tokens في localStorage</b> — Angular مش بيفرق عن React هنا. HttpOnly cookies + SameSite.</li>
+                <li><b>Route guards بس على parent route</b> — الـ child routes مفتوحة. CanActivateChild ضرورة.</li>
+                <li><b>TransferState بـ PII</b> — الـ SSR بيـ embed البيانات في HTML للـ hydration. أي حد بيـ view source يلاقيها.</li>
+                <li><b>navigateByUrl بـ user input</b> — open redirect مفتوح. لازم whitelist.</li>
+              </ul>
+            </Callout>
+          </Section>
+
+          <Section title="الخلاصة الناشفة">
+            <p>Angular بيدّيك أمان افتراضي أحسن من React. وفي نفس الوقت بيدّيك أبواب جانبية اسمها واضح: <span className="eng">bypassSecurityTrust*</span>.</p>
+            <p>الفرق بين Angular آمن وApp مكشوف = إنت فاهم ليه استخدمت كل bypass في الكود، ولا حطّيتها عشان TypeScript يسكت.</p>
+            <p>اقرا الـ <span className="eng">bypassSecurityTrust*</span> في codebase بتاعك. لو فيه واحد ما عندوش سبب مكتوب جنبه، يبقى دي ثغرتك القادمة.</p>
+            <p>اكتبها على ظهر إيدك:</p>
+            <p><b>كل <span className="eng">bypassSecurityTrust*</span> من غير تعليق بيشرح ليه = thread review قادم. اوعى تنسى.</b></p>
           </Section>
         </>}
         en={<>

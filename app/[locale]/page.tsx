@@ -39,7 +39,7 @@ export default function Landing() {
               </h1>
               <p className="text-lg leading-relaxed max-w-xl mb-8">
                 <T
-                  ar="منهج عملياتي متكامل يأخذك من بناء أول مختبر منزلي إلى تكتيكات الدول والبنى التحتية الحرجة. مسار واحد. أربع مراحل. سبعون درساً."
+                  ar="بُص. انت فاكر إنك هتتعلم سيبراني إزاي؟ من فيديو على يوتيوب طوله 10 ساعات؟ من بوت كامب بـ 13 ألف دولار؟ من شهادة بتتجدد كل سنة؟ كله عك. ده مسار شغل. من أول VM في أوضتك، لحد ما تبقى فاهم إزاي دولة بتطبخ حملة على بنية تحتية حساسة. سكة واحدة. أربع مراحل. سبعين درس. خلاص."
                   en="A complete operational curriculum from your first home lab to nation-state tradecraft and critical infrastructure. One path. Four tiers. Seventy lessons."
                 />
               </p>
@@ -120,7 +120,7 @@ export default function Landing() {
               </div>
               <div className="text-[13px] mt-3 text-black/60 leading-snug">
                 <T
-                  ar="بوت كامب SANS أو OSCP أو ما يماثلهما — مع رسوم سنوية وكورسات ربعية."
+                  ar="SANS، OSCP، وكل اللي على شاكلتهم. رسوم سنوية. مقاعد ربع سنوية. paywall على كل تفصيلة. ادفع 13 ألف دولار وكل حاجة هتتحل؟ ده بزنس يا نجم. مش تعليم."
                   en="A SANS bootcamp, OSCP track, or equivalent — paywalls, annual fees, quarterly seats."
                 />
               </div>
@@ -149,7 +149,7 @@ export default function Landing() {
               </div>
               <div className="text-[13px] mt-3 text-white/85 leading-snug max-w-sm">
                 <T
-                  ar="نفس العمق العملياتي، بدون اشتراك ولا شهادة مدفوعة. سبعون درساً، أربع مراحل، وصول كامل من اليوم الأول."
+                  ar="نفس العمق. نفس الشغل. من غير اشتراك. من غير شهادة. من غير paywall. سبعين درس. أربع مراحل. الباب مفتوح من أول يوم. خلاص."
                   en="Same operational depth. No subscription, no paywall, no paid cert. Seventy lessons, four tiers, full access from day one."
                 />
               </div>
@@ -169,13 +169,13 @@ export default function Landing() {
             <div className="space-y-5">
               <p className="text-lg leading-relaxed">
                 <T
-                  ar="هذه ليست قائمة فيديوهات على YouTube. ولا قائمة قراءة. هذه دورة عمليات سيبرانية متكاملة، صُمّمت كما تُصمَّم برامج التدريب الفيدرالية: مسار واحد متّصل، يبدأ من تثبيت Linux في جهاز افتراضي، وينتهي عند فهم كيف تخطّط دولة لحملة طويلة الأمد ضد بنية تحتية حرجة."
+                  ar="دي مش playlist على يوتيوب. مش قائمة قراءة. مش كورس مرصوص بفلوس. جربنا الكورسات اللي بتباع بآلاف الدولارات — معظمها سلايدات وحماس فاضي. ده منهج عمليات سيبرانية كامل، مبني بنفس طريقة برامج التدريب الفيدرالية. سكة واحدة متصلة. بتبدأ من تنصيب Linux على VM، وبتنتهي وانت فاهم إزاي دولة بتطبخ حملة طويلة الأمد على بنية تحتية حساسة."
                   en="This isn't a YouTube playlist. It isn't a reading list. It's a complete cyber-operations curriculum, structured the way federal training programs are structured: one continuous path, starting from installing Linux in a virtual machine and ending at understanding how a nation-state plans a long-haul campaign against critical infrastructure."
                 />
               </p>
               <p className="leading-relaxed">
                 <T
-                  ar="كل درس يربط بين الجانب الهجومي والدفاعي: لو كنت تستطيع أن تنفذ التقنية، فأنت تستطيع أن تكشفها وتمنعها. هذا هو الفرق بين مهاجم محترف وصياد تهديدات محترف — التدريب نفسه."
+                  ar="كل درس ماشي على رجلين: هجوم ودفاع. لو قادر تشغّل التقنية، يبقى قادر تشوفها وتقفلها. الفرق بين المهاجم المحترف والـ threat hunter المحترف؟ مفيش فرق في التدريب. اللي بيتغيّر الكرسي اللي قاعد عليه. بس."
                   en="Every lesson pairs offense with defense: if you can run the technique, you can detect and stop it. That's the difference between a real attacker and a real threat hunter — the same training."
                 />
               </p>
@@ -183,18 +183,18 @@ export default function Landing() {
                 <Bullet
                   n="01"
                   title={{ ar: "بالعربية والإنجليزية", en: "Bilingual AR/EN" }}
-                  desc={{ ar: "كل درس متاح بكامل التفاصيل في اللغتين", en: "Every lesson, full content in both languages" }}
+                  desc={{ ar: "كل درس بكامله في اللغتين — مفيش ترجمة ناقصة", en: "Every lesson, full content in both languages" }}
                 />
                 <Bullet
                   n="02"
                   title={{ ar: "هجوم + دفاع", en: "Offense + Defense" }}
-                  desc={{ ar: "كل تقنية مقرونة بطريقة كشفها", en: "Every technique paired with detection" }}
+                  desc={{ ar: "كل تقنية معاها طريقة كشفها — مفيش هجوم بدون رد", en: "Every technique paired with detection" }}
                   bordered
                 />
                 <Bullet
                   n="03"
                   title={{ ar: "مختبر شخصي", en: "Personal Lab" }}
-                  desc={{ ar: "تطبق على بيئتك الخاصة، لا أهداف حقيقية", en: "Practice in your own lab — no real targets" }}
+                  desc={{ ar: "بتشتغل على بيئتك إنت. مفيش target حقيقي. ما حدش بيتأذى", en: "Practice in your own lab — no real targets" }}
                   bordered
                 />
               </div>
@@ -215,17 +215,17 @@ export default function Landing() {
             </div>
             <p className="max-w-md">
               <T
-                ar="كل مرحلة تبني على ما قبلها. لا قفزات، لا ثغرات في المعرفة. فقط مسار متين من الأساسيات إلى تكتيكات الدول."
+                ar="كل مرحلة بتقف على اللي قبلها. مفيش قفزات. مفيش خرم في المعرفة. سكة واحدة من الأساسيات لحد تكتيكات الدول. اللي يقفز يقع."
                 en="Each tier builds on the last. No leaps, no gaps. A solid path from fundamentals to nation-state tradecraft."
               />
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 border-[3px] border-black bg-white">
-            <TierCard tier="1" status="success" title={{ ar: "الأساسيات", en: "Foundations" }} desc={{ ar: "المختبر، Linux، Windows، الشبكات", en: "Lab, Linux, Windows, networking" }} count="05" duration="≈ 5h" />
-            <TierCard tier="2" status="info"    title={{ ar: "العمليات الأساسية", en: "Core Ops" }}    desc={{ ar: "استطلاع، أدوات، دفاع أساسي",    en: "Recon, tooling, baseline defense" }} count="16" duration="≈ 18h" />
-            <TierCard tier="3" status="warning" title={{ ar: "العمليات المتقدمة", en: "Advanced Ops" }} desc={{ ar: "ويب، AD، سحابة، IoT، Blue",        en: "Web, AD, cloud, IoT, blue team" }} count="29" duration="≈ 35h" />
-            <TierCard tier="4" status="error"   title={{ ar: "الخبراء", en: "Expert" }}                desc={{ ar: "أبحاث، تكتيكات الدول، 0-days", en: "Research, nation-state, 0-days" }} count="20" duration="≈ 40h" />
+            <TierCard tier="1" status="success" title={{ ar: "الأساسيات", en: "Foundations" }} desc={{ ar: "المعمل، Linux، Windows، الشبكات. اللي ميعرفهمش ميكمّلش.", en: "Lab, Linux, Windows, networking" }} count="05" duration="≈ 5h" />
+            <TierCard tier="2" status="info"    title={{ ar: "شغل العمليات", en: "Core Ops" }}    desc={{ ar: "استطلاع، أدوات، دفاع على الأرض. شغل بإيدك مش سلايدات.",    en: "Recon, tooling, baseline defense" }} count="16" duration="≈ 18h" />
+            <TierCard tier="3" status="warning" title={{ ar: "العمليات المتقدمة", en: "Advanced Ops" }} desc={{ ar: "ويب، AD، سحابة، IoT، Blue. هنا بيبان مين فاهم فعلاً.",        en: "Web, AD, cloud, IoT, blue team" }} count="29" duration="≈ 35h" />
+            <TierCard tier="4" status="error"   title={{ ar: "الخبراء", en: "Expert" }}                desc={{ ar: "أبحاث، تكتيكات دول، 0-days. مش لكل الناس.", en: "Research, nation-state, 0-days" }} count="20" duration="≈ 40h" />
           </div>
 
           <div className="mt-8 flex flex-wrap gap-3">
@@ -253,24 +253,24 @@ export default function Landing() {
             <Pillar
               kind="red"
               tag="Red Team"
-              title={{ ar: "عقلية الخصم", en: "Adversary Mindset" }}
-              desc={{ ar: "من الاستطلاع السلبي إلى تطوير الـ exploit وأبحاث الثغرات.", en: "From passive recon through exploit dev and 0-day research." }}
+              title={{ ar: "تفكير اللي قصادك", en: "Adversary Mindset" }}
+              desc={{ ar: "من الاستطلاع الصامت لحد كتابة الـ exploit وأبحاث الثغرات الجديدة.", en: "From passive recon through exploit dev and 0-day research." }}
               items={["Reconnaissance", "Web Exploitation", "AD / Cloud", "Exploit Dev", "Long-Haul C2"]}
               icon={<Swords className="w-6 h-6" strokeWidth={2.5} />}
             />
             <Pillar
               kind="blue"
               tag="Blue Team"
-              title={{ ar: "الدفاع المتعمق", en: "Defense In Depth" }}
-              desc={{ ar: "هندسة الكشف، الاستجابة للحوادث، التحقيق الجنائي.", en: "Detection engineering, incident response, forensics." }}
+              title={{ ar: "دفاع بطبقات", en: "Defense In Depth" }}
+              desc={{ ar: "هندسة الكشف، الاستجابة وقت الحادثة، التحقيق الجنائي بعدها.", en: "Detection engineering, incident response, forensics." }}
               items={["Detection (SIEM/EDR)", "Threat Hunting", "Malware Analysis", "DFIR", "Hardening"]}
               icon={<Shield className="w-6 h-6" strokeWidth={2.5} />}
             />
             <Pillar
               kind="amber"
               tag="Threat Intel"
-              title={{ ar: "العمليات والإسناد", en: "Ops & Attribution" }}
-              desc={{ ar: "تقصي الخصوم، إسناد الحملات، تكتيكات APT والدول.", en: "Adversary tracking, campaign attribution, APT tradecraft." }}
+              title={{ ar: "تتبّع وإسناد", en: "Ops & Attribution" }}
+              desc={{ ar: "تتبّع اللي قصادك، توصيل الحملة لصاحبها، تكتيكات APT والدول.", en: "Adversary tracking, campaign attribution, APT tradecraft." }}
               items={["MITRE ATT&CK", "Attribution", "State-Actor Tradecraft", "VEP / OPSEC", "Federal Law"]}
               icon={<Crosshair className="w-6 h-6" strokeWidth={2.5} />}
             />
@@ -287,15 +287,15 @@ export default function Landing() {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-0 border-[3px] border-black bg-white">
-            <Highlight icon={<Network className="w-4 h-4" strokeWidth={3} />} title={{ ar: "سلاسل هجوم كاملة", en: "Full Kill Chains" }} desc={{ ar: "من الاستطلاع إلى Domain Admin", en: "From recon to Domain Admin" }} />
+            <Highlight icon={<Network className="w-4 h-4" strokeWidth={3} />} title={{ ar: "Kill Chain كامل", en: "Full Kill Chains" }} desc={{ ar: "من recon لحد Domain Admin", en: "From recon to Domain Admin" }} />
             <Highlight icon={<Cloud className="w-4 h-4" strokeWidth={3} />} title={{ ar: "هجمات السحابة", en: "Cloud Attacks" }} desc={{ ar: "AWS، Azure، M365، K8s", en: "AWS, Azure, M365, K8s" }} />
-            <Highlight icon={<Cpu className="w-4 h-4" strokeWidth={3} />} title={{ ar: "BadUSB / IoT", en: "BadUSB / IoT" }} desc={{ ar: "DuckyScript إلى pivots", en: "DuckyScript to pivots" }} />
-            <Highlight icon={<Lock className="w-4 h-4" strokeWidth={3} />} title={{ ar: "Exploit Dev", en: "Exploit Dev" }} desc={{ ar: "binary, kernel LPE, 0-days", en: "Binary, kernel LPE, 0-days" }} />
-            <Highlight icon={<Eye className="w-4 h-4" strokeWidth={3} />} title={{ ar: "هندسة الكشف", en: "Detection Eng" }} desc={{ ar: "Sigma، EDR، SIEM، hunting", en: "Sigma, EDR, SIEM, hunting" }} />
-            <Highlight icon={<Layers className="w-4 h-4" strokeWidth={3} />} title={{ ar: "DFIR", en: "DFIR" }} desc={{ ar: "Memory، disk، network", en: "Memory, disk, network" }} />
+            <Highlight icon={<Cpu className="w-4 h-4" strokeWidth={3} />} title={{ ar: "BadUSB / IoT", en: "BadUSB / IoT" }} desc={{ ar: "من DuckyScript لحد pivot جوّه الشبكة", en: "DuckyScript to pivots" }} />
+            <Highlight icon={<Lock className="w-4 h-4" strokeWidth={3} />} title={{ ar: "Exploit Dev", en: "Exploit Dev" }} desc={{ ar: "binary، kernel LPE، 0-days", en: "Binary, kernel LPE, 0-days" }} />
+            <Highlight icon={<Eye className="w-4 h-4" strokeWidth={3} />} title={{ ar: "هندسة الكشف", en: "Detection Eng" }} desc={{ ar: "Sigma، EDR، SIEM، threat hunting", en: "Sigma, EDR, SIEM, hunting" }} />
+            <Highlight icon={<Layers className="w-4 h-4" strokeWidth={3} />} title={{ ar: "DFIR", en: "DFIR" }} desc={{ ar: "ذاكرة، قرص، شبكة", en: "Memory, disk, network" }} />
             <Highlight icon={<Building2 className="w-4 h-4" strokeWidth={3} />} title={{ ar: "Active Directory", en: "Active Directory" }} desc={{ ar: "ADCS، BloodHound، DCSync", en: "ADCS, BloodHound, DCSync" }} />
-            <Highlight icon={<Crosshair className="w-4 h-4" strokeWidth={3} />} title={{ ar: "تكتيكات الدول", en: "Nation-State" }} desc={{ ar: "long-haul، dormancy، OPSEC", en: "Long-haul, dormancy, OPSEC" }} />
-            <Highlight icon={<Brain className="w-4 h-4" strokeWidth={3} />} title={{ ar: "أمن AI / LLM", en: "AI / LLM Security" }} desc={{ ar: "prompt injection، RAG", en: "Prompt injection, RAG" }} />
+            <Highlight icon={<Crosshair className="w-4 h-4" strokeWidth={3} />} title={{ ar: "تكتيكات الدول", en: "Nation-State" }} desc={{ ar: "long-haul، dormancy، OPSEC على أعلى مستوى", en: "Long-haul, dormancy, OPSEC" }} />
+            <Highlight icon={<Brain className="w-4 h-4" strokeWidth={3} />} title={{ ar: "أمن AI / LLM", en: "AI / LLM Security" }} desc={{ ar: "prompt injection، RAG، التسميم", en: "Prompt injection, RAG" }} />
           </div>
         </section>
 
@@ -309,18 +309,18 @@ export default function Landing() {
               </h2>
               <p className="leading-relaxed">
                 <T
-                  ar="هذه ليست دورة مبتدئين. تفترض أنك تعرف كيف تشغّل سطر أوامر، وتعرف الفرق بين TCP و UDP، وأنك تستطيع قضاء ساعتين في تجربة شيء قبل أن تطلب مساعدة. غير ذلك، ستنهي الأساسيات أولاً."
+                  ar="بُص. دي مش دورة للمبتدئين. أنا فارض إنك بتعرف تفتح terminal. فاهم الفرق بين TCP و UDP. وقادر تقعد ساعتين تجرّب حاجة قبل ما تيجي تسأل. لو لسه مش هناك، ابدأ بالأساسيات الأول. مفيش عيب. العيب إنك تخش متقدم وانت لسه متلخبط في الأساسيات."
                   en="This isn't a beginner course. It assumes you can use a command line, you know the difference between TCP and UDP, and you can spend two hours trying something before asking for help. Otherwise, finish the foundations first."
                 />
               </p>
             </div>
             <ul className="rb-list border-y-[3px] border-black self-start w-full">
               <li><AudienceItem label={{ ar: "فرق فيدرالية وحكومية", en: "Federal / government teams" }} /></li>
-              <li><AudienceItem label={{ ar: "Red Team محترفون", en: "Pro Red teams" }} /></li>
+              <li><AudienceItem label={{ ar: "Red Team بشغل حقيقي", en: "Pro Red teams" }} /></li>
               <li><AudienceItem label={{ ar: "Blue Team / SOC / IR", en: "Blue teams / SOC / IR" }} /></li>
-              <li><AudienceItem label={{ ar: "باحثو الثغرات", en: "Vulnerability researchers" }} /></li>
-              <li><AudienceItem label={{ ar: "Pentesters محترفون", en: "Professional pentesters" }} /></li>
-              <li><AudienceItem label={{ ar: "Threat hunters", en: "Threat hunters" }} /></li>
+              <li><AudienceItem label={{ ar: "باحثين ثغرات", en: "Vulnerability researchers" }} /></li>
+              <li><AudienceItem label={{ ar: "Pentesters محترفين", en: "Professional pentesters" }} /></li>
+              <li><AudienceItem label={{ ar: "صيادين تهديدات", en: "Threat hunters" }} /></li>
             </ul>
           </div>
         </section>
@@ -335,10 +335,10 @@ export default function Landing() {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-0 border-[3px] border-black bg-white">
-            <HowStep n="01" title={{ ar: "اتبع المسار", en: "Follow The Path" }} desc={{ ar: "ابدأ بالأساسيات. لا تقفز للمراحل المتقدمة قبل أن تكمل ما قبلها.", en: "Start at the foundations. Don't jump to advanced tiers before finishing what comes first." }} />
-            <HowStep n="02" title={{ ar: "اقرأ في الدرس", en: "Read The Lesson" }} desc={{ ar: "كل درس يشرح المفهوم، يفصّل الهجوم، ثم يربط الكشف الدفاعي.", en: "Each lesson explains the concept, walks the attack, then ties the defensive detection." }} bordered />
-            <HowStep n="03" title={{ ar: "طبّق في مختبرك", en: "Apply In Your Lab" }} desc={{ ar: "ساعة قراءة = ساعة عملي. لا تقرأ بدون تجربة.", en: "One reading hour equals one hands-on hour. Don't read without trying." }} bordered />
-            <HowStep n="04" title={{ ar: "علّم على المتقدّم", en: "Mark Progress" }} desc={{ ar: "علّم الدرس كمكتمل وانتقل للتالي. تتبّع التقدم.", en: "Mark the lesson complete and move on. Track your progress." }} bordered />
+            <HowStep n="01" title={{ ar: "امشي على السكة", en: "Follow The Path" }} desc={{ ar: "ابدأ من الأساسيات. ما تقفزش لحاجة متقدمة قبل ما اللي قبلها يبقى راكب. اللي يقفز يقع.", en: "Start at the foundations. Don't jump to advanced tiers before finishing what comes first." }} />
+            <HowStep n="02" title={{ ar: "اقرا الدرس بهدوء", en: "Read The Lesson" }} desc={{ ar: "كل درس بيفكّك الفكرة، يمشيك على الهجوم خطوة خطوة، وبعدين يوريك إزاي بتكشفه. مفيش حشو.", en: "Each lesson explains the concept, walks the attack, then ties the defensive detection." }} bordered />
+            <HowStep n="03" title={{ ar: "طبّق في معملك", en: "Apply In Your Lab" }} desc={{ ar: "ساعة قراية = ساعة شغل بإيدك. القراية لوحدها مالهاش لازمة. لازم تلمس الكيبورد.", en: "One reading hour equals one hands-on hour. Don't read without trying." }} bordered />
+            <HowStep n="04" title={{ ar: "علّم اللي خلصته", en: "Mark Progress" }} desc={{ ar: "علّم الدرس وكمّل اللي بعده. خلّيك عارف انت فين على السكة، مش تايه.", en: "Mark the lesson complete and move on. Track your progress." }} bordered />
           </div>
         </section>
 
@@ -352,23 +352,23 @@ export default function Landing() {
           </div>
 
           <div className="border-[3px] border-black">
-            <FAQ q={{ ar: "هل أحتاج خبرة سابقة؟", en: "Do I need prior experience?" }}
-                 a={{ ar: "نعم. تفترض الدورة معرفة أساسية بسطر الأوامر، الشبكات، ونظامي Linux و Windows. غير ذلك، ابدأ بمرحلة الأساسيات أولاً.",
+            <FAQ q={{ ar: "محتاج خبرة قبل ما ابدأ؟", en: "Do I need prior experience?" }}
+                 a={{ ar: "أيوه. لازم تعرف terminal، فاهم شبكات على الأقل بالحد الأدنى، ومرتاح في Linux و Windows. لو لسه مش هناك، خلّص الـ Foundations الأول. ما تكسرش رجلك في أول خطوة.",
                       en: "Yes. The course assumes baseline familiarity with the command line, networking, and both Linux and Windows. If not, start with the Foundations tier first." }} />
-            <FAQ q={{ ar: "هل المحتوى قانوني؟", en: "Is the content legal?" }}
-                 a={{ ar: "كل التقنيات مخصصة للتنفيذ في مختبر شخصي معزول، أو على أنظمة لديك إذن خطّي صريح باختبارها. تنفيذها في أي مكان آخر مسؤوليتك أنت.",
+            <FAQ q={{ ar: "الكلام ده قانوني؟", en: "Is the content legal?" }}
+                 a={{ ar: "كل تقنية في الكورس مكانها معملك المعزول، أو نظام ماسك بإيدك ورق إذن مكتوب بتجربته. غير كده؟ التبعات عليك. مفيش محامي هيدافع عنك بحجة \"أنا اتعلمت من كورس مجاني\". الورقة دي مش هتسند في محكمة.",
                       en: "Every technique is meant for execution in your own isolated lab, or on systems you have explicit written authorization to test. Running it anywhere else is on you." }} />
-            <FAQ q={{ ar: "كم تستغرق الدورة؟", en: "How long does it take?" }}
-                 a={{ ar: "ما يقارب 100 ساعة محتوى مكتوب، إضافة إلى وقت تطبيق مماثل. معظم الناس ينهون الأساسيات في أسبوع، والمراحل المتقدمة في 3 إلى 6 أشهر بمعدّل عمل ثابت.",
+            <FAQ q={{ ar: "الكورس بياخد قد ايه؟", en: "How long does it take?" }}
+                 a={{ ar: "حوالي 100 ساعة قراءة. ومثلهم على الأقل شغل بإيدك. الأساسيات معظم الناس بتخلصها في أسبوع. المراحل المتقدمة بتاخد من 3 لـ 6 شهور لو ماشي بإيقاع ثابت. اللي يقولك \"اتعلم سيبراني في 30 يوم\" بيكدب عليك.",
                       en: "About 100 hours of reading, plus an equivalent amount of hands-on time. Most people finish foundations in a week and the advanced tiers in 3–6 months at a steady pace." }} />
-            <FAQ q={{ ar: "هل الدورة مجانية؟", en: "Is the course free?" }}
-                 a={{ ar: "نعم. هذه مادة تدريبية مفتوحة للجهات المُصرّح لها. لا تسجيل، لا اشتراك، لا حسابات.",
+            <FAQ q={{ ar: "ببلاش فعلاً؟", en: "Is the course free?" }}
+                 a={{ ar: "أيوه. ببلاش. مادة تدريبية مفتوحة للجهات المصرّح لها. مفيش تسجيل. مفيش اشتراك. مفيش حساب. مفيش رسالة بعد 7 أيام تقولك \"ادفع 9.99$ علشان تكمّل\". خلاص. ادخل اقرا.",
                       en: "Yes. This is open training material for authorized parties. No signup, no subscription, no account." }} />
-            <FAQ q={{ ar: "هل يوجد شهادة؟", en: "Is there a certificate?" }}
-                 a={{ ar: "لا. هذه دورة تعليمية، ليست برنامج اعتماد. التقدم يُحفظ محلياً في متصفحك للتتبع الذاتي.",
+            <FAQ q={{ ar: "في شهادة في الآخر؟", en: "Is there a certificate?" }}
+                 a={{ ar: "لا. ده منهج تعليمي، مش بزنس شهادات. التقدم بيتسجّل في المتصفح بتاعك علشان تعرف انت وصلت فين. والشغل اللي في دماغك وعلى كيبوردك هو شهادتك. الورقة بتعلّق على الحيطة، الشغل بيدخل الميدان.",
                       en: "No. This is an educational curriculum, not a certification program. Progress is saved locally in your browser for personal tracking." }} />
-            <FAQ q={{ ar: "ما الذي يميّزها عن غيرها؟", en: "What makes it different?" }}
-                 a={{ ar: "الكثافة والتسلسل. كل درس مكتوب بنفس النمط، يربط الهجوم بالدفاع مباشرة، ولا يقفز إلى ما بعده دون أن يبني الأساسيات اللازمة. لا حشو، لا فيديوهات تسويقية.",
+            <FAQ q={{ ar: "ايه اللي بيميّزه عن غيره؟", en: "What makes it different?" }}
+                 a={{ ar: "الكثافة. والترتيب. كل درس مكتوب بنفس الشكل، بيربط الهجوم بالدفاع طول الوقت، وما بيقفزش لحاجة قبل ما يبني اللي قبلها. مفيش حشو. مفيش فيديوهات تسويقية. مفيش \"اشترك زي الأبطال\". مفيش مدرّب بيلبس بدلة ويصرخ في الكاميرا. شغل وبس.",
                       en: "Density and sequence. Every lesson is written in the same shape, ties offense to defense directly, and doesn't skip ahead without building what comes before. No fluff, no marketing videos." }} />
           </div>
         </section>
@@ -385,7 +385,7 @@ export default function Landing() {
             </h2>
             <p className="max-w-xl leading-relaxed mb-8">
               <T
-                ar="لا تشتت في 12 منصة. اتبع مساراً واحداً بُني من تجربة عملياتية حقيقية."
+                ar="بطّل تتفرّق على 12 منصة. بطّل تجمّع PDFs مش هتقراها. بطّل تشتري كورسات بتنام في الـ wishlist. سكة واحدة. مبنية من شغل حقيقي. مش من سلايدات. ادخل."
                 en="Stop juggling 12 platforms. Follow one path built from real operational experience."
               />
             </p>
@@ -410,7 +410,7 @@ export default function Landing() {
                 <T ar="إخلاء مسؤولية قانوني" en="Legal Notice" />
               </div>
               <T
-                ar="هذا المحتوى مخصص للأغراض المهنية والجهات المُصرّح لها قانوناً بإجراء اختبارات الاختراق والدفاع السيبراني. كل التقنيات تُنفّذ في بيئة معزولة أو على أنظمة لديك إذن خطّي صريح باختبارها. أي استخدام آخر تقع تبعاته على من ينفّذه."
+                ar="المحتوى ده للمحترفين والجهات اللي معاها تفويض قانوني تشتغل اختبار اختراق ودفاع سيبراني. كل تقنية بتتنفّذ في بيئة معزولة، أو على نظام معاك ورق صريح بتجربته. أي استخدام تاني؟ التبعات على اللي بينفّذ. ما حدش هيتشال عنه."
                 en="This material is intended for professionals and parties legally authorized to perform penetration testing and cyber-defense work. Every technique is to be executed in an isolated lab or on systems you have written authorization to test. Any other use is the user's responsibility."
               />
             </div>

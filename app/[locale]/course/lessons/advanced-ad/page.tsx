@@ -7,11 +7,39 @@ export default function Page() {
       <L
         ar={<>
           <Section title="ليه Active Directory هو الجائزة الكبرى؟">
-            <Analogy>الـ Domain Controller هو مفتاح المملكة. اللي معاه صلاحية Domain Admin أو الـ krbtgt، هو فعلياً مالك كل جهاز وكل حساب في الشركة. الدرس ده عن السكك الحديثة اللي بتوصلك للمفتاح ده.</Analogy>
-            <Callout kind="danger" title="تنبيه">كل التكنيكات هنا للتطبيق في تمارين red team معاك فيها إذن رسمي. تطبيقها على هدف من غير تفويض = جريمة فيدرالية، مش مزحة.</Callout>
+            <Analogy>
+              بُص. لو دخلت شركة فيها 10 آلاف موظف، هتروح فين الأول؟
+              هتفضل تكسر لاب توب موظف ورا التاني؟
+              ولا هتروح للسيرفر اللي ماسك المفاتيح كلها؟
+              <br/><br/>
+              - طب يا حضرتك، أنا داخل بـ user عادي.. هكسر DA إزاي من غير exploit؟
+              <br/><br/>
+              يا مستجد. الـ DA مش بيتكسر بـ exploit. بيتكسر بـ misconfig قاعد سنين محدش فاكره. الـ Domain Controller هو مفتاح المملكة، واللي معاه Domain Admin أو الـ krbtgt هو فعلياً مالك كل جهاز وكل حساب. الدرس ده عن السكك اللي بتوصلك للمفتاح ده — مش الكلام النظري، السكك الحقيقية اللي بتشتغل في 2026.
+            </Analogy>
+            <Callout kind="danger" title="اللي بيحصل فعلياً">
+              كل التكنيكات هنا للتطبيق في red team معاك فيه إذن رسمي مكتوب.
+              تطبيقها على هدف من غير تفويض = جريمة فيدرالية. مش مزحة.
+              لو حذرتك، فده مش علشان أنا مثالي — ده علشان شفت ناس راحت بيها فعلاً.
+            </Callout>
+            <Callout kind="warn" title="غلطات الـ junior">
+              <ul>
+                <li>يشغل SharpHound -c All في أول 5 دقائق ويولّع الـ EDR كله.</li>
+                <li>يعمل Kerberoast على كل حساب SPN في الدومين دفعة واحدة. الـ SOC هيتفرج عليك من 4769 events.</li>
+                <li>يلاقي ESC1 في الـ ADCS ويستعجل ياخد Domain Admin قبل ما يفهم القالب بيعمل إيه.</li>
+                <li>ينسى يدوّر krbtgt مرتين بعد ما يخلص ويفتكر إن "اتنظفت". فاكر نفسه عمل clean-up — هو بس عمل هدنة.</li>
+              </ul>
+            </Callout>
           </Section>
           <Section title="ارسم شجرة الهجوم بـ BloodHound">
-            <p>أول حاجة بيعملها أي red teamer جوه الدومين: يرسم العلاقات. BloodHound + SharpHound بيلموا الـ ACLs والـ sessions وعضويات الجروبات كلها، وبيحولوها لجراف تقدر تمشي فيه بعينك من اليوزر بتاعك لحد Domain Admin.</p>
+            <p>
+              إنت داخل دومين فيه 1200 يوزر و 90 سيرفر. هتفحص كل ACL بإيدك؟
+              هتقعد تكتب <code>net user /domain</code> لحد ما الشمس تطلع؟
+              لا. أول حاجة بيعملها أي red teamer جوه الدومين: يرسم العلاقات.
+            </p>
+            <p>
+              BloodHound + SharpHound بيلموا الـ ACLs والـ sessions وعضويات الجروبات كلها، وبيحولوها لجراف تقدر تمشي فيه بعينك من اليوزر بتاعك لحد Domain Admin.
+              في حادثة Conti ransomware اللي اتسربت في 2021، الـ playbook بتاعهم كان حرفياً: SharpHound أول حاجة، وبعدين Cypher queries، وبعدين تنفيذ. مش عبقرية — منهجية.
+            </p>
             <Terminal lines={[
               { p: "bloodhound-python -d corp.local -u user -p Pass1 -ns 10.0.0.10 -c All --zip" },
               { p: "Invoke-BloodHound -CollectionMethod All,LoggedOn,GPOLocalGroup -ZipFileName loot.zip" },
@@ -72,13 +100,14 @@ ntlmrelayx.py -t ldaps://dc -smb2support --delegate-access
 ntlmrelayx.py -t ldap://dc --shadow-credentials --shadow-target victim$
 mitm6 -d corp.local
 ntlmrelayx.py -6 -wh fake-wpad -t ldaps://dc --delegate-access`}</Code>
-            <Callout kind="good" title="الدفاع — Blue Team">
+            <Callout kind="good" title="الحماية — Blue Team">
               <ul>
                 <li>فعّل SMB Signing + LDAP Signing &amp; Channel Binding (EPA). دي البديهيات.</li>
                 <li>اقفل LLMNR / NBT-NS / mDNS. مفيش مبرر سنة 2026 إنهم شغالين.</li>
                 <li>اقفل IPv6 لو مش مستخدم، أو ركّب DHCPv6 guard.</li>
                 <li>راقب 4624 type 3 + 4768/4769 الغريبة. الباترن هو اللي هيكشفهم.</li>
               </ul>
+              اوعى تسيب LLMNR شغّال "علشان قديم وما حدش عايز يلمسه". ده اللي بيتقتلك في كل engagement.
             </Callout>
           </Section>
           <Section title="DCSync والتذاكر الذهبية والفضية والماسية">
@@ -89,6 +118,21 @@ psexec.py -k -no-pass corp.local/administrator@DC1
 ticketer.py -nthash <SVC_NTLM> -spn cifs/target -domain corp.local user
 Rubeus.exe diamond /tgtdeleg /ticketuser:admin /ticketuserid:500 /groups:512`}</Code>
             <Callout kind="warn" title="القاعدة الذهبية للمدافع">لما تتأكد إن الـ DC اتخرق: <b>دوّر krbtgt مرتين</b> (مرة، استنى 10 ساعات، تاني مرة). مرة واحدة مش كفاية، المهاجم لسة معاه التذكرة القديمة شغالة.</Callout>
+          </Section>
+          <Section title="الخلاصة الناشفة">
+            <p>
+              الـ AD مش بيتكسر بـ exploit واحد. بيتكسر بسلسلة قرارات إدارية اتأجلت سنين.
+              <br/>
+              الـ junior بيقول: "أنا عملت Kerberoast، يبقى أنا معدّي".
+              <br/>
+              المحترف بيقول: "أنا قعدت أرسم الجراف 4 ساعات، وعرفت إن الطريق من user عادي لـ DA طوله 3 خطوات. الباقي تنفيذ".
+              <br/>
+              لو إنت blue team: شغّل BloodHound على نفسك قبل المهاجم. لو لقيت طريق قصير، يبقى الفجوة موجودة. ما تنتظرش حد يثبتها لك.
+              <br/><br/>
+              اكتبها على سطح مكتبك:
+              <br/>
+              <b>كل يوم ما تشغلش BloodHound على دومينك، أنت بتتفرج مش بتدافع.</b>
+            </p>
           </Section>
         </>}
         en={<>

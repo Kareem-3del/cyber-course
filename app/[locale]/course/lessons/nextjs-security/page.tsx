@@ -6,11 +6,31 @@ export default function Page() {
     <LessonShell slug="nextjs-security">
       <L
         ar={<>
-          <Section title="لماذا Next.js يضاعف سطح الهجوم">
-            <p>Next.js كوكتيل: <b>React frontend + Node backend + Edge middleware + RSC + Server Actions + Image Optimizer + ISR cache</b>. كل واحدة فيهم سطح هجوم مستقل بذاته. المهاجم الشاطر بيفصل الطبقات وبيضرب الأضعف.</p>
-            <Analogy>تخيلها مبنى بأكتر من طابق وفيه أكتر من مصعد (App Router, Pages, API, Edge). مش كل مصعد بيوصل كل دور، ولا كل أبوابه بتقفل بنفس الطريقة. المهاجم برسم خريطة المصاعد الأول، وبعدين بيختار سكته.</Analogy>
+          <Section title="ليه Next.js بيضاعف الأبواب اللي قدامه؟">
+            <p>Next.js مش framework واحد. ده 7 frameworks في صندوق واحد.</p>
+            <p>React frontend + Node backend + Edge middleware + RSC + Server Actions + Image Optimizer + ISR cache.</p>
+
+            <p>- بس استنى يا حضرتك.. أنا فاكره React بس!</p>
+
+            <p>متوقّع كالعادة يا مستجد. ده اللي بيخدع الكل. كل واحد من الـ 7 دول جبهة مستقلة بذاتها. وكل deployment فيه واحد منهم متفعّل بشكل غريب.</p>
+            <Analogy>
+              تخيّل مبنى بـ 7 أدوار وفيه 7 أسانسيرات مختلفة (App Router، Pages، API، Edge، Server Actions، Image، ISR).
+              مش كل أسانسير بيوصل كل دور.
+              ولا كل أبوابه بتقفل بنفس الطريقة.
+              المهاجم برسم خريطة الأسانسيرات (المصاعد) الأول، وبعدين بيختار سكته.
+              إنت كـ developer شايف الـ feature بتاعتك. هو شايف 7 مداخل.
+            </Analogy>
+            <Callout kind="info" title="حكاية: CVE-2025-29927 — أكبر breach في تاريخ Next">
+              في مارس 2025، اتنشرت ثغرة في Next.js middleware.
+              header اسمه <span className="eng">x-middleware-subrequest</span> كان موجود لمنع loops داخلية.
+              المشكلة؟ مفيش validation إنه جاي من جوّه.
+              attacker بيبعت <code>{`curl -H "x-middleware-subrequest: middleware:middleware:middleware:middleware:middleware"`}</code> على /admin.
+              اللي بيحصل فعلياً: الـ middleware كله بـ bypass — auth، rate limit، redirect، كله.
+              آلاف التطبيقات اللي معتمدة على middleware للـ authorization اتفتحت في يوم واحد.
+              الدرس: ما تعتمدش على middleware وحده. كل route يفحص الـ session بنفسه.
+            </Callout>
             <Callout kind="danger" title="تذكير قانوني">
-              الأمثلة دي لاختبار تطبيقاتك أنت. متستخدمهاش على مواقع برّه من غير إذن.
+              الأمثلة دي لاختبار تطبيقاتك إنت. ما تستخدمهاش على مواقع برّه من غير إذن.
             </Callout>
           </Section>
 
@@ -29,7 +49,7 @@ curl -H "x-middleware-subrequest: middleware:middleware:middleware:middleware:mi
             <Callout kind="info" title="مين اتأثّر">
               أي تطبيق Next.js بيستخدم middleware للـ authorization. لو إصدارك &lt; 14.2.25 أو &lt; 15.2.3، رقّع <b>دلوقتي</b>. التحديث هو الحل الوحيد. WAF rules مجرد إسعافات أولية.
             </Callout>
-            <Code lang="javascript">{`// الدفاع المعمّق — لا تعتمد على middleware وحده للـ authz
+            <Code lang="javascript">{`// الحماية المعمّق — لا تعتمد على middleware وحده للـ authz
 // كل route يفحص في handler:
 export async function GET(req) {
   const session = await getSession(req);
@@ -38,7 +58,7 @@ export async function GET(req) {
 }`}</Code>
           </Section>
 
-          <Section title="Server Actions — سطح هجوم جديد كلياً">
+          <Section title="Server Actions — باب جديد قدامه كلياً">
             <p>Server Actions = دوال بتتنادى من الـ client عن طريق POST مشفّر. بس:</p>
             <ul>
               <li><b>كل Server Action endpoint مفتوح للعامة</b> — حتى لو مفيش UI بينديها. المهاجم بيعدّ الـ actions من الـ bundle ويناديهم مباشرة.</li>
@@ -145,7 +165,7 @@ const url = headers().get('x-forwarded-host');   ← يستخدمه في canonic
 
 # النتيجة: cached version لـ /products/widget يحوي canonical = evil.com
 # كل user لاحق يصل لنفس الصفحة المسمومة`}</Code>
-            <Callout kind="good" title="الدفاع">
+            <Callout kind="good" title="الحماية">
               <ul>
                 <li>متعتمدش على request headers وأنت بترسم cached pages.</li>
                 <li>عرّف <span className="eng">cache key</span> بصراحة — متخليش Next يستنتج لوحده.</li>
@@ -308,6 +328,26 @@ export function middleware(req) {
             <Callout kind="info" title="أدوات">
               <span className="eng">next-secure-headers</span>, Snyk, Semgrep <span className="eng">p/nextjs</span>, Vercel Firewall، وقواعد Cloudflare WAF للأنماط الخاصة بـ Next.
             </Callout>
+          </Section>
+
+          <Section title="غلطات الـ junior في Next">
+            <Callout kind="danger" title="اللي بيحصل لما الـ junior يكتب Next">
+              <ul>
+                <li><b>auth في middleware بس</b> — CVE-2025-29927 خرّب اللعبة دي. كل route لازم يفحص بنفسه.</li>
+                <li><b>NEXT_PUBLIC_API_KEY</b> — أي حاجة بـ NEXT_PUBLIC بتطلع في bundle الـ client. السر اللي حطّيته بقى public بمعنى الكلمة.</li>
+                <li><b>Server Action من غير revalidation</b> — الـ user يضغط Submit مرتين بسرعة، يطلع double charge. لازم idempotency.</li>
+                <li><b>Server Action بياخد ID من client من غير ownership check</b> — "هو الـ user مش هيغيرها" — هيغيّرها يا نجم. هيغيّرها بـ Burp.</li>
+                <li><b>RSC بترجع entity كامل</b> — السيرفر بيـ pass الـ user object للـ client component، فيه password_hash. الـ user بيـ inspect element.</li>
+                <li><b>Image Optimizer مفتوح</b> — <span className="eng">remotePatterns: '**'</span> = SSRF عبر <code>/_next/image?url=http://169.254.169.254</code>.</li>
+              </ul>
+            </Callout>
+          </Section>
+
+          <Section title="الخلاصة الناشفة">
+            <p>Next مش "framework" — Next "platform". وكل platform بيدّيك سرعة بسعر معقّد.</p>
+            <p>السرعة في الـ DX. التعقيد في الحماية: 7 طبقات، كل واحدة لازم تتأمّن لوحدها.</p>
+            <p>اكتبها على ظهر إيدك:</p>
+            <p>كل route، كل Action، كل API. اوعى تثق في middleware. اوعى تثق في الـ client. ولا حتى في الـ session token من غير ما تتأكد منه على السيرفر.</p>
           </Section>
         </>}
         en={<>

@@ -8,15 +8,35 @@ export default function Page() {
         ar={<>
           <Section title="ليه MFA مش معناها انتهى الهجوم؟">
             <Analogy>
-              تخيّل قفلين على باب بيتك: مفتاح وكود. لو واحد فيهم مكسور (MFA fatigue، أو موقع phishing بيعمل proxy
-              للأصلي)، التاني لوحده مش هيكفي. MFA بيقلّل الخطر بـ 99%، لكنه مش 100%، والـ 1% الباقية هي بالظبط
-              اللي المهاجمين بيشتغلوا عليها النهارده.
+              ركّبت MFA على كل حاجة، خلاص؟ خلصنا؟
+              المهاجم يعمل إيه طب، يقعد يعيّط؟
+              <br/><br/>
+              بُص. الـ MFA الكلاسيكي بيقفل 99٪ من الـ phishing. ده رقم حقيقي، مش marketing.
+              طب اللي فاضل؟ الـ AiTM. والـ MFA fatigue. وسرقة الـ session token.
+              الضحية بتدخّل الكود طبيعي، والكوكي بتروح للمهاجم. ومحدش حسّ.
             </Analogy>
             <p>
-              في 2024-2025، أكبر اختراقات الشركات (Uber، MGM، Snowflake) ما عدّوش الـ password — عدّوا الـ MFA.
-              الدرس ده هيغطي أربع محاور: MFA fatigue، Adversary-in-the-Middle مع Evilginx، token theft،
-              وGolden SAML.
+              في 2022-2024، أكبر اختراقات الشركات (Uber، MGM، Cisco، Microsoft نفسها في حادثة Midnight Blizzard) ما عدّوش الـ password — عدّوا الـ MFA.
+              <br/>
+              في حادثة Uber، 18 سنة، عيّل، ضغط push 50 مرة على مسؤول الـ infra، وكتبله "أنا من IT لو سمحت اقبلها".
+              <br/>
+              ووافق.
+              <br/>
+              مش عبقرية تقنية — هندسة اجتماعية وضحية تعبت من الإشعارات.
             </p>
+            <p>
+              الدرس ده هيغطي 4 محاور: MFA fatigue، Adversary-in-the-Middle مع Evilginx، token theft، و Golden SAML.
+            </p>
+          </Section>
+          <Section title="غلطات الـ junior في كسر MFA">
+            <Callout kind="warn" title="اللي بيحصل فعلياً في أول engagement">
+              <ul>
+                <li>يفتكر إن "MFA متفعّل" يعني "الحساب آمن". لا. الـ MFA Type مهم. SMS مش زي TOTP مش زي FIDO2.</li>
+                <li>يبعت 200 push notification في 5 دقايق. الـ SOC بيشوف الـ pattern قبل ما الضحية يوافق.</li>
+                <li>يستخدم Evilginx من غير ما يضبط الـ phishlet كويس، فالموقع يبقى مكسوف ومحدش بيدخّل بياناته.</li>
+                <li>ينسى يسرق الـ refresh token، فلما الـ session تنتهي، يرجع تاني للصفر.</li>
+              </ul>
+            </Callout>
           </Section>
 
           <Section title="1. MFA Fatigue / Push Bombing">
@@ -30,7 +50,7 @@ export default function Page() {
 3. تكرار كل 30 ثانية لمدة ساعة
 4. الضحية يضغط Approve ليصمت الإشعار
 5. session token يخرج للمهاجم`}</Code>
-            <Card title="الدفاع" color="green">
+            <Card title="الحماية" color="green">
               <ul>
                 <li><strong>Number Matching</strong> (Microsoft, Okta): الضحية يدخل رقم يظهر على شاشة تسجيل الدخول</li>
                 <li>تقييد عدد محاولات MFA per hour</li>
@@ -74,7 +94,7 @@ evilginx2 -p ./phishlets
                 { o: "[+] Logged in as john.doe@target.gov — no password, no MFA" },
               ]} />
             </Step>
-            <Card title="الدفاع" color="green">
+            <Card title="الحماية" color="green">
               <ul>
                 <li><strong>FIDO2 / WebAuthn</strong>: مرتبط بنطاق الـ origin، لا يعمل على evilginx domain</li>
                 <li>Conditional Access: device compliance + IP location</li>
@@ -101,7 +121,7 @@ https://login.microsoftonline.com/common/oauth2/v2.0/authorize
 Victim sees: "Cool Reports App wants to access your mailbox"
 Victim clicks Accept
 → Attacker gets refresh token good for 90 days`}</Code>
-            <Card title="الدفاع" color="green">
+            <Card title="الحماية" color="green">
               <ul>
                 <li>Admin consent للتطبيقات بصلاحيات حساسة</li>
                 <li>Block unverified publishers</li>
@@ -122,7 +142,7 @@ mimikatz # privilege::debug
 mimikatz # token::elevate
 mimikatz # vault::cred /patch
 # يستخرج private key من Microsoft.IdentityServer service`}</Code>
-            <Card title="الدفاع" color="green">
+            <Card title="الحماية" color="green">
               <ul>
                 <li>HSM للـ ADFS signing keys (لا يمكن استخراجها برمجياً)</li>
                 <li>تقصير عمر SAML tokens (15 دقيقة بدلاً من 8 ساعات)</li>
@@ -136,6 +156,22 @@ mimikatz # vault::cred /patch
             بناء phishing domains، أو إرسال إيميل، أو سرقة tokens من نظام مش بتاعك = جرايم فيدرالية متعددة. كل
             مثال هنا مكانه معملك أنت ومعاه authorization مكتوب.
           </Callout>
+
+          <Section title="الخلاصة الناشفة">
+            <p>
+              MFA مش حل سحري. هو طبقة، ومعاها طبقات تانية لازم تبقى موجودة.
+              <br/>
+              لو الـ MFA بتاعك SMS أو push approval بسيط، فإنت متحصّن على ورق بس. ده مش defense، ده تمثيل defense.
+              <br/>
+              FIDO2 / Passkeys هو اللي بيقفل AiTM فعلاً. غيره كله compromise.
+              <br/><br/>
+              الـ junior بيقول: "MFA متفعّل، خلصنا".
+              <br/>
+              المحترف بيسأل: "MFA إيه؟ على إيه؟ مين معفي منه؟ وإمتى آخر مرة راجعنا الـ Conditional Access policies؟"
+              <br/><br/>
+              اكتبها على ظهر إيدك يا مستجد: لو حساب حساس عندك مش على Passkeys في 2026، فإنت مش بتدافع — إنت بتتفرج.
+            </p>
+          </Section>
 
           <Section title="مصادر">
             <ul>

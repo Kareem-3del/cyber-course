@@ -8,14 +8,27 @@ export default function Page() {
         ar={<>
           <Section title="ليه shell عادية بتديك root في نص الحالات؟">
             <Analogy>
-              تخيّل عمارة مكاتب. أنت موظف زائر، البطاقة بتاعتك بتفتح الردهة بس. تصعيد الصلاحيات = تلاقي باب جانبي
-              حد ساب مفتاحه، أو نظام التحكم في الأبواب بيثق في بطاقتك أكتر من اللازم. الفرق بينك وبين root في
-              معظم الحالات مش ثغرة kernel، ده غلطة صغيرة في الإعدادات.
+              نزلت على shell كـ www-data. وبعدين؟
+
+              - أهو شغل وخلصنا يا حضرتك. شِيلت السيرفر.
+
+              يا نجم الجيل.. www-data ده مش root.
+              تقعد تتفرّج على /var/www؟
+              ولا تقول "خلاص، اخترقت السيرفر"؟
+              اوعى تخدع نفسك. الشغل لسه في أوله.
+              <br/><br/>
+              تخيّل عمارة مكاتب. إنت موظف زائر، البطاقة بتاعتك بتفتح الردهة بس. تصعيد الصلاحيات = تلاقي باب جانبي حد ساب مفتاحه، أو نظام التحكم في الأبواب بيثق في بطاقتك أكتر من اللازم. الفرق بينك وبين root في معظم الحالات مش ثغرة kernel — ده غلطة صغيرة في الإعدادات سايبها الـ admin.
+              <br/><br/>
+              تصعيد الصلاحيات في Linux نادر يكون 0-day. غالباً SUID ناقص، sudo rule مفتوح، أو script شغّال على cron بصلاحيات عالية وبيثق في PATH. في Pwnkit (CVE-2021-4034)، الثغرة كانت موجودة في polkit من 2009. 12 سنة. ومحدش لاحظ.
             </Analogy>
-            <p>
-              تصعيد الصلاحيات في Linux نادر يكون 0-day. غالباً SUID ناقص، sudo rule مفتوح، أو script شغّال على
-              cron بصلاحيات عالية وبيثق في PATH. الدرس ده بيغطّي اللي المهاجم بيدوّر عليه أول ما ينزل على shell.
-            </p>
+            <Callout kind="warn" title="غلطات الـ junior في privesc">
+              <ul>
+                <li>يطير على kernel exploit في أول دقيقة. الـ kernel exploits مش مستقرة وممكن تكراش السيرفر. ابدأ بالـ misconfigs.</li>
+                <li>يشغّل linpeas من غير ما يفحص الـ environment. بعض البيئات فيها auditd بيلوگ كل execve.</li>
+                <li>يلاقي SUID على binary غريب ويعمل له exec من غير ما يفهم بيعمل إيه. ممكن يكون honeypot.</li>
+                <li>ينسى يفحص <code>cat /etc/crontab</code>. الكنز المنسي.</li>
+              </ul>
+            </Callout>
           </Section>
 
           <Section title="فحص أولي — ماذا أعرف عن النظام؟">
@@ -90,7 +103,7 @@ export PATH=/tmp:$PATH
             معاك إذن مكتوب صريح إنك تختبره.
           </Callout>
 
-          <Callout kind="good" title="الدفاع — تقليل سطح التصعيد">
+          <Callout kind="good" title="الحماية — تقليل الأبواب اللي قدامه">
             <ul>
               <li>راجع <span className="eng">sudo -l</span> لكل مستخدم. لا NOPASSWD لأي أداة في GTFOBins.</li>
               <li>ابحث عن SUID شهرياً (auditd rule على path-changes)</li>
@@ -119,6 +132,19 @@ level: high
 tags: [attack.privilege_escalation, attack.t1548]`}</Code>
           </Section>
 
+          <Section title="الخلاصة الناشفة">
+            <p>
+              Linux privesc 90٪ منه misconfigs. مش kernel exploits.
+              <br/>
+              SUID على binary مش لازم يكون SUID. sudo rule كاتبها admin من 4 سنين. cron بيشغّل /tmp/script.sh اللي إنت ممكن تكتبه. PATH فيه folder writable.
+              <br/><br/>
+              الـ junior بيدوّر على CVE.
+              <br/>
+              الـ pro بيدوّر على غلطة الـ admin.
+              <br/><br/>
+              اكتبها على ظهر إيدك يا مستجد: شغّل LinPEAS على سيرفراتك إنت قبل الـ adversary. لو لقى حاجة، يبقى هو هيلاقيها أسرع منك. وأنت ونصيبك ساعتها.
+            </p>
+          </Section>
           <Section title="مصادر">
             <ul>
               <li>GTFOBins — <span className="eng">gtfobins.github.io</span></li>

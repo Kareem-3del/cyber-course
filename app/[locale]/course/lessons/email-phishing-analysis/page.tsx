@@ -6,9 +6,24 @@ export default function Page() {
     <LessonShell slug="email-phishing-analysis">
       <L
         ar={<>
-          <Section title="لماذا تحليل الإيميل أساسي لكل محقّق">
-            <p>~90% من اختراقات المؤسسات تبدأ بإيميل. كمحلّل SOC أو IR، ستفتح user-reported phishing 5–20 مرة في اليوم. هذه المهارة لا تُؤجّل.</p>
-            <Analogy>الإيميل مثل ظرف بريد رسمي. الـ envelope عليه ختم البريد (SMTP servers)، طوابع (DKIM signatures)، عنوان مرسِل ظاهر (From) و آخر فعلي (Return-Path). محلّل ماهر يقرأ الظرف قبل أن يفتح الرسالة.</Analogy>
+          <Section title="ليه تحليل الإيميل أساسي لكل محقق">
+            <p>حوالي 90% من اختراقات الشركات بتبدأ بإيميل. صدّقني..</p>
+            <p>كمحلل SOC أو IR، هتفتح phishing من user reports 5 لـ 20 مرة في اليوم.
+            ده مش حاجة هتأجلها.
+            مش هتبقى محلل وأنت ما تعرفش تقرا headers.
+            مش هتبقى IR وأنت ما تعرفش تفرّق بين BEC وphishing عادي.
+            ولا تتمنى.</p>
+            <Analogy>
+              الإيميل زي ظرف بريد رسمي.
+              عليه ختم البريد (SMTP servers)..
+              طوابع (DKIM signatures)..
+              عنوان مرسل ظاهر (From)..
+              وعنوان فعلي للرد (Return-Path).
+              المحلل الشاطر بيقرا الظرف الأول، قبل ما يفتح الجواب.
+            </Analogy>
+            <Callout kind="info" title="Ubiquiti 2015 — درس BEC بـ 46 مليون دولار">
+              مهاجمين انتحلوا إيميل executive في Ubiquiti (شركة networking كبيرة). بعتوا للـ finance team طلب wire transfer "سرّي" لاستحواذ. الـ team نفّذوا. 46.7 مليون دولار راحوا. مفيش malware. مفيش zero-day. إيميل + ضغط وقت + هيبة منصب. وبس. Ubiquiti لحقت ترجّع 8 مليون بس. الباقي طار.
+            </Callout>
           </Section>
 
           <Section title="بنية الـ Email — ما يهمّ فعلاً">
@@ -58,7 +73,7 @@ _dmarc.target.gov. TXT "v=DMARC1; p=reject; rua=mailto:dmarc@target.gov; pct=100
             </Callout>
           </Section>
 
-          <Section title="حيل الـ phishing التي يجب أن تعرفها">
+          <Section title="حيل الـ phishing اللي لازم تعرفها">
             <ol>
               <li><b>Display name spoofing</b> — <span className="eng">"CEO Name" &lt;random@gmail.com&gt;</span>. الـ From الظاهر صحيح، الفعلي مزيّف. SPF/DMARC لا يفحصان display name.</li>
               <li><b>Lookalike domains (typosquatting)</b> — <span className="eng">microsoft-support.com</span>, <span className="eng">paypa1.com</span>, <span className="eng">target-gov.com</span>. حروف Cyrillic مشابهة لـ Latin (homoglyph).</li>
@@ -151,7 +166,7 @@ any.run           # interactive sandbox للـ malware
             </Callout>
           </Section>
 
-          <Section title="الدفاع — طبقات يجب أن تُبنى">
+          <Section title="الحماية — الطبقات اللي لازم تتبني">
             <ol>
               <li><b>Email gateway</b> (Proofpoint, Mimecast, Microsoft Defender for Office 365) — sandboxing، URL rewriting، attachment detonation.</li>
               <li><b>DMARC على p=reject</b> لكل النطاقات — حتى parked ones.</li>
@@ -165,6 +180,25 @@ any.run           # interactive sandbox للـ malware
             <Callout kind="info" title="MITRE ATT&CK">
               T1566.001 (Spearphishing Attachment) · T1566.002 (Spearphishing Link) · T1566.003 (Spearphishing via Service) · T1534 (Internal Spearphishing) · T1114 (Email Collection).
             </Callout>
+          </Section>
+
+          <Section title="غلطات الـ junior — اللي بتحرق التحقيق">
+            <Callout kind="warn" title="لو فات عليك ده، يبقى مش بتراقب">
+              <ul>
+                <li>بياخد screenshot من الإيميل بدل الـ .eml. الـ headers ضاعت. الـ analysis ما بقاش analysis.</li>
+                <li>بيدوس على الـ link "علشان يشوف يروح فين". من جوّه شبكة الشركة. الـ malware delivery حصل والـ analyst نفسه بقى patient zero.</li>
+                <li>بيشارك الـ URL في Slack من غير defang. الـ link preview بيتحمّل تلقائي. كل الفريق اتعرّض.</li>
+                <li>بيقفل الـ ticket "false positive" بدون ما يفحص الـ Authentication-Results. الـ user كان بلّغ عن BEC حقيقي. اتسرّقت 200 ألف بعد 3 أيام.</li>
+                <li>بيعمل purge من mailboxes بدون ما يحتفظ بنسخة forensic. الـ IR بعدين ما لقاش الـ evidence.</li>
+              </ul>
+              <p>الخلاصة: الـ phishing analysis مش "بصة سريعة". هي forensics مصغّرة. خد الـ .eml، اشتغل في sandbox، وثّق كل خطوة.</p>
+            </Callout>
+          </Section>
+
+          <Section title="الخلاصة الناشفة">
+            <p>الـ user اللي بلّغ عن phishing = ميزة. اللي ما بلّغش = خطر.</p>
+            <p>الـ analyst اللي بيقفل من غير ما يفحص = البيت التاني للـ attacker.</p>
+            <p>اكتبها على ظهر إيدك: <b>Always read the headers. Always.</b> مفيش shortcut.</p>
           </Section>
         </>}
         en={<>

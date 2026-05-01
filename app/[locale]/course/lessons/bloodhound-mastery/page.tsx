@@ -9,13 +9,26 @@ export default function Page() {
           <>
             <Section title="إيه هو BloodHound — وليه غيّر AD pentesting للأبد؟">
               <Analogy>
-                Active Directory زي مدينة فيها عشرات الآلاف من الموظفين والأبواب والبطاقات والصلاحيات. قبل BloodHound، المهاجم
-                كان بيفحص باب واحد في المرة. مع BloodHound، إنت بتحمل المدينة كلها في graph database وتسأله: <b>"إيه أقصر طريق من
-                الباب الجانبي ده لمكتب الـ CEO؟"</b> — وهو يرسم لك السلسلة كاملة بكليك واحد.
+                إنت داخل دومين فيه 10 آلاف user و 500 سيرفر.
+
+                - طب أعمل إيه يا حضرتك؟؟ أفحص ACLs بإيدي؟ أقرا 38 GPO ورا بعض؟
+
+                ها ها ها يا نجم الجيل.. ده شغل سنة. ولو خلصت، هيكون الدومين اتغيّر.
+
+                Active Directory زي مدينة فيها عشرات الآلاف من الموظفين والأبواب والبطاقات. قبل BloodHound، المهاجم كان بيفحص باب واحد في المرة. مع BloodHound، إنت بتحمل المدينة كلها في graph database وتسأله: <b>&quot;إيه أقصر طريق من الباب الجانبي ده لمكتب الـ CEO؟&quot;</b> — وهو يرسم السلسلة كاملة بكليك.
+
+                Andy Robbins و Will Schroeder و Rohan Vazarkar نشروه في DEFCON 24 (2016). من ساعتها، أي AD assessment محترفة بتبدأ بـ SharpHound. مش &quot;أداة من ضمن الأدوات&quot; — هو الأداة.
               </Analogy>
-              <Callout kind="danger" title="إذن رسمي بس">
-                BloodHound بيلم كم رهيب من بيانات الـ AD. تشغيله على domain من غير تفويض = جريمة. استخدمه في pentest معاك فيه عقد، أو
-                في معمل AD محلي (HTB Pro Labs، GOAD، VulnLab).
+              <Callout kind="danger" title="اللي بيحصل فعلياً">
+                BloodHound بيلم كم رهيب من بيانات الـ AD. تشغيله على domain من غير تفويض = جريمة فيدرالية. استخدمه في pentest معاك فيه عقد، أو في معمل AD محلي (HTB Pro Labs، GOAD، VulnLab). مش مكسوف من السؤال — اسأل قبل ما تشغّل.
+              </Callout>
+              <Callout kind="warn" title="اوعى تعمل الغلطات دي">
+                <ul className="list-disc pe-6 space-y-1">
+                  <li>يشغّل <code>SharpHound -c All</code> في بيئة عميل من أول ثانية. الـ EDR بيولّع في 30 ثانية.</li>
+                  <li>يستخدم الـ pre-built queries بس وما يكتبش Cypher. الـ pre-built بيغطي 30٪ بس من الحالات الحقيقية.</li>
+                  <li>ما يضغطش "Mark as Owned" على اليوزرز اللي خرقهم، فيفضل يرسم الجراف من الصفر كل مرة.</li>
+                  <li>ينسى الـ trusts. الـ child-domain trust = forest pivot جاهز، وهو مش شايفه.</li>
+                </ul>
               </Callout>
               <p className="opacity-80">
                 BloodHound CE (Community Edition) هو الـ standard الحالي (2024+) — حل محل النسخة القديمة Legacy. النظام
@@ -245,6 +258,7 @@ secretsdump.py CORP/svc_backup:'NewP@ss123'@DC.CORP.LOCAL -just-dc
               </Step>
               <Step n={4} title="نظّف وراك">
                 <p>رجّع باسورد svc_backup للقيمة الأصلية لو قدرت. وثّق كل خطوة في التقرير. متسبش ticketing artifacts.</p>
+                <p className="opacity-80 mt-2">اكتبها على المكتب: المهاجم اللي بينضف وراه = اللي بيرجع تاني الشهر الجاي. اللي بيسيب فوضى = هيتمسك مرة وخلاص.</p>
               </Step>
             </Section>
 
@@ -283,7 +297,7 @@ certipy req -u user@corp.local -p Pass! -ca CORP-CA \\
               </ol>
             </Section>
 
-            <Section title="من جهة الدفاع — هتتمسك إزاي؟">
+            <Section title="من جهة الحماية — هتتمسك إزاي؟">
               <Callout kind="warn" title="إشارات تشغيل SharpHound">
                 <ul className="list-disc pe-6 space-y-1">
                   <li>كم هائل من LDAP queries من جهاز واحد في وقت قصير.</li>
@@ -295,7 +309,7 @@ certipy req -u user@corp.local -p Pass! -ca CORP-CA \\
               </Callout>
             </Section>
 
-            <Section title="الدفاع — هندسة AD صعب على BloodHound">
+            <Section title="الحماية — هندسة AD صعب على BloodHound">
               <Callout kind="good" title="مرجع دفاعي عملي">
                 <ol className="list-decimal pe-6 space-y-2">
                   <li><b>Tier model صارم</b>: Tier-0 (DC, ADCS, Entra Connect)، Tier-1 (servers)، Tier-2 (workstations). مفيش login عبر الـ tiers.</li>
@@ -311,6 +325,23 @@ certipy req -u user@corp.local -p Pass! -ca CORP-CA \\
               </Callout>
             </Section>
 
+            <Section title="الخلاصة الناشفة">
+              <p className="opacity-90">
+                BloodHound مش &quot;أداة من ضمن الأدوات&quot;.
+                <br/>
+                هو اللي بيحوّل الـ AD من &quot;غابة مظلمة&quot; لـ &quot;خريطة طرق&quot;.
+                <br/><br/>
+                المستجد بيفتح BloodHound، يدوس Find Shortest Path، ياخد screenshot، خلاص.
+                <br/>
+                المحترف بيقعد ساعتين يكتب Cypher. يعرف الـ bottlenecks. يعرف اليوزرز اللي محدش فاكرهم. يعرف الـ trusts المنسية. وبيدخل سكة محدش شافها.
+                <br/><br/>
+                لو إنت blue team؟ اكتبها على الحيطة اللي في وش السرير: شغّل BloodHound على نفسك. كل شهر.
+                <br/>
+                لو لقيت Domain User بيوصل لـ DA في 4 خطوات، الفجوة موجودة. ما تستناش حد يستغلها.
+                <br/><br/>
+                اللي بتشوفه إنت في الجراف، المهاجم شافه قبلك بشهر.
+              </p>
+            </Section>
             <Section title="مصادر للإتقان">
               <ul className="list-disc pe-6 space-y-1 opacity-90">
                 <li><b>BloodHound Docs</b>: bloodhound.specterops.io — رسمي و محدّث.</li>

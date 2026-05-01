@@ -6,11 +6,15 @@ export default function Page() {
     <LessonShell slug="evasion">
       <L
         ar={<>
-          <Section title="لعبة القط و الفأر">
-            <Analogy>أنظمة الحماية الحديثة (EDR) لا تبحث عن «الفيروس» القديم بل عن <b>السلوك المريب</b>: عملية Word فجأة تشغل PowerShell، أو ذاكرة فيها أنماط Cobalt Strike. مهمة المهاجم المتقدم: التمويه ليبدو نشاطه طبيعياً.</Analogy>
-            <Callout kind="danger" title="هام">هذا الدرس لـ red team مصرّح به فقط. الهدف الحقيقي: أن يعرف المدافع ماذا يبحث عنه و أن لا يثق ثقة عمياء بـ AV.</Callout>
+          <Section title="القط والفار — مين بيلاحق مين؟">
+            <Analogy>الـ EDR الحديث مش بيدوّر على الـ "virus" القديم اللي بـ signature. بيدوّر على <b>السلوك</b>: Word بيشغّل PowerShell؟ ذاكرة فيها Cobalt Strike beacon pattern؟ child process لـ msword.exe اسمه cmd.exe؟ كله flags. شغل المهاجم المتقدم: يخلّي السلوك يبان طبيعي. مش يشغّل tool، يخلّي الـ tool يبان زي اللي حواليه.</Analogy>
+
+            <p>- طب يا حضرتك إحنا عندنا EDR بـ مليون دولار، ده بيقفل كل حاجة!</p>
+
+            <p>متوقّع كالعادة يا مستجد. لو AV التقليدي مات، ليه لسه الناس بيعتمدوا على signatures؟ ليه لسه عندنا "تحديث الـ definitions"؟ الـ vendor بيبيع لك راحة بال، مش حماية. الفرق كبير.</p>
+            <Callout kind="danger" title="قبل ما تكمّل">هذا الدرس لـ red team عنده تصريح كتابي. الهدف الحقيقي: المدافع يعرف بيدوّر على ايه، وما يثقش ثقة عميا في AV. الـ EDR كله اللي بيقولك "100% detection" بيكدب عليك. مفيش EDR بيقفل كل حاجة.</Callout>
           </Section>
-          <Section title="طبقات الكشف التي يجب تجاوزها">
+          <Section title="طبقات الكشف اللي لازم تتجاوزها">
             <ol>
               <li><b>Static AV</b> — توقيعات الملف.</li>
               <li><b>AMSI</b> — يفحص النصوص قبل تنفيذها (PowerShell, JS, VBA).</li>
@@ -92,7 +96,7 @@ wmic process call create "powershell -enc ..."`}</Code>
               <li><b>Domain check</b> — لا تنفّذ إلا داخل دومين الضحية.</li>
             </ul>
           </Section>
-          <Section title="الدفاع — كيف يكشف الـ Blue Team هذه التقنيات">
+          <Section title="الحماية — إزاي الـ Blue Team بيكشف ده كله">
             <ul>
               <li>Sysmon + قواعد SwiftOnSecurity / Olaf Hartong.</li>
               <li>ETW-TI (Threat Intelligence provider) لرصد syscalls مباشرة.</li>
@@ -103,7 +107,22 @@ wmic process call create "powershell -enc ..."`}</Code>
               <li>تطبيق WDAC / AppLocker في وضع enforced.</li>
               <li>Credential Guard, HVCI.</li>
             </ul>
-            <Callout kind="good" title="حقيقة دفاعية">أفضل EDR لن يكشف 100%. الكشف الحقيقي يأتي من <b>دمج عدة طبقات</b>: سلوك + شبكة + هوية + سحابة، مع UEBA فوقها.</Callout>
+            <Callout kind="good" title="الحقيقة المرّة">أحسن EDR في السوق مش هيلاقط 100%. الكشف الحقيقي بييجي من <b>دمج طبقات</b>: behavior + network + identity + cloud، وفوقهم UEBA. اللي بيعتمد على EDR لوحده، بيعرّض نفسه. اللي بيعتمد على network IDS لوحده، بيعرّض نفسه. الـ defense in depth مش buzzword، ده اللي بيشتغل فعلاً.</Callout>
+          </Section>
+          <Section title="غلطات الـ junior في الـ red team side">
+            <Callout kind="warn" title="بلاش تعمل كده">
+              <ul>
+                <li>تجرّب payload على VirusTotal. VT بيوزّع الـ samples للـ AV vendors. انت كده حرقت الـ implant بنفسك.</li>
+                <li>تستخدم default Cobalt Strike profile. كل blue team في العالم بيـ block JA3 hash بتاعه.</li>
+                <li>تنسى تـ obfuscate الـ C2 sleep timing. الـ network detection بتلاقط الـ regular beaconing من بعيد.</li>
+                <li>تستخدم AMSI bypass من 2018. الـ string-based detection لاقطه قبل ما الـ payload يشتغل.</li>
+              </ul>
+            </Callout>
+          </Section>
+          <Section title="الخلاصة الناشفة">
+            <p>الـ evasion مش حركة واحدة. ده تركيب من 10+ تقنية شغّالة في نفس الوقت: AMSI bypass + ETW patch + indirect syscalls + sleep masking + stack spoofing + LOLBAS + domain check.</p>
+            <p>اللي بيكسر واحد فيهم بيكسر الكل. ولو واحد منهم سقط، الـ chain كلها سقطت.</p>
+            <p>للمدافع: ما تستثمرش في tool واحد. استثمر في visibility. كل ما الـ data أكتر، كل ما الـ adversary بيلاقي صعوبة يخفي. الـ logs اللي ما بتجمعهاش = هدية للـ adversary.</p>
           </Section>
         </>}
         en={<>

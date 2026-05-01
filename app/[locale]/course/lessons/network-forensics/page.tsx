@@ -6,11 +6,28 @@ export default function Page() {
     <LessonShell slug="network-forensics">
       <L
         ar={<>
-          <Section title="لماذا الـ Network Forensics لا غنى عنه">
-            <p>المهاجم يقدر يمسح logs الـ endpoint، يشيل ملفات، يقفل EDR. بس الشبكة لو <b>بتسجّل اللي بيمر</b>، مش هيقدر يلغي اللي قاله في السلك. <b>The network never lies</b>.</p>
-            <Analogy>زي الـ ECG في غرفة العمليات — بيسجّل كل دقة قلب لحظة بلحظة. الجراح ممكن ينسى، الممرض ممكن يغلط، الشريط مش بيكدب.</Analogy>
+          <Section title="ليه الـ Network Forensics مفيش غنى عنه؟">
+            <Analogy>
+              المهاجم دخل، نضّف logs الـ endpoint، شال ملفاته، قفل الـ EDR.
+
+              - يبقى خلاص خلاص، ما حدش هيعرف عمل ايه؟؟
+
+              يا نجم الجيل.. كنت مستنيك تسأل. الشبكة لو <b>بتسجّل اللي بيمر</b>، مش هيقدر يلغي اللي قاله في السلك.
+              زي الـ ECG في غرفة العمليات — بيسجّل كل دقة قلب لحظة بلحظة. الجراح ممكن ينسى، الممرض ممكن يغلط، الشريط مش بيكدب.
+              <b>The network never lies.</b>
+            </Analogy>
+            <p>SolarWinds 2020: APT29 قعدوا 9 شهور جوه. اللي فضحهم في النهاية مش endpoint logs — لأ، beacon traffic كل 12 ساعة لـ avsvmcloud.com. الـ Mandiant لاقوها في NetFlow archives قديمة. الشبكة فضحت اللي الـ EDR ما شافوش.</p>
             <Callout kind="info" title="القاعدة">
-              في أي حادث جدّي: اسأل الأول "إيه الـ traffic data المتاح؟" قبل ما تبص للـ host خالص.
+              في أي حادث جدّي: اسأل الأول &quot;إيه الـ traffic data المتاح؟&quot; قبل ما تبصّ للـ host خالص.
+              لو فات عليك ده، يبقى مش بتراقب — بتتفرّج.
+            </Callout>
+            <Callout kind="danger" title="غلطات الـ junior في network forensics">
+              <ul>
+                <li>بيدوّر على malicious IPs في threat intel feeds — معظم الـ C2 الحديث على Cloudflare وAWS وAzure. الـ IP نظيف، الـ behavior فاضح.</li>
+                <li>بيتجاهل DNS — DNS هو أرخص telemetry وأقوى hunt surface. أي malware لازم يعمل lookup.</li>
+                <li>بيفتح Wireshark على pcap حجمه 50GB ويستنّى — استخدم Zeek الأول، Wireshark بعدين على stream محدد.</li>
+                <li>بينسى JA3/JA3S — TLS handshake fingerprint بتفضح Cobalt Strike وSliver حتى لو الـ cert مزوّر.</li>
+              </ul>
             </Callout>
           </Section>
 
@@ -193,6 +210,9 @@ rita show-beacons mydataset
               <li>NetFlow طويل المدى (90+ يوم) للـ retroactive hunts.</li>
               <li>وقّف TLS inspection لو القانون مش سامح، بس سجّل Metadata + JA3.</li>
             </ol>
+            <Callout kind="info" title="الخلاصة الناشفة">
+              المهاجم بيقدر يخفي شغله على endpoint. ما بيقدرش يخفيه على الشبكة. ولو شغّلت Zeek + JA3 + RITA + NetFlow طويل المدى، انت بنيت time machine — لو ضربتك حادثة بكره، تقدر ترجع 90 يوم وتشوف من امتى المهاجم جوه. اكتبها على كشكولك: مفيش بديل عن الـ visibility دي. الـ EDR لوحده مش كفاية. اوعى تـ trust الـ endpoint بس.
+            </Callout>
           </Section>
         </>}
         en={<>

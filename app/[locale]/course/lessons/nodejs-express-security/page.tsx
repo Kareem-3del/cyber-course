@@ -6,11 +6,28 @@ export default function Page() {
     <LessonShell slug="nodejs-express-security">
       <L
         ar={<>
-          <Section title="لماذا Node.js مختلف عن PHP/Java أمنياً">
-            <p>Node.js بيشغّل JavaScript على السيرفر. وJavaScript لغة <b>ديناميكية لأقصى درجة</b> — كل object قابل للتعديل، وكل property ممكن تتعدّى عليها. ده بيفتح فئات هجمات مش موجودة أصلاً في Java أو Go: prototype pollution، NoSQL injection، التلاعب بـ <span className="eng">require()</span>، deserialization عن طريق JSON.</p>
-            <Analogy>تخيل بيت ذكي كل حيطانه بتتحرّك. مرونة جامدة، بس لو الزائر فهم إزاي يحرّكها، هيوصل لكل أوضة. Java زي مبنى أسمنت مسلّح — صعب تخش، صعب تبني فيه.</Analogy>
+          <Section title="ليه Node.js مختلف عن PHP/Java أمنياً؟">
+            <p>إنت كاتب تطبيق Node. نفس الـ logic لو كاتبه في Java، آمن.</p>
+
+            <p>- طب يعني نفس الكود؟ مش معقول!</p>
+
+            <p>متوقّع يا مستجد. آه نفس الكود. السبب؟ JavaScript مش زي Java.</p>
+            <Analogy>
+              تخيّل بيت ذكي كل حيطانه بتتحرّك.
+              مرونة جامدة، بس لو الزائر فهم إزاي يحرّكها، هيوصل لكل أوضة.
+              Java زي مبنى أسمنت مسلّح — صعب تخش، صعب تبني فيه.
+              Node مرن، سريع، حلو في الكتابة — وفيه فئات هجمات مش موجودة في Java أصلاً: prototype pollution، NoSQL injection، التلاعب بـ <span className="eng">require()</span>، deserialization عن طريق JSON عادي.
+            </Analogy>
+            <Callout kind="info" title="القصة: Lodash و 4 مليار download في الشهر">
+              <span className="eng">lodash.merge</span> فيه prototype pollution — CVE-2019-10744. الـ npm بيـ download lodash 4 مليار مرة في الشهر.
+              يعني نص الإنترنت كان vulnerable لـ payload واحد: <code>{`{"__proto__":{"isAdmin":true}}`}</code>.
+              الـ patch طلع. تمام.
+              بعد سنة، طلعت ثغرة مشابهة في <span className="eng">set-value</span>. وبعدها <span className="eng">hoek</span>. وبعدها <span className="eng">minimist</span>.
+              نفس الـ class من الثغرات، شركات مختلفة، دروس ما اتعلمتش.
+            </Callout>
             <Callout kind="danger" title="تحذير قانوني">
-              أمثلة الاستغلال اللي جايّة كلها للتدريب في معملك أو pentest عليه إذن. تشغّلها على نظام إنتاج مش بتاعك = جريمة CFAA.
+              أمثلة الاستغلال اللي جايّة كلها للتدريب في معملك أو pentest عليه إذن.
+              تشغّلها على نظام إنتاج مش بتاعك = CFAA.
             </Callout>
           </Section>
 
@@ -65,7 +82,7 @@ fetch('/api/profile', {
     }
   })
 });`}</Code>
-            <Callout kind="good" title="الدفاع">
+            <Callout kind="good" title="الحماية">
               <ul>
                 <li>استخدم <span className="eng">Object.create(null)</span> للـ maps اللي بتيجي من user input.</li>
                 <li>افحص الـ keys: ارفض <span className="eng">__proto__</span>، <span className="eng">constructor</span>، <span className="eng">prototype</span>.</li>
@@ -92,7 +109,7 @@ GET /fetch-image?url=http://rebind.evil.com/latest/...
 
 // أو URL parser confusion (Node URL vs WHATWG URL)
 GET /fetch-image?url=http://attacker.com#@169.254.169.254/`}</Code>
-            <Code lang="javascript">{`// الدفاع — allowlist + IP literal check + DNS resolve يدوي
+            <Code lang="javascript">{`// الحماية — allowlist + IP literal check + DNS resolve يدوي
 import dns from 'dns/promises';
 import ipaddr from 'ipaddr.js';
 
@@ -171,7 +188,7 @@ app.post('/login', async (req, res) => {
 // JS injection في $where
 {"$where": "this.name == 'admin' && sleep(5000)"}   // blind oracle
 
-// الدفاع
+// الحماية
 import mongoSanitize from 'express-mongo-sanitize';
 app.use(mongoSanitize({ replaceWith: '_' }));
 
@@ -195,7 +212,7 @@ GET /files/..%252f..%252f   # double-encode إذا كان هناك decode مرت
 // عبر symlinks
 GET /files/symlink_to_root
 
-// الدفاع
+// الحماية
 const safe = path.normalize(req.params.name).replace(/^(\\.\\.[\\/\\\\])+/, '');
 const full = path.join(__dirname, 'uploads', safe);
 if (!full.startsWith(path.resolve(__dirname, 'uploads') + path.sep)) {
@@ -224,7 +241,7 @@ if (!real.startsWith(uploadsRoot)) return res.status(403).end();`}</Code>
               <li><b>Compromised maintainer</b> — event-stream (2018), ua-parser-js (2021), node-ipc (2022 protestware).</li>
               <li><b>postinstall scripts</b> — بتشتغل لوحدها مع <span className="eng">npm install</span>. خصوصاً على CI.</li>
             </ul>
-            <Code lang="bash">{`# الدفاع
+            <Code lang="bash">{`# الحماية
 npm config set ignore-scripts true            # امنع postinstall افتراضياً
 npm install --ignore-scripts <pkg>
 npm audit && npm audit fix
@@ -282,6 +299,26 @@ app.use(session({
               <li><b>Burp Suite</b> + extension <span className="eng">prototype-pollution-finder</span>.</li>
               <li><b>OWASP ZAP</b> + active scanner للـ NoSQLi.</li>
             </ul>
+          </Section>
+
+          <Section title="غلطات الـ junior في Node">
+            <Callout kind="danger" title="اللي بيكلّفك breach">
+              <ul>
+                <li><b>"merge بسيط، إيه المشكلة"</b> — أي recursive merge من user input من غير فلترة على <span className="eng">__proto__</span> = ثغرة. حتى لو الـ codebase صغير.</li>
+                <li><b>npm install أي حاجة</b> — left-pad اتمسحت مرة وكسرت نص الإنترنت. <span className="eng">event-stream</span> اتعملها supply chain attack وسرقت Bitcoin wallets. قبل ما تـ install package، اتفرّج على المؤلف، الـ downloads، آخر commit.</li>
+                <li><b>JWT بـ HS256 والـ secret في .env</b> — ثم الـ .env بيتكوميت بالغلط. اتسرّب 1000 مرة في 1000 شركة. استخدم RS256 + KMS.</li>
+                <li><b>eval() على JSON</b> — لسه فيه ناس بتعمل كده في 2026. <span className="eng">JSON.parse</span> موجود من زمان.</li>
+                <li><b>child_process.exec بـ string</b> — بدل spawn بـ array. الفرق: shell injection vs آمن.</li>
+                <li><b>"helmet مش هيعمل فرق"</b> — helmet في 5 سطور بيقفلك 8 classes من الهجمات. مش feature، ضرورة.</li>
+              </ul>
+            </Callout>
+          </Section>
+
+          <Section title="الخلاصة الناشفة">
+            <p>Node سريع وحلو. وبيدّيك مساحة تغلط 1000 غلطة قبل ما تخش production.</p>
+            <p>اكتبها على ظهر إيدك:</p>
+            <p>الفرق بين Node آمن و Node مكشوف = 5 packages: helmet، express-rate-limit، joi/zod، express-mongo-sanitize، و npm audit في الـ CI.</p>
+            <p>اللي مش بيستخدمهم؟ بيختبر الـ exploits على إنتاجه. وأنت ونصيبك.</p>
           </Section>
         </>}
         en={<>

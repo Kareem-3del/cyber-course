@@ -7,8 +7,29 @@ export default function Page() {
       <L
         ar={<>
           <Section title="React آمن من XSS by default؟ — هو إحنا متأكدين؟">
-            <p>أيوة، React بيعمل escape للنصوص في JSX، يعني <span className="eng">{`{userInput}`}</span> سليمة. بس السمعة دي بتنوّم المطورين، و بينسوا إن React بيفتح خرّامات تانية كتير: <span className="eng">dangerouslySetInnerHTML</span>، URL handlers (<span className="eng">href</span>, <span className="eng">src</span>)، refs، event handlers ديناميكية، و JSX injection عن طريق <span className="eng">React.createElement</span>. الإطار مش حصان أبيض — إنت اللي بتقفل الباب أو تفتحه.</p>
-            <Analogy>تخيل باب بيتقفل لوحده. طالما سايبه — تمام. بس لحظة ما تفتحه بإيدك (dangerouslySetInnerHTML) إنت لوحدك في الشارع. الناس بتفتح الباب و هي مطمنة "الإطار آمن دايماً" — و دي اللحظة اللي بتتحرق فيها.</Analogy>
+            <p>"React بيعمل escape تلقائي". صح.</p>
+
+            <p>- يبقى أنا في حماية يا حضرتك! :D</p>
+
+            <p>كنت مستنيك تقول كده يا مستجد. متوقّع. تعالى نشوف بقى.</p>
+            <p>طب الـ <span className="eng">dangerouslySetInnerHTML</span>؟</p>
+            <p>والـ <span className="eng">href={`{userUrl}`}</span>؟</p>
+            <p>والـ markdown renderer اللي شغّال في الـ comments؟</p>
+            <p>والـ <span className="eng">window.location = userInput</span>؟</p>
+            <Analogy>
+              تخيّل باب بيتقفل لوحده. طالما سايبه — تمام.
+              بس لحظة ما تفتحه بإيدك (dangerouslySetInnerHTML)، إنت لوحدك في الشارع.
+              الناس بتفتح الباب وهي مطمنّة "الإطار آمن دايماً".
+              ودي اللحظة اللي بتتحرق فيها.
+              React بيقفل XSS الكلاسيكي. مش بيقفل dangerously*، مش بيقفل URL injection، مش بيقفل DOM clobbering.
+            </Analogy>
+            <Callout kind="info" title="حكاية: marked + React = breach">
+              في 2021، dApp شهيرة (DeFi) كانت بتـ render markdown comments في React بـ <span className="eng">marked</span> + <span className="eng">dangerouslySetInnerHTML</span>.
+              من غير DOMPurify.
+              attacker كتب comment فيه <code>{`<img src=x onerror=window.ethereum.request(...)>`}</code>.
+              اللي بيحصل فعلياً؟ كل واحد فتح الـ thread، الـ wallet بتاعه طلب transaction.
+              مفيش 0day. "React آمن" + DOMPurify ناقصة = مليون دولار.
+            </Callout>
             <Callout kind="danger" title="تنبيه">
               الأمثلة هنا عشان تتعلم تستغل DOM/XSS في تطبيقاتك إنت. مش لمواقع متملكهاش.
             </Callout>
@@ -173,7 +194,7 @@ if (window.trustedTypes) {
               <li><b>postMessage leaks</b> — listener على <span className="eng">"*"</span>. ده عك صريح.</li>
               <li><b>Navigation timing</b> — تحميل /admin أخد قد إيه؟ → admin أو لأ.</li>
             </ul>
-            <Callout kind="good" title="الدفاع">
+            <Callout kind="good" title="الحماية">
               <ul>
                 <li><span className="eng">Cross-Origin-Opener-Policy: same-origin</span></li>
                 <li><span className="eng">Cross-Origin-Embedder-Policy: require-corp</span></li>
@@ -225,6 +246,27 @@ fetch('/api', { credentials: 'include', headers: { 'X-CSRF-Token': csrfToken } }
             <Callout kind="info" title="أدوات بتختصر عليك">
               ESLint + <span className="eng">eslint-plugin-react</span>, <span className="eng">eslint-plugin-jsx-a11y</span>, <span className="eng">eslint-plugin-security</span>. Semgrep <span className="eng">p/react</span>. Dependabot. Snyk. خلّي الأدوات تشتغل عنك بدل ما تنسى.
             </Callout>
+          </Section>
+
+          <Section title="غلطات الـ junior في React">
+            <Callout kind="danger" title="الأخطاء اللي بتنسف الـ frontend">
+              <ul>
+                <li><b>JWT في localStorage</b> — أول XSS = الـ token مع المهاجم. استخدم HttpOnly cookies.</li>
+                <li><b>"React بيعمل escape، فأنا آمن"</b> — مش هنا. الـ <span className="eng">href</span> الديناميكي مش بيتعمله escape زي string. <span className="eng">javascript:</span> بتعدّي.</li>
+                <li><b>VITE_API_KEY في .env</b> — كل حاجة بـ <span className="eng">VITE_</span> أو <span className="eng">REACT_APP_</span> بتطلع في الـ bundle. أي حد بيقرا الـ source يلاقيها.</li>
+                <li><b>target="_blank" بدون rel="noopener noreferrer"</b> — الموقع المفتوح بيقدر يعدّل window.opener. tabnabbing كلاسيكي.</li>
+                <li><b>postMessage بيقبل من أي origin</b> — اللعبة الفضلى للـ iframe-based attacks.</li>
+                <li><b>dangerouslySetInnerHTML على markdown</b> — من غير DOMPurify. نفس قصة marked + DeFi.</li>
+              </ul>
+            </Callout>
+          </Section>
+
+          <Section title="الخلاصة الناشفة">
+            <p>اكتبها على الموبايل قدامك:</p>
+            <p>React مش "آمن بنفسه" — React "بيقلّل المساحة المكشوفة".</p>
+            <p>اللي فاضل، إنت مسؤول عنه: الـ HTML اللي بتـ render، الـ URLs اللي بتـ click عليها، الـ secrets اللي بتحطها في الـ bundle.</p>
+            <p>أمن الـ frontend مش "tooling" — هو طريقة تفكير. كل property ديناميكية = decision عن الـ trust.</p>
+            <p>اوعى تثق في الـ client. الـ client أرض عدوانية.</p>
           </Section>
         </>}
         en={<>
